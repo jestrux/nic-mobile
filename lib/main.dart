@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nic/color_schemes.g.dart';
+import 'package:nic/constants.dart';
 import 'package:nic/pages/HomePage.dart';
 
 void main() => runApp(const NICKiganjani());
@@ -37,15 +38,31 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int currentPageIndex = 0;
-  NavigationDestinationLabelBehavior labelBehavior =
-      NavigationDestinationLabelBehavior.alwaysShow;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const HomePage(),
+      backgroundColor: Constants.primaryColor,
+      body: Stack(
+        // fit: StackFit.expand,
+        children: [
+          Container(
+            // height: 320,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                opacity: 0.3,
+                scale: 10,
+                image: AssetImage(
+                  "assets/img/patterns.png",
+                ),
+                repeat: ImageRepeat.repeat,
+              ),
+            ),
+          ),
+          HomePage(),
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
-        labelBehavior: labelBehavior,
+        height: 60,
         selectedIndex: currentPageIndex,
         onDestinationSelected: (int index) {
           setState(() {

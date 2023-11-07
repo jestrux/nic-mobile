@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> buyBimaActions() {
     return [
       {
-        "icon": "heart-rate",
+        "icon": "save-heart",
         "name": "Life & Saving",
         "actions": () {
           navigate(
@@ -205,15 +205,16 @@ class _HomePageState extends State<HomePage> {
                     width: 36,
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color:
-                          colorScheme(context).surfaceVariant.withOpacity(0.8),
-                      borderRadius: const BorderRadius.all(Radius.circular(6)),
+                      color: colorScheme(context).primary.withOpacity(0.1),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(6),
+                      ),
                     ),
                     child: SvgPicture.asset(
                       "assets/img/quick-actions/${action["icon"]}.svg",
                       semanticsLabel: action["name"],
                       colorFilter: ColorFilter.mode(
-                        colorScheme(context).surfaceTint,
+                        colorScheme(context).primary,
                         BlendMode.srcIn,
                       ),
                     ),
@@ -226,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                   width: 0.6,
                   color: colorScheme(context).outlineVariant,
                 ),
-                color: colorScheme(context).surfaceVariant.withOpacity(0.1),
+                color: colorScheme(context).surfaceVariant.withOpacity(0.2),
                 borderRadius: const BorderRadius.all(Radius.circular(8)),
               ),
               child: Row(
@@ -369,8 +370,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
+      // backgroundColor: Constants.primaryColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2E6B27),
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -380,45 +383,64 @@ class _HomePageState extends State<HomePage> {
               width: 40,
             ),
             const SizedBox(width: 12),
-            const Text("NIC Kiganjani"),
+            Text(
+              "Sisi ndiyo Bima".toUpperCase(),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    color: Colors.white,
+                    letterSpacing: 1.5,
+                  ),
+            ),
           ],
         ),
         automaticallyImplyLeading: false,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            _buildAdsBar(),
-            const SizedBox(height: 16),
-            _buildActions(actions: [
-              ...quickActions(),
-              ...claimActions(),
-              ...bimaActions(),
-            ]),
-            // _buildCardSection("Quick Actions",
-            //     [...quickActions(), ...claimActions(), ...bimaActions()]),
-            const SizedBox(height: 16),
-            _buildCardSection("Buy Bima", buyBimaActions()),
-            const SizedBox(height: 16),
-            // _buildCardSection(
-            //   "Your Policies",
-            //   [
-            //     {
-            //       // "icon": "document",
-            //       "name": "Pending Bima",
-            //       "description": "Expires in two weeks",
-            //       "action": {"label": "Renew", "onClick": () {}},
-            //     },
-            //   ],
-            //   columns: 1,
-            // ),
-            // const SizedBox(height: 16),
-            // _buildCardSection("Bima Actions", bimaActions()),
-            // const SizedBox(height: 16),
-          ],
+      body: Container(
+        height: double.infinity,
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          color: colorScheme(context).background,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              _buildAdsBar(),
+              const SizedBox(height: 16),
+              _buildActions(actions: [
+                ...quickActions(),
+                ...claimActions(),
+                ...bimaActions(),
+              ]),
+              // _buildCardSection("Quick Actions",
+              //     [...quickActions(), ...claimActions(), ...bimaActions()]),
+              const SizedBox(height: 16),
+              _buildCardSection("Buy Bima", buyBimaActions()),
+              const SizedBox(height: 16),
+              // _buildCardSection(
+              //   "Your Policies",
+              //   [
+              //     {
+              //       // "icon": "document",
+              //       "name": "Pending Bima",
+              //       "description": "Expires in two weeks",
+              //       "action": {"label": "Renew", "onClick": () {}},
+              //     },
+              //   ],
+              //   columns: 1,
+              // ),
+              // const SizedBox(height: 16),
+              // _buildCardSection("Bima Actions", bimaActions()),
+              // const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
