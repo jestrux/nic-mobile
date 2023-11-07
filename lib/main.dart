@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:nic/color_schemes.g.dart';
 import 'package:nic/pages/HomePage.dart';
 
 void main() => runApp(const NICKiganjani());
@@ -8,13 +11,19 @@ class NICKiganjani extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData themeWithFont(ThemeData theme) => theme.copyWith(
+          textTheme: GoogleFonts.notoSansTextTheme(theme.textTheme).copyWith(
+              // bodyMedium: GoogleFonts.oswald(textStyle: textTheme.bodyMedium),
+              ),
+        );
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const MyApp(),
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
+      theme: themeWithFont(
+          ThemeData(useMaterial3: true, colorScheme: lightColorScheme)),
+      darkTheme: themeWithFont(
+          ThemeData(useMaterial3: true, colorScheme: darkColorScheme)),
     );
   }
 }
@@ -45,18 +54,17 @@ class _MyAppState extends State<MyApp> {
         },
         destinations: const <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
+            icon: Icon(Icons.home_filled),
             label: 'Home',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.shopping_cart),
-            icon: Icon(Icons.shopping_cart_outlined),
+            // selectedIcon: Icon(CupertinoIcons.shopping_cart),
+            icon: Icon(CupertinoIcons.shopping_cart),
             label: 'Bima',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.account_circle),
-            icon: Icon(Icons.account_circle_outlined),
+            // selectedIcon: Icon(Icons.account_circle),
+            icon: Icon(CupertinoIcons.person),
             label: 'Profile',
           ),
           NavigationDestination(

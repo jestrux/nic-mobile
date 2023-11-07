@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:nic/components/MiniButton.dart';
+import 'package:nic/utils.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,17 +28,40 @@ class _HomePageState extends State<HomePage> {
 
   void route() {}
 
-  Widget _buildActions() {
-    List<Map<String, dynamic>> quickActions = [
+  List<Map<String, dynamic>> quickActions() {
+    return [
       {
         "icon": "calculator",
         "name": "Get a Quote",
-        "action": showGetQuoteModal,
+        "actions": showGetQuoteModal,
       },
+      // {
+      //   "icon": "feedback",
+      //   "name": "Feedback and Complaints",
+      //   "actions": () {
+      //     // navigate(route("feedback"));
+      //   },
+      // },
+      // {
+      //   "icon": "complaint",
+      //   "name": "Complaints",
+      //   "actions": () {
+      //     navigate(
+      //         // route("feedback", {
+      //         //     "subPage": "complaints",
+      //         // })
+      //         );
+      //   },
+      // },
+    ];
+  }
+
+  List<Map<String, dynamic>> claimActions() {
+    return [
       {
         "icon": "add-file",
         "name": "Report Claim",
-        "action": () {
+        "actions": () {
           navigate(
               // route("claims", {
               //     "subPage": "report",
@@ -46,7 +72,7 @@ class _HomePageState extends State<HomePage> {
       {
         "icon": "contract",
         "name": "Claim Status",
-        "action": () {
+        "actions": () {
           navigate(
               // route("claims", {
               //     "subPage": "status",
@@ -54,10 +80,53 @@ class _HomePageState extends State<HomePage> {
               );
         },
       },
+    ];
+  }
+
+  List<Map<String, dynamic>> buyBimaActions() {
+    return [
+      {
+        "icon": "heart-rate",
+        "name": "Life & Saving",
+        "actions": () {
+          navigate(
+              // route("claims", {
+              //     "subPage": "report",
+              // })
+              );
+        },
+      },
+      {
+        "icon": "car",
+        "name": "Magari",
+        "actions": () {
+          navigate(
+              // route("claims", {
+              //     "subPage": "report",
+              // })
+              );
+        },
+      },
+      {
+        "icon": "motorcycle",
+        "name": "Pikipiki / Bajaji",
+        "actions": () {
+          navigate(
+              // route("claims", {
+              //     "subPage": "status",
+              // })
+              );
+        },
+      },
+    ];
+  }
+
+  List<Map<String, dynamic>> bimaActions() {
+    return [
       {
         "icon": "status",
         "name": "Bima Status",
-        "action": () {
+        "actions": () {
           // navigate(
           //     route("bima", {
           //         subPage: "status",
@@ -89,84 +158,222 @@ class _HomePageState extends State<HomePage> {
       //         );
       //     },
       // },
-      {
-        "icon": "renewable",
-        "name": "Bima Renewal",
-        "action": () {
-          // navigate(
-          //     route("profile", {
-          //         "subPage": "bima-renewal",
-          //     })
-          // );
-        },
-      },
       // {
-      //     icon: "document",
-      //     name: "Pending Bima",
-      //     action: () {},
+      //   "icon": "renewable",
+      //   "name": "Bima Renewal",
+      //   "actions": () {
+      //     // navigate(
+      //     //     route("profile", {
+      //     //         "subPage": "bima-renewal",
+      //     //     })
+      //     // );
+      //   },
       // },
       // {
-      //     icon: "folder",
-      //     name: "Your Claims",
-      //     action: () {},
+      //   "icon": "document",
+      //   "name": "Pending Bima",
+      //   "actions": () {},
       // },
-      {
-        "icon": "feedback",
-        "name": "Feedback",
-        "action": () {
-          // navigate(route("feedback"));
-        },
-      },
-      {
-        "icon": "complaint",
-        "name": "Complaints",
-        "action": () {
-          navigate(
-              // route("feedback", {
-              //     "subPage": "complaints",
-              // })
-              );
-        },
-      },
+      // {
+      //   "icon": "folder",
+      //   "name": "Your Claims",
+      //   "actions": () {},
+      // },
     ];
+  }
 
+  Widget _buildActions(
+      {required List<Map<String, dynamic>> actions, int columns = 2}) {
     return GridView(
         primary: false,
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
         physics: const ScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
-          crossAxisCount: 3,
+          crossAxisCount: columns,
+          childAspectRatio: columns == 2 ? 1 / 0.32 : 1 / 0.15,
         ),
-        children: quickActions
-            .map(
-              (action) => Container(
-                color: Colors.red,
-                child: Column(
-                  children: [
-                    Image.asset("assets/img/${action["icon"]}"),
-                    Text(action['name'])
-                  ],
+        children: actions.map(
+          (action) {
+            Widget icon = action["icon"] == null
+                ? Container()
+                : Container(
+                    height: 40,
+                    width: 36,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color:
+                          colorScheme(context).surfaceVariant.withOpacity(0.8),
+                      borderRadius: const BorderRadius.all(Radius.circular(6)),
+                    ),
+                    child: SvgPicture.asset(
+                      "assets/img/quick-actions/${action["icon"]}.svg",
+                      semanticsLabel: action["name"],
+                      colorFilter: ColorFilter.mode(
+                        colorScheme(context).surfaceTint,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  );
+
+            return Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 0.6,
+                  color: colorScheme(context).outlineVariant,
+                ),
+                color: colorScheme(context).surfaceVariant.withOpacity(0.1),
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  icon,
+                  const SizedBox(width: 8, height: 6),
+                  Expanded(
+                    child: Text(
+                      action['name'],
+                      style: const TextStyle(
+                        fontSize: 12,
+                        height: 1.4,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  if (action['action'] != null)
+                    const MiniButton(label: "Renew", filled: true),
+                ],
+              ),
+            );
+          },
+        ).toList());
+  }
+
+  Widget _buildCardSection(title, actions, {int columns = 2}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        ),
+        _buildActions(actions: actions, columns: columns),
+      ],
+    );
+  }
+
+  Widget _buildAdsBar() {
+    return AspectRatio(
+      aspectRatio: 1 / 0.35,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 0.6,
+            color: colorScheme(context).outlineVariant,
+          ),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(12),
+          ),
+          image: const DecorationImage(
+            fit: BoxFit.cover,
+            image: NetworkImage(
+                "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGZhbmN5JTIwaG91c2V8ZW58MHx8fHwxNjk5MzQ5OTM1fDA&ixlib=rb-4.0.3&q=80&w=900"),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(
+            Radius.circular(12),
+          ),
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0),
+                      Colors.black12,
+                      Colors.black54,
+                      Colors.black
+                    ],
+                    // stops: const [0, 0.8, 1],
+                  ),
                 ),
               ),
-            )
-            .toList());
+              Positioned(
+                  bottom: 12,
+                  left: 16,
+                  right: 12,
+                  child: DefaultTextStyle(
+                    style: TextStyle(color: Colors.white),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Linda Mjengo",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                              ),
+                              const SizedBox(height: 2),
+                              Opacity(
+                                opacity: 0.85,
+                                child: Text(
+                                  "Insurance against fire, floods, buglary",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        fontSize: 11,
+                                        color: Colors.white,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const MiniButton(
+                          label: "Learn more",
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ))
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: const Color(0xFF2E6B27),
         foregroundColor: Colors.white,
-        titleTextStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               'assets/img/icon.png',
@@ -179,11 +386,38 @@ class _HomePageState extends State<HomePage> {
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            _buildActions(),
+            _buildAdsBar(),
+            const SizedBox(height: 16),
+            _buildActions(actions: [
+              ...quickActions(),
+              ...claimActions(),
+              ...bimaActions(),
+            ]),
+            // _buildCardSection("Quick Actions",
+            //     [...quickActions(), ...claimActions(), ...bimaActions()]),
+            const SizedBox(height: 16),
+            _buildCardSection("Buy Bima", buyBimaActions()),
+            const SizedBox(height: 16),
+            // _buildCardSection(
+            //   "Your Policies",
+            //   [
+            //     {
+            //       // "icon": "document",
+            //       "name": "Pending Bima",
+            //       "description": "Expires in two weeks",
+            //       "action": {"label": "Renew", "onClick": () {}},
+            //     },
+            //   ],
+            //   columns: 1,
+            // ),
+            // const SizedBox(height: 16),
+            // _buildCardSection("Bima Actions", bimaActions()),
+            // const SizedBox(height: 16),
           ],
         ),
       ),
