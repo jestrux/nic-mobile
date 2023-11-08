@@ -93,10 +93,7 @@ class ListItem extends StatelessWidget {
     return Container(
       padding: margin,
       child: CardWrapper(
-        padding: EdgeInsets.only(
-          left: image != null ? 8 : 10,
-          right: 10,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Row(
           children: [
             // SizedBox(width: image != null ? 0 : 8),

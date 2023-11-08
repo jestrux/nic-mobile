@@ -81,11 +81,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 // title: "Quick Actions",
                 actions: [
                   {
-                    "icon": "calculator",
+                    "icon": "profile",
                     "name": "Account details",
                   },
                   {
-                    "icon": "renewable",
+                    "icon": "logout",
                     "name": "Logout",
                   },
                 ],

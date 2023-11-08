@@ -53,20 +53,20 @@ class _MorePageState extends State<MorePage> {
             topRight: Radius.circular(20),
           ),
         ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: const SingleChildScrollView(
+          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               ListItem(
-                margin: const EdgeInsets.only(top: 4, bottom: 6),
-                leading: const Icon(Icons.location_city),
+                margin: EdgeInsets.only(top: 4, bottom: 6),
+                leading: Icon(Icons.location_city),
                 title: "Our branches",
                 description: "Find a branch near you",
                 actionLabel: "See branches",
-                actionIsFilled: true,
+                // actionIsFilled: true,
               ),
             ],
           ),

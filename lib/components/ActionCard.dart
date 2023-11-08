@@ -189,9 +189,6 @@ class ActionCard extends StatelessWidget {
     );
 
     Widget VideoCard = Container(
-      decoration: BoxDecoration(
-          // color: cardBackground,
-          ),
       child: Column(
         children: [
           Expanded(
