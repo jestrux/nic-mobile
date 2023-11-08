@@ -128,7 +128,7 @@ class _SelfServePageState extends State<SelfServePage> {
                 shape: ActionCardShape.square,
                 columns: 3,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 22),
               const SectionTitle(title: "Resources"),
               ...resources
                   .map((resource) => ListItem(
