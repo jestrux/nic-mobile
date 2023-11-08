@@ -530,7 +530,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               _buildAdsBar(),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               const ListItem(
                 themeColor: Colors.lightGreen,
                 margin: EdgeInsets.symmetric(horizontal: 16),
@@ -540,7 +540,7 @@ class _HomePageState extends State<HomePage> {
                 actionLabel: "View all",
                 actionIsFilled: true,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               _buildCardSection(
                 title: "Buy Bima",
                 actions: buyBimaActions(),
