@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nic/color_schemes.g.dart';
 import 'package:nic/constants.dart';
+import 'package:nic/pages/BimaPage.dart';
 import 'package:nic/pages/HomePage.dart';
+import 'package:nic/pages/MorePage.dart';
+import 'package:nic/pages/ProfilePage.dart';
+import 'package:nic/pages/SelfServePage.dart';
 
 void main() => runApp(const NICKiganjani());
 
@@ -40,6 +44,14 @@ class _MyAppState extends State<MyApp> {
   int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {
+    var pages = [
+      HomePage(),
+      BimaPage(),
+      SelfServePage(),
+      ProfilePage(),
+      MorePage(),
+    ];
+
     return Scaffold(
       backgroundColor: Constants.primaryColor,
       body: Stack(
@@ -58,7 +70,7 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
           ),
-          HomePage(),
+          pages[currentPageIndex]
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -71,17 +83,23 @@ class _MyAppState extends State<MyApp> {
         },
         destinations: const <Widget>[
           NavigationDestination(
-            icon: Icon(Icons.home_filled),
+            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
           NavigationDestination(
-            // selectedIcon: Icon(CupertinoIcons.shopping_cart),
-            icon: Icon(CupertinoIcons.shopping_cart),
+            selectedIcon: Icon(Icons.shopping_cart),
+            icon: Icon(Icons.shopping_cart_checkout_outlined),
             label: 'Bima',
           ),
           NavigationDestination(
-            // selectedIcon: Icon(Icons.account_circle),
-            icon: Icon(CupertinoIcons.person),
+            selectedIcon: Icon(Icons.tips_and_updates),
+            icon: Icon(Icons.tips_and_updates_outlined),
+            label: 'Self Serve',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.person_2),
+            icon: Icon(Icons.person_2_outlined),
             label: 'Profile',
           ),
           NavigationDestination(

@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:nic/components/CardWrapper.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/constants.dart';
@@ -12,7 +14,8 @@ class ListItem extends StatelessWidget {
   final Function onAction;
   final String? actionLabel;
   final bool? actionIsFilled;
-  final Widget? leading;
+  final String? image;
+  final dynamic leading;
 
   const ListItem({
     Key? key,
@@ -20,6 +23,7 @@ class ListItem extends StatelessWidget {
     this.margin,
     required this.title,
     this.description,
+    this.image,
     this.leading,
     this.onAction = Constants.randoFunction,
     this.actionLabel,
@@ -49,6 +53,7 @@ class ListItem extends StatelessWidget {
             child: Container(
               height: 36,
               width: 36,
+              margin: const EdgeInsets.symmetric(vertical: 6),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: iconBackground,
@@ -56,37 +61,78 @@ class ListItem extends StatelessWidget {
                   Radius.circular(6),
                 ),
               ),
-              child: leading,
+              child: leading is String
+                  ? SvgPicture.asset(
+                      "assets/img/quick-actions/$leading.svg",
+                      // semanticsLabel: action["name"],
+                      colorFilter: ColorFilter.mode(
+                        iconColor,
+                        BlendMode.srcIn,
+                      ),
+                    )
+                  : leading,
             ),
           );
+
+    if (image != null) {
+      leadingWidget = Container(
+        margin: const EdgeInsets.only(top: 6, bottom: 6, right: 4),
+        height: 40,
+        width: 56,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          color: iconBackground,
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(image!),
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    }
 
     return Container(
       padding: margin,
       child: CardWrapper(
-        child: ListTile(
-          leading: leadingWidget,
-          contentPadding: EdgeInsets.zero,
-          dense: true,
-          visualDensity: VisualDensity.compact,
-          title: Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
+        padding: EdgeInsets.only(
+          left: image != null ? 8 : 10,
+          right: 10,
+        ),
+        child: Row(
+          children: [
+            // SizedBox(width: image != null ? 0 : 8),
+            if (leadingWidget != null) leadingWidget,
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                  if (description != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 2),
+                      child: Text(
+                        description!,
+                        style: const TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
-          ),
-          subtitle: description == null
-              ? null
-              : Padding(
-                  padding: const EdgeInsets.only(bottom: 2),
-                  child: Text(description!),
-                ),
-          trailing: actionLabel == null
-              ? null
-              : MiniButton(
-                  label: actionLabel!,
-                  filled: true,
-                  background: themeColor?.shade500,
-                ),
+            if (actionLabel != null)
+              MiniButton(
+                label: actionLabel!,
+                filled: actionIsFilled ?? false,
+                background: themeColor?.shade500,
+              )
+          ],
         ),
       ),
     );

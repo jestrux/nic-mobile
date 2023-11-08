@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:nic/components/ClickableContent.dart';
 import 'package:nic/utils.dart';
 
-enum ActionCardShape { regular, square, portrait, rounded }
+enum ActionCardShape { regular, square, portrait, rounded, video }
 
 class ActionCard extends StatelessWidget {
   final Map<String, dynamic> action;
@@ -29,6 +29,7 @@ class ActionCard extends StatelessWidget {
     bool square = shape == ActionCardShape.square;
     bool rounded = shape == ActionCardShape.rounded;
     bool portrait = shape == ActionCardShape.portrait;
+    bool video = shape == ActionCardShape.video;
 
     var cardBackground =
         colorScheme(context).surfaceVariant.withOpacity(rounded ? 0 : 0.3);
@@ -104,7 +105,7 @@ class ActionCard extends StatelessWidget {
       padding: const EdgeInsets.only(
         left: 12,
         right: 12,
-        top: 8,
+        top: 4,
         bottom: 10,
       ),
       color: cardBackground,
@@ -118,7 +119,7 @@ class ActionCard extends StatelessWidget {
               Text(
                 action['name'],
                 style: const TextStyle(
-                  fontSize: 13,
+                  fontSize: 12,
                   // height: 1.5,
                   fontWeight: FontWeight.w600,
                 ),
@@ -187,24 +188,78 @@ class ActionCard extends StatelessWidget {
       ),
     );
 
+    Widget VideoCard = Container(
+      decoration: BoxDecoration(
+          // color: cardBackground,
+          ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(radius),
+                image: image == null
+                    ? null
+                    : DecorationImage(
+                        image: CachedNetworkImageProvider(image),
+                        fit: BoxFit.cover,
+                      ),
+              ),
+              alignment: Alignment.center,
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: Colors.white,
+                ),
+                child: Icon(
+                  Icons.play_arrow_rounded,
+                  color: colorScheme(context).primary,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            action['name'],
+            maxLines: 1,
+            style: const TextStyle(
+              fontSize: 11,
+              overflow: TextOverflow.ellipsis,
+              // height: 1.5,
+              // fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+
     return ClickableContent(
       onClick: action['action'],
       child: ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(radius)),
+        borderRadius: video
+            ? BorderRadius.circular(0)
+            : BorderRadius.all(Radius.circular(radius)),
         child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 0.6,
-              color: colorScheme(context).outlineVariant,
-            ),
-            color: cardBackground,
-            borderRadius: BorderRadius.all(Radius.circular(radius)),
-          ),
+          decoration: video
+              ? null
+              : BoxDecoration(
+                  border: Border.all(
+                    width: 0.6,
+                    color: colorScheme(context).outlineVariant,
+                  ),
+                  color: cardBackground,
+                  borderRadius: BorderRadius.all(Radius.circular(radius)),
+                ),
           child: portrait
               ? PortraitCard
-              : square
-                  ? SquareCard
-                  : RowCard,
+              : video
+                  ? VideoCard
+                  : square
+                      ? SquareCard
+                      : RowCard,
         ),
       ),
     );
