@@ -4,9 +4,14 @@ class MiniButton extends StatelessWidget {
   final String label;
   final bool filled;
   final Color? color;
-  const MiniButton(
-      {Key? key, required this.label, this.filled = false, this.color})
-      : super(key: key);
+  final Color? background;
+  const MiniButton({
+    Key? key,
+    required this.label,
+    this.filled = false,
+    this.background,
+    this.color,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +22,7 @@ class MiniButton extends StatelessWidget {
         borderRadius: const BorderRadius.all(
           Radius.circular(50),
         ),
-        color: filled ? colorScheme.primary : null,
+        color: filled ? background ?? colorScheme.primary : null,
         border: filled
             ? null
             : Border.all(
