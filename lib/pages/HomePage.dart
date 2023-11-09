@@ -22,10 +22,10 @@ class _HomePageState extends State<HomePage> {
 
   List<Map<String, dynamic>> quickActions() {
     return [
-      {
-        "icon": "contract",
-        "name": "Claim Status",
-      },
+      // {
+      //   "icon": "contract",
+      //   "name": "Claim Status",
+      // },
       {
         "icon": "add-file",
         "name": "Report Claim",
@@ -34,19 +34,16 @@ class _HomePageState extends State<HomePage> {
         "icon": "status",
         "name": "Bima Status",
       },
-      {
-        "icon": "renewable",
-        "name": "Bima Renewal",
-      },
+      // {
+      //   "icon": "renewable",
+      //   "name": "Bima Renewal",
+      // },
       {
         "icon": "wallet",
         "name": "Life Contributions",
         "action": () async {
           String? selectedChoice = await Utils.showChoicePicker(
             context,
-            // title: "Select action",
-            // selected: currency,
-            // value: "Show contributions",
             choices: ["Show contributions", "Make contribution"],
           );
 
@@ -138,6 +135,47 @@ class _HomePageState extends State<HomePage> {
         "image":
             "https://images.unsplash.com/photo-1554134449-8ad2b1dea29e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDMwfHxjb2luc3xlbnwwfHx8fDE2OTk0NTg1MDd8MA&ixlib=rb-4.0.3&q=80&w=1080",
         "name": "Lipa Kidogo kidogo",
+        "action": () async {
+          String? selectedChoice = await Utils.showChoicePicker(
+            context,
+            choices: [
+              "Call Us",
+              "Send Email",
+              "Submit Feedback",
+              "Submit Complaint"
+            ],
+          );
+
+          if (selectedChoice != null) Utils.showToast(selectedChoice);
+        },
+      },
+    ];
+  }
+
+  List<Map<String, dynamic>> otherActions() {
+    return [
+      {
+        "background": Colors.orange.shade300,
+        "icon": "calculator",
+        "name": "Get a Quick Quote",
+      },
+      {
+        "background": Colors.green.shade300,
+        "icon": "money",
+        "name": "Make payment",
+        "action": () async {
+          String? selectedChoice = await Utils.showChoicePicker(
+            context,
+            choices: ["Pay Now", "Payment Info"],
+          );
+
+          if (selectedChoice != null) Utils.showToast(selectedChoice);
+        }
+      },
+      {
+        "background": Colors.blue.shade300,
+        "icon": "customer-support",
+        "name": "Customer Support",
         "action": () async {
           String? selectedChoice = await Utils.showChoicePicker(
             context,
@@ -303,26 +341,32 @@ class _HomePageState extends State<HomePage> {
               //   leading: Icon(Icons.monetization_on),
               //   title: "TZS 300,000",
               //   description: "Total commission this week",
-              //   actionLabel: "View all",
-              //   actionIsFilled: true,
+              //   action: {"label": "View all", "filled": true},
               // ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               PageSection(
                 title: "Buy Bima",
+                titleAction: const {
+                  "label": "All products",
+                  "rightIcon": Icons.keyboard_double_arrow_right,
+                },
                 actions: buyBimaActions(),
               ),
               const SizedBox(height: 20),
               PageSection(
                 title: "Quick actions",
+                titleAction: const {
+                  "label": "All actions",
+                  "rightIcon": Icons.keyboard_double_arrow_right,
+                },
                 actions: quickActions(),
                 shape: ActionCardShape.rounded,
               ),
               const SizedBox(height: 16),
               PageSection(
-                padding: EdgeInsets.zero,
-                title: "Handy tips",
-                actions: quickTipsActions(),
-                shape: ActionCardShape.portrait,
+                title: "Quick Help",
+                actions: otherActions(),
+                shape: ActionCardShape.square,
                 columns: 3,
               ),
             ],

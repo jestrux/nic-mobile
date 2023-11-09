@@ -3,35 +3,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nic/components/CardWrapper.dart';
 import 'package:nic/components/MiniButton.dart';
-import 'package:nic/constants.dart';
 import 'package:nic/utils.dart';
 
 class ListItem extends StatelessWidget {
   final MaterialColor? themeColor;
+  final bool? flat;
   final String title;
   final EdgeInsets? margin;
   final String? description;
-  final Function onAction;
-  final String? actionLabel;
-  final bool? actionIsFilled;
+  final Map<String, dynamic>? action;
   final String? image;
+  final dynamic trailing;
   final dynamic leading;
 
   const ListItem({
     Key? key,
     this.themeColor,
+    this.flat,
     this.margin,
     required this.title,
     this.description,
     this.image,
     this.leading,
-    this.onAction = Constants.randoFunction,
-    this.actionLabel,
-    this.actionIsFilled = false,
+    this.trailing,
+    this.action,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Function? onAction;
+    String? actionLabel;
+    bool? actionIsFilled;
+    bool? actionIsFlat;
+    IconData? actionLeftIcon;
+    IconData? actionRightIcon;
+
+    if (action != null) {
+      actionLabel = action!["label"];
+      actionIsFilled = action!["filled"];
+      actionIsFlat = action!["flat"];
+      onAction = action!["onClick"];
+      actionLeftIcon = action!["leftIcon"];
+      actionRightIcon = action!["rightIcon"];
+    }
+
     var theme = Theme.of(context);
     var iconBackground = colorScheme(context).primary.withOpacity(0.1);
     var iconColor = colorScheme(context).primary;
@@ -90,47 +105,83 @@ class ListItem extends StatelessWidget {
       );
     }
 
-    return Container(
-      padding: margin,
-      child: CardWrapper(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Row(
-          children: [
-            // SizedBox(width: image != null ? 0 : 8),
-            if (leadingWidget != null) leadingWidget,
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                    ),
-                  ),
-                  if (description != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 2),
-                      child: Text(
-                        description!,
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
+    var content = Row(
+      children: [
+        // SizedBox(width: image != null ? 0 : 8),
+        if (leadingWidget != null) leadingWidget,
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
+              if (description != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: Opacity(
+                    opacity: 0.7,
+                    child: Text(
+                      description!,
+                      style: const TextStyle(
+                        fontSize: 12,
                       ),
                     ),
-                ],
-              ),
-            ),
-            if (actionLabel != null)
-              MiniButton(
-                label: actionLabel!,
-                filled: actionIsFilled ?? false,
-                background: themeColor?.shade500,
-              )
-          ],
+                  ),
+                ),
+            ],
+          ),
         ),
+        if (trailing != null && actionLabel == null)
+          Opacity(
+            opacity: 0.6,
+            child: trailing is String
+                ? Text(
+                    trailing,
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
+                  )
+                : trailing,
+          ),
+        if (actionLabel != null)
+          MiniButton(
+            leftIcon: actionLeftIcon,
+            rightIcon: actionRightIcon,
+            label: actionLabel,
+            flat: actionIsFlat ?? false,
+            filled: actionIsFilled ?? false,
+            background: themeColor?.shade500,
+          )
+      ],
+    );
+
+    if (flat ?? false) {
+      return Container(
+        padding: margin,
+        constraints: BoxConstraints(
+          minHeight: description != null ? 56 : 44,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: content,
+        ),
+      );
+    }
+
+    return Container(
+      padding: margin,
+      constraints: BoxConstraints(
+        minHeight: description != null ? 56 : 44,
+      ),
+      child: CardWrapper(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: content,
       ),
     );
   }

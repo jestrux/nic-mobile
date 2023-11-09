@@ -35,7 +35,7 @@ class ActionCard extends StatelessWidget {
         colorScheme(context).surfaceVariant.withOpacity(rounded ? 0 : 0.3);
 
     double radius = rounded ? 50 : 10;
-    var iconBackground = colorScheme(context).primary.withOpacity(0.1);
+    var iconBackground = colorScheme(context).primary.withOpacity(0.15);
     var iconColor = colorScheme(context).primary;
 
     if (themeColor != null) {
@@ -154,7 +154,7 @@ class ActionCard extends StatelessWidget {
                 colors: [
                   Colors.black.withOpacity(0),
                   Colors.black12,
-                  Colors.black54,
+                  Colors.black87,
                   Colors.black
                 ],
                 // stops: const [0, 0.8, 1],
@@ -163,10 +163,10 @@ class ActionCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(
-              left: 12,
-              right: 12,
+              left: 8,
+              right: 8,
               top: 8,
-              bottom: 10,
+              bottom: 8,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,10 +175,11 @@ class ActionCard extends StatelessWidget {
                 Text(
                   action['name'],
                   style: const TextStyle(
-                      fontSize: 13,
-                      // height: 1.5,
-                      // fontWeight: FontWeight.w600,
-                      color: Colors.white),
+                    fontSize: 12,
+                    height: 1.3,
+                    // fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
                 // const SizedBox(height: 10)
               ],
@@ -233,12 +234,12 @@ class ActionCard extends StatelessWidget {
       ),
     );
 
-    return ClickableContent(
-      onClick: action['action'],
-      child: ClipRRect(
-        borderRadius: video
-            ? BorderRadius.circular(0)
-            : BorderRadius.all(Radius.circular(radius)),
+    return ClipRRect(
+      borderRadius: video
+          ? BorderRadius.circular(0)
+          : BorderRadius.all(Radius.circular(radius)),
+      child: ClickableContent(
+        onClick: action['action'],
         child: Container(
           decoration: video
               ? null

@@ -29,7 +29,6 @@ class ChoiceItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color textColor = modeWhite ? Colors.white : Colors.black87;
     Color borderColor =
         modeWhite ? Colors.white54 : Colors.black.withOpacity(0.08);
     Color iconColor = modeWhite ? Colors.white54 : const Color(0xFF999999);
@@ -65,17 +64,14 @@ class ChoiceItem extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: textColor,
-                    ),
+                    style: const TextStyle(fontSize: 14),
                   ),
                   if (subtitle != null && subtitle!.isNotEmpty)
-                    Text(
-                      subtitle!,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: textColor.withOpacity(0.8),
+                    Opacity(
+                      opacity: 0.8,
+                      child: Text(
+                        subtitle!,
+                        style: const TextStyle(fontSize: 12),
                       ),
                     )
                 ],

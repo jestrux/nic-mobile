@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/ActionCard.dart';
+import 'package:nic/components/MiniButton.dart';
 
 class PageSection extends StatelessWidget {
   final EdgeInsets? padding;
   final String? title;
+  final Map<String, dynamic>? titleAction;
   final List<Map<String, dynamic>>? actions;
   final ActionCardShape? shape;
   final MaterialColor? theme;
@@ -12,6 +14,7 @@ class PageSection extends StatelessWidget {
     Key? key,
     this.padding,
     this.title,
+    this.titleAction,
     this.actions,
     this.shape,
     this.theme,
@@ -36,7 +39,7 @@ class PageSection extends StatelessWidget {
       var shapeMap = {
         ActionCardShape.rounded: 1 / 0.26,
         ActionCardShape.square: 1 / 1,
-        ActionCardShape.portrait: 1 / 1.3,
+        ActionCardShape.portrait: 1 / 1.4,
         ActionCardShape.video: 16 / 12,
         ActionCardShape.regular: 1 / 0.32,
       };
@@ -84,9 +87,10 @@ class PageSection extends StatelessWidget {
           if (title != null) ...[
             SectionTitle(
               title: title,
+              action: titleAction,
               padding: padding ?? defaultPadding,
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: titleAction != null ? 0 : 4),
           ],
           buildActions(
             actions: actions,
@@ -111,23 +115,37 @@ class PageSection extends StatelessWidget {
 class SectionTitle extends StatelessWidget {
   final EdgeInsets? padding;
   final String title;
+  final Map<String, dynamic>? action;
 
   const SectionTitle({
     required this.title,
     this.padding,
+    this.action,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
       padding: padding ?? EdgeInsets.zero,
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          const Spacer(),
+          if (action != null)
+            MiniButton(
+              label: action!["label"],
+              leftIcon: action!["leftIcon"],
+              rightIcon: action!["rightIcon"],
+              flat: true,
             ),
+        ],
       ),
     );
   }

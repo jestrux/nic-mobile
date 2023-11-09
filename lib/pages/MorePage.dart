@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/ListItem.dart';
-import 'package:nic/components/PageSection.dart';
 import 'package:nic/utils.dart';
 
 class MorePage extends StatefulWidget {
@@ -15,7 +15,6 @@ class _MorePageState extends State<MorePage> {
     {
       "title": "Tandahimba",
       "description": "Right next to bus station",
-      "actionLabel": "View",
     }
   ];
 
@@ -31,7 +30,7 @@ class _MorePageState extends State<MorePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Other Details".toUpperCase(),
+              "More".toUpperCase(),
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
@@ -53,21 +52,31 @@ class _MorePageState extends State<MorePage> {
             topRight: Radius.circular(20),
           ),
         ),
-        child: const SingleChildScrollView(
-          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              SizedBox(height: 4),
-              ListItem(
-                margin: EdgeInsets.only(top: 4, bottom: 6),
-                leading: Icon(Icons.location_city),
-                title: "Our branches",
-                description: "Find a branch near you",
-                actionLabel: "See branches",
-                // actionIsFilled: true,
-              ),
+              const SizedBox(height: 8),
+              InlineList(data: [
+                {"title": "Language", "trailing": "English", "onClick": () {}},
+                {"title": "Theme", "trailing": "Automatic", "onClick": () {}},
+              ]),
+              const SizedBox(height: 20),
+              InlineList(data: [
+                {"title": "Our branches", "onClick": () {}},
+                {"title": "Submit Feedback", "onClick": () {}},
+              ]),
+              const SizedBox(height: 20),
+              InlineList(data: [
+                {"title": "Terms and policies", "onClick": () {}},
+                {"title": "Service level agreement", "onClick": () {}},
+              ]),
+              // const SizedBox(height: 20),
+              // const InlineList(data: [
+              //   {"title": "App Version", "trailing": "0.2.5"},
+              // ]),
             ],
           ),
         ),

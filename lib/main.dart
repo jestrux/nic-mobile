@@ -27,8 +27,8 @@ class NICKiganjani extends StatelessWidget {
       home: const MyApp(),
       theme: themeWithFont(
           ThemeData(useMaterial3: true, colorScheme: lightColorScheme)),
-      // darkTheme: themeWithFont(
-      //     ThemeData(useMaterial3: true, colorScheme: darkColorScheme)),
+      darkTheme: themeWithFont(
+          ThemeData(useMaterial3: true, colorScheme: darkColorScheme)),
     );
   }
 }

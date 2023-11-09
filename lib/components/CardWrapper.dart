@@ -3,8 +3,15 @@ import 'package:nic/utils.dart';
 
 class CardWrapper extends StatelessWidget {
   final Widget? child;
+  final Color? background;
   final EdgeInsets? padding;
-  const CardWrapper({Key? key, this.padding, this.child}) : super(key: key);
+
+  const CardWrapper({
+    Key? key,
+    this.padding,
+    this.background,
+    this.child,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +23,8 @@ class CardWrapper extends StatelessWidget {
           width: 0.6,
           color: colorScheme(context).outlineVariant,
         ),
-        color: colorScheme(context).surfaceVariant.withOpacity(0.2),
+        color:
+            background ?? colorScheme(context).surfaceVariant.withOpacity(0.3),
         borderRadius: const BorderRadius.all(Radius.circular(8)),
       ),
       child: child,

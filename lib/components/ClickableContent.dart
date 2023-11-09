@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nic/constants.dart';
+import 'package:nic/utils.dart';
 
 class ClickableContent extends StatelessWidget {
   final VoidCallback? onClick;
@@ -16,17 +17,19 @@ class ClickableContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var color = colorScheme(context).surfaceVariant;
+
     return Material(
       type: MaterialType.transparency,
       child: Ink(
         decoration: BoxDecoration(
           border: border,
-          // shape: BoxShape.circle,
         ),
         child: InkWell(
-          // borderRadius: BorderRadius.circular(
-          //   100.0,
-          // ),
+          hoverColor: color,
+          focusColor: color,
+          highlightColor: color,
+          splashColor: color,
           onTap: onClick,
           child: Padding(
             padding: padding,

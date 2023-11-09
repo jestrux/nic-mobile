@@ -15,44 +15,49 @@ class _SelfServePageState extends State<SelfServePage> {
   List<Map<String, dynamic>> quickActions() {
     return [
       {
-        "background": Colors.orange.shade300,
-        "icon": "calculator",
-        "name": "Get a Quick Quote",
+        "icon": "contract",
+        "name": "Claim Status",
       },
       {
-        "background": Colors.green.shade300,
-        "icon": "location",
-        "name": "Our Branches",
+        "icon": "add-file",
+        "name": "Report Claim",
       },
       {
-        "background": Colors.blue.shade300,
-        "icon": "customer-support",
-        "name": "Customer Support",
+        "icon": "status",
+        "name": "Bima Status",
+      },
+      {
+        "icon": "renewable",
+        "name": "Bima Renewal",
+      },
+      {
+        "icon": "wallet",
+        "name": "Life Contributions",
         "action": () async {
           String? selectedChoice = await Utils.showChoicePicker(
             context,
-            choices: [
-              "Call Us",
-              "Send Email",
-              "Submit Feedback",
-              "Submit Complaint"
-            ],
+            // title: "Select action",
+            // selected: currency,
+            // value: "Show contributions",
+            choices: ["Show contributions", "Make contribution"],
           );
 
           if (selectedChoice != null) Utils.showToast(selectedChoice);
         },
+      },
+      {
+        "icon": "contributions",
+        "name": "Changia Bima",
       },
     ];
   }
 
   List<Map<String, dynamic>> resources = [
     {
-      "title": "Claims form",
-      "actionLabel": "Download",
+      "title": "Claim form",
     },
     {
       "title": "Vendor form",
-      "actionLabel": "Download",
     }
   ];
 
@@ -77,6 +82,45 @@ class _SelfServePageState extends State<SelfServePage> {
         "name":
             "Zifahamu Faida za BIMA ya Maisha (BeamLife) kutoka NIC Insurance",
         "video": "https://www.youtube.com/watch?v=KOLJORmuvTQ",
+      },
+    ];
+  }
+
+  List<Map<String, dynamic>> quickTipsActions() {
+    return [
+      {
+        "background": Colors.orange.shade300,
+        "icon": "calculator",
+        "image":
+            "https://images.unsplash.com/photo-1626178793926-22b28830aa30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGJyb2tlcnxlbnwwfHx8fDE2OTk0NTc4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
+        "name": "Become an Agent",
+      },
+      {
+        "background": Colors.green.shade300,
+        "icon": "location",
+        "image":
+            "https://images.unsplash.com/photo-1631193816258-28b44b21e78b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDExfHxvZmZpY2UlMjBzcGFjZXxlbnwwfHx8fDE2OTk1MTQ5ODl8MA&ixlib=rb-4.0.3&q=80&w=1080",
+        "name": "Rent One of Our Spaces",
+      },
+      {
+        "background": Colors.blue.shade300,
+        "icon": "customer-support",
+        "image":
+            "https://images.unsplash.com/photo-1554134449-8ad2b1dea29e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDMwfHxjb2luc3xlbnwwfHx8fDE2OTk0NTg1MDd8MA&ixlib=rb-4.0.3&q=80&w=1080",
+        "name": "Lipa Kidogo kidogo",
+        "action": () async {
+          String? selectedChoice = await Utils.showChoicePicker(
+            context,
+            choices: [
+              "Call Us",
+              "Send Email",
+              "Submit Feedback",
+              "Submit Complaint"
+            ],
+          );
+
+          if (selectedChoice != null) Utils.showToast(selectedChoice);
+        },
       },
     ];
   }
@@ -123,24 +167,36 @@ class _SelfServePageState extends State<SelfServePage> {
             children: <Widget>[
               const SizedBox(height: 4),
               PageSection(
-                // title: "Quick Actions",
-                actions: quickActions(),
-                shape: ActionCardShape.square,
+                padding: EdgeInsets.zero,
+                // title: "Handy tips",
+                actions: quickTipsActions(),
+                shape: ActionCardShape.portrait,
                 columns: 3,
               ),
-              const SizedBox(height: 22),
+              const SizedBox(height: 16),
+              PageSection(
+                padding: EdgeInsets.zero,
+                title: "Quick Actions",
+                actions: quickActions(),
+                shape: ActionCardShape.rounded,
+                columns: 2,
+              ),
+              const SizedBox(height: 16),
               const SectionTitle(title: "Resources"),
               ...resources
                   .map((resource) => ListItem(
                         margin: const EdgeInsets.only(top: 4, bottom: 6),
-                        leading: Icon(Icons.description),
+                        leading: const Icon(Icons.description),
                         title: resource["title"],
                         description: resource["description"],
-                        actionLabel: resource["actionLabel"],
-                        actionIsFilled: false,
+                        action: const {
+                          "leftIcon": Icons.download,
+                          "label": "Download",
+                          // "flat": true
+                        },
                       ))
                   .toList(),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
               PageSection(
                 padding: EdgeInsets.zero,
                 title: "Watch and Learn",

@@ -123,8 +123,7 @@ class _BimaPageState extends State<BimaPage> {
                   image: product["image"],
                   leading: product["icon"],
                   title: product["name"],
-                  actionLabel: "Purchase",
-                  // actionIsFilled: true,
+                  action: const {"label": "Purchase"},
                 );
               }).toList(),
             ],
