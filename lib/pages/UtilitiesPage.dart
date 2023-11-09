@@ -4,14 +4,14 @@ import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/utils.dart';
 
-class SelfServePage extends StatefulWidget {
-  const SelfServePage({Key? key}) : super(key: key);
+class UtilitiesPage extends StatefulWidget {
+  const UtilitiesPage({Key? key}) : super(key: key);
 
   @override
-  State<SelfServePage> createState() => _SelfServePageState();
+  State<UtilitiesPage> createState() => _UtilitiesPageState();
 }
 
-class _SelfServePageState extends State<SelfServePage> {
+class _UtilitiesPageState extends State<UtilitiesPage> {
   List<Map<String, dynamic>> quickActions() {
     return [
       {
@@ -137,7 +137,7 @@ class _SelfServePageState extends State<SelfServePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Self Serve".toUpperCase(),
+              "Utilities".toUpperCase(),
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,

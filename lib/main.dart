@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nic/color_schemes.g.dart';
@@ -7,7 +6,7 @@ import 'package:nic/pages/BimaPage.dart';
 import 'package:nic/pages/HomePage.dart';
 import 'package:nic/pages/MorePage.dart';
 import 'package:nic/pages/ProfilePage.dart';
-import 'package:nic/pages/SelfServePage.dart';
+import 'package:nic/pages/UtilitiesPage.dart';
 
 void main() => runApp(const NICKiganjani());
 
@@ -44,10 +43,10 @@ class _MyAppState extends State<MyApp> {
   int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {
-    var pages = [
+    var pages = const [
       HomePage(),
       BimaPage(),
-      SelfServePage(),
+      UtilitiesPage(),
       ProfilePage(),
       MorePage(),
     ];
@@ -55,10 +54,8 @@ class _MyAppState extends State<MyApp> {
     return Scaffold(
       backgroundColor: Constants.primaryColor,
       body: Stack(
-        // fit: StackFit.expand,
         children: [
           Container(
-            // height: 320,
             decoration: const BoxDecoration(
               image: DecorationImage(
                 opacity: 0.3,
@@ -95,7 +92,7 @@ class _MyAppState extends State<MyApp> {
           NavigationDestination(
             selectedIcon: Icon(Icons.tips_and_updates),
             icon: Icon(Icons.tips_and_updates_outlined),
-            label: 'Self Serve',
+            label: 'Utilities',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.person_2),
