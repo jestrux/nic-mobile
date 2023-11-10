@@ -6,20 +6,23 @@ enum ActionItemShape { regular, square, portrait, rounded, video }
 class ActionItem {
   final String label;
   final String? image;
+  final String? resourceUrl;
   final Color? background;
   final dynamic icon;
-  final ActionItemShape? shape;
+  late ActionItemShape? shape;
   final bool? flat;
   final String? description;
   final ActionButton? action;
   late dynamic trailing;
-  final dynamic leading;
-  final VoidCallback? onClick;
+  late dynamic leading;
+  String? value;
+  final void Function(dynamic)? onClick;
 
   ActionItem({
     required this.label,
     this.icon,
     this.image,
+    this.resourceUrl,
     this.description,
     this.shape,
     this.background,
@@ -27,6 +30,7 @@ class ActionItem {
     this.action,
     this.leading,
     this.trailing,
+    this.value,
     this.onClick,
   });
 }

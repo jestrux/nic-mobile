@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/data/actions.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
@@ -100,10 +101,10 @@ class _BimaPageState extends State<BimaPage> {
               const SizedBox(height: 4),
               PageSection(
                 // title: "Quick Actions",
-                actions: [
-                  ActionItem(label: "Get a Quick Quote", icon: Icons.calculate),
-                  ActionItem(label: "Bima Status", icon: Icons.timelapse),
-                  ActionItem(label: "Bima Renewal", icon: Icons.event_repeat),
+                content: [
+                  getQuickQuoteAction,
+                  bimaStatusAction,
+                  bimaRenewalAction,
                 ],
                 shape: ActionItemShape.rounded,
               ),

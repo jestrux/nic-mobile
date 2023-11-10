@@ -7,6 +7,7 @@ import 'package:nic/pages/HomePage.dart';
 import 'package:nic/pages/MorePage.dart';
 import 'package:nic/pages/ProfilePage.dart';
 import 'package:nic/pages/UtilitiesPage.dart';
+import 'package:nic/utils.dart';
 
 void main() => runApp(const NICKiganjani());
 
@@ -43,12 +44,18 @@ class _MyAppState extends State<MyApp> {
   int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {
-    var pages = const [
-      HomePage(),
-      BimaPage(),
-      UtilitiesPage(),
-      ProfilePage(),
-      MorePage(),
+    var pages = [
+      HomePage(
+        goToMainPage: (page) {
+          setState(() {
+            currentPageIndex = page;
+          });
+        },
+      ),
+      const BimaPage(),
+      const UtilitiesPage(),
+      const ProfilePage(),
+      const MorePage(),
     ];
 
     return Scaffold(

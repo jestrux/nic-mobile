@@ -41,7 +41,7 @@ class ActionCard extends StatelessWidget {
             data: Theme.of(context).copyWith(
               iconTheme: Theme.of(context).iconTheme.copyWith(
                     size: 18,
-                    color: iconColor,
+                    color: square ? Colors.white : iconColor,
                   ),
             ),
             child: Container(
@@ -238,8 +238,13 @@ class ActionCard extends StatelessWidget {
           ? BorderRadius.circular(0)
           : BorderRadius.all(Radius.circular(radius)),
       child: ClickableContent(
+        color: video ? Colors.transparent : null,
         onClick: () {
-          if (action.onClick != null) action.onClick!();
+          if (action.onClick != null) {
+            action.onClick!(action);
+          } else if (action.resourceUrl != null) {
+            openUrl(action.resourceUrl!);
+          }
         },
         child: Container(
           decoration: video

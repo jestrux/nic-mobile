@@ -8,7 +8,7 @@ class PageSection extends StatelessWidget {
   final EdgeInsets? padding;
   final String? title;
   final ActionButton? titleAction;
-  final List<ActionItem>? actions;
+  final List<ActionItem>? content;
   final ActionItemShape? shape;
   final int? columns;
   const PageSection({
@@ -16,7 +16,7 @@ class PageSection extends StatelessWidget {
     this.padding,
     this.title,
     this.titleAction,
-    this.actions,
+    this.content,
     this.shape,
     this.columns,
   }) : super(key: key);
@@ -27,7 +27,7 @@ class PageSection extends StatelessWidget {
     // var defaultPadding = const EdgeInsets.symmetric(horizontal: 16);
 
     Widget buildActions({
-      required List<ActionItem> actions,
+      required List<ActionItem> content,
       ActionItemShape? shape,
       int? columns,
     }) {
@@ -59,18 +59,19 @@ class PageSection extends StatelessWidget {
           childAspectRatio:
               shapeMap[shape] ?? shapeMap[ActionItemShape.regular]!,
         ),
-        children: actions
-            .map(
-              (action) => ActionCard(action: action),
-            )
-            .toList(),
+        children: content.map(
+          (action) {
+            action.shape ??= shape;
+            return ActionCard(action: action);
+          },
+        ).toList(),
       );
     }
 
     Widget buildCardSection({
       EdgeInsets? padding,
       String? title,
-      actions,
+      content,
       ActionItemShape? shape,
       int? columns,
     }) {
@@ -86,7 +87,7 @@ class PageSection extends StatelessWidget {
             SizedBox(height: titleAction != null ? 0 : 4),
           ],
           buildActions(
-            actions: actions,
+            content: content,
             shape: shape,
             columns: columns,
           ),
@@ -97,7 +98,7 @@ class PageSection extends StatelessWidget {
     return buildCardSection(
       padding: padding,
       title: title,
-      actions: actions,
+      content: content,
       shape: shape,
       columns: columns,
     );
@@ -130,7 +131,14 @@ class SectionTitle extends StatelessWidget {
                 ),
           ),
           const Spacer(),
-          if (action != null) MiniButton(action: action!),
+          if (action != null)
+            MiniButton.fromAction(
+              action!,
+              onClick: () {
+                if (action!.onClick == null) return;
+                action!.onClick!("");
+              },
+            ),
         ],
       ),
     );

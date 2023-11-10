@@ -1,19 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:nic/components/ActionCard.dart';
-import 'package:nic/components/CardWrapper.dart';
-import 'package:nic/components/InlineList.dart';
-import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/constants.dart';
 import 'package:nic/data/actions.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final void Function(int) goToMainPage;
+  const HomePage({required this.goToMainPage, Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -24,7 +21,7 @@ class _HomePageState extends State<HomePage> {
 
   void route() {}
 
-  void makePaymentAction() async {
+  void makePaymentAction(item) async {
     String? selectedChoice = await Utils.showChoicePicker(
       context,
       choices: [
@@ -42,7 +39,7 @@ class _HomePageState extends State<HomePage> {
     if (selectedChoice != null) Utils.showToast(selectedChoice);
   }
 
-  void customerSupportAction() async {
+  void customerSupportAction(item) async {
     String? selectedChoice = await Utils.showChoicePicker(
       context,
       choices: [
@@ -61,7 +58,13 @@ class _HomePageState extends State<HomePage> {
       ],
     );
 
-    if (selectedChoice != null) Utils.showToast(selectedChoice);
+    if (selectedChoice == "Call Us") {
+      openUrl("tel:${Constants.supportPhoneNumber}");
+    } else if (selectedChoice == "Send Email") {
+      openUrl("mailto:${Constants.supportEmail}");
+    } else if (selectedChoice == "Feedback / Complaint") {
+      openUrl(Constants.contactsUrl);
+    }
   }
 
   Widget _buildAdsBar() {
@@ -229,20 +232,27 @@ class _HomePageState extends State<HomePage> {
               // const SizedBox(height: 12),
               PageSection(
                 title: "Buy Bima",
-                titleAction: ActionButton.all("All products"),
-                actions: buyBimaActions,
+                titleAction: ActionButton.all(
+                  "All products",
+                  onClick: (item) => widget.goToMainPage(1),
+                ),
+                content: buyBimaActions,
+                shape: ActionItemShape.regular,
               ),
               const SizedBox(height: 16),
               PageSection(
                 title: "Common Actions",
-                titleAction: ActionButton.all("All actions"),
-                actions: homePageQuickActions,
+                titleAction: ActionButton.all(
+                  "All actions",
+                  onClick: (item) => widget.goToMainPage(2),
+                ),
+                content: homePageQuickActions,
                 shape: ActionItemShape.rounded,
               ),
               const SizedBox(height: 16),
               PageSection(
                 title: "Self Service",
-                actions: otherActions(
+                content: otherActions(
                   makePaymentAction: makePaymentAction,
                   customerSupportAction: customerSupportAction,
                 ),

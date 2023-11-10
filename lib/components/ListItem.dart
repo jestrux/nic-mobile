@@ -15,6 +15,7 @@ class ListItem extends StatelessWidget {
   final String? image;
   final dynamic trailing;
   final dynamic leading;
+  final ActionItem? content;
 
   const ListItem({
     Key? key,
@@ -25,11 +26,11 @@ class ListItem extends StatelessWidget {
     this.leading,
     this.trailing,
     this.action,
+    this.content,
   }) : super(key: key);
 
-  ListItem.fromContent(ActionItem content, {super.key})
-      : flat = content.flat,
-        title = content.label,
+  ListItem.fromContent(ActionItem this.content, {this.flat, super.key})
+      : title = content.label,
         description = content.description,
         image = content.image,
         leading = content.leading,
@@ -98,7 +99,7 @@ class ListItem extends StatelessWidget {
       );
     }
 
-    var content = Row(
+    var itemContent = Row(
       children: [
         // SizedBox(width: image != null ? 0 : 8),
         if (leadingWidget != null) leadingWidget,
@@ -138,7 +139,17 @@ class ListItem extends StatelessWidget {
                   )
                 : trailing,
           ),
-        if (action != null) MiniButton(action: action!)
+        if (action != null)
+          Padding(
+            padding: EdgeInsets.only(right: action!.flat ? 4 : 0),
+            child: MiniButton.fromAction(
+              action!,
+              onClick: () {
+                if (action!.onClick == null) return;
+                action!.onClick!(content);
+              },
+            ),
+          )
       ],
     );
 
@@ -149,7 +160,7 @@ class ListItem extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: content,
+          child: itemContent,
         ),
       );
     }
@@ -160,7 +171,7 @@ class ListItem extends StatelessWidget {
       ),
       child: CardWrapper(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: content,
+        child: itemContent,
       ),
     );
   }

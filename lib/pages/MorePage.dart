@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:nic/components/ActionCard.dart';
 import 'package:nic/components/InlineList.dart';
-import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
 
 class MorePage extends StatefulWidget {
@@ -61,33 +60,47 @@ class _MorePageState extends State<MorePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               const SizedBox(height: 4),
-              const PageSection(
-                actions: [
-                  {
-                    "icon": Icons.explore,
-                    "name": "Nearby branches",
-                  },
-                  {
-                    "icon": Icons.security_update,
-                    "name": "Update app",
-                  },
+              PageSection(
+                content: [
+                  ActionItem(label: "Nearby branches", icon: Icons.explore),
+                  ActionItem(label: "Update app", icon: Icons.security_update),
                 ],
                 shape: ActionItemShape.rounded,
               ),
               const SizedBox(height: 20),
               InlineList(data: [
-                {"title": "Language", "trailing": "English", "onClick": () {}},
-                {"title": "Theme", "trailing": "Automatic", "onClick": () {}},
+                ActionItem(
+                  label: "Language",
+                  value: "English",
+                  onClick: (item) {},
+                ),
+                ActionItem(
+                  label: "Theme",
+                  value: "Automatic",
+                  onClick: (item) {},
+                ),
               ]),
               const SizedBox(height: 20),
               InlineList(data: [
-                {"title": "Our branches", "onClick": () {}},
-                {"title": "Submit Feedback", "onClick": () {}},
+                ActionItem(
+                  label: "Our branches",
+                  onClick: (item) {},
+                ),
+                ActionItem(
+                  label: "Submit Feedback",
+                  onClick: (item) {},
+                ),
               ]),
               const SizedBox(height: 20),
               InlineList(data: [
-                {"title": "Terms and policies", "onClick": () {}},
-                {"title": "Service level agreement", "onClick": () {}},
+                ActionItem(
+                  label: "Terms and policies",
+                  onClick: (item) {},
+                ),
+                ActionItem(
+                  label: "Service level agreement",
+                  onClick: (item) {},
+                ),
               ]),
               // const SizedBox(height: 20),
               // const InlineList(data: [

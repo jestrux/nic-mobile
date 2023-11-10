@@ -12,6 +12,7 @@ class InlineList extends StatelessWidget {
   final List<ActionItem> data;
   final String? bottomLabel;
   final ActionButton? bottomAction;
+  final dynamic leading;
 
   const InlineList({
     this.title,
@@ -19,6 +20,7 @@ class InlineList extends StatelessWidget {
     required this.data,
     this.bottomLabel,
     this.bottomAction,
+    this.leading,
     Key? key,
   }) : super(key: key);
 
@@ -51,11 +53,11 @@ class InlineList extends StatelessWidget {
                 .map(
                   (i, entry) {
                     List<Widget> trailingWidgets = [
-                      if (entry.trailing != null)
+                      if (entry.value != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 1, right: 2),
                           child: Text(
-                            entry.trailing,
+                            entry.value!,
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
@@ -73,6 +75,10 @@ class InlineList extends StatelessWidget {
                       entry.trailing = Row(children: trailingWidgets);
                     }
 
+                    if (entry.leading == null && leading != null) {
+                      entry.leading = leading;
+                    }
+
                     return MapEntry(
                       i,
                       Container(
@@ -86,7 +92,7 @@ class InlineList extends StatelessWidget {
                             ),
                           ),
                         ),
-                        child: ListItem.fromContent(entry),
+                        child: ListItem.fromContent(entry, flat: true),
                       ),
                     );
                   },
@@ -103,10 +109,15 @@ class InlineList extends StatelessWidget {
                 bottomLabel!,
                 style: const TextStyle(fontSize: 12),
               ),
+            const SizedBox(),
             if (bottomAction != null)
-              MiniButton(
-                action: bottomAction!,
-              )
+              MiniButton.fromAction(
+                bottomAction!,
+                onClick: () {
+                  if (bottomAction!.onClick == null) return;
+                  bottomAction!.onClick!("");
+                },
+              ),
           ],
         ),
       ],

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nic/components/ActionCard.dart';
 import 'package:nic/components/InlineList.dart';
-import 'package:nic/components/ListItem.dart';
-import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/models/ActionButton.dart';
+import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -14,60 +13,47 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  List<Map<String, dynamic>> policies = [
-    {
-      "leading": const Icon(Icons.directions_car),
-      "title": "T124ADC",
-      "description": "Expires in two weeks",
-      "action": {"label": "Renew"},
-    },
-    {
-      "leading": const Icon(Icons.directions_car),
-      "title": "T311LTY",
-      "description": "Covered until January 2024",
-      // "action": {"label": "Check status"},
-    }
+  List<ActionItem> policies = [
+    ActionItem(
+        label: "T124ADC",
+        leading: Icons.directions_car,
+        description: "Expires in two weeks",
+        action: ActionButton.outlined("Renew")),
+    ActionItem(
+      label: "T311LTY",
+      leading: Icons.directions_car,
+      description: "Covered until January 2024",
+      // action: ActionButton.outlined("Renew")
+    ),
   ];
 
-  List<Map<String, dynamic>> pendingBima = [
-    {
-      "leading": const Icon(Icons.two_wheeler),
-      "title": "Toyota Camry",
-      "description": "Created 5 minutes ago",
-      "action": {"label": "Pay now", "filled": true},
-    }
+  List<ActionItem> claims = [
+    ActionItem(
+      label: "Third party body fatal",
+      // leading: Icons.post_add,
+      description: "Payment approved",
+    ),
+    ActionItem(
+      label: "On damage",
+      description: "Submitted two days ago",
+      action: ActionButton.outlined("Check status"),
+    ),
   ];
 
-  List<Map<String, dynamic>> claims = [
-    {
-      "leading": const Icon(Icons.post_add),
-      "title": "Third party body fatal",
-      "description": "Payment approved",
-    },
-    {
-      "leading": const Icon(Icons.post_add),
-      "title": "On damage",
-      "description": "Submitted two days ago",
-      "action": {"label": "Check status"},
-    },
-  ];
-
-  List<Map<String, dynamic>> lifeContributions = [
-    {
-      "leading": Icons.paid,
-      "title": "TZS 50,000",
-      "trailing": "October 15th",
-    },
-    {
-      "leading": Icons.paid,
-      "title": "TZS 33,700",
-      "trailing": "July 21st",
-    },
-    // {
-    //   "leading": const Icon(Icons.paid),
-    //   "title": "TZS 15,700",
-    //   "description": "May 3rd",
-    // },
+  List<ActionItem> lifeContributions = [
+    ActionItem(
+      label: "TZS 50,000",
+      trailing: "October 15th",
+    ),
+    ActionItem(
+      label: "TZS 33,700",
+      trailing: "July 21st",
+    ),
+    // ActionItem(
+    //   icon: Icons.paid,
+    //   label: "TZS 15,700",
+    //   trailing: "May 3rd",
+    // ),
   ];
 
   @override
@@ -112,55 +98,55 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               const SizedBox(height: 4),
-              const PageSection(
+              PageSection(
                 // title: "Quick Actions",
-                actions: [
-                  {
-                    "icon": Icons.account_circle,
-                    "name": "Account details",
-                  },
-                  {
-                    "icon": Icons.logout,
-                    "name": "Logout",
-                  },
+                content: [
+                  ActionItem(
+                    label: "Account details",
+                    icon: Icons.account_circle,
+                  ),
+                  ActionItem(
+                    label: "Logout",
+                    icon: Icons.logout,
+                  ),
                 ],
                 shape: ActionItemShape.rounded,
               ),
               const SizedBox(height: 16),
               InlineList(
                 title: "Pending bima",
-                data: pendingBima,
+                data: [
+                  ActionItem(
+                    leading: const Icon(Icons.two_wheeler),
+                    label: "Toyota Camry",
+                    description: "Created 5 minutes ago",
+                    action: ActionButton.filled("Pay now"),
+                  ),
+                ],
               ),
               const SizedBox(height: 18),
               InlineList(
+                leading: Icons.post_add,
                 title: "Recent Claims",
                 data: claims,
                 bottomLabel: "+1 more",
-                bottomAction: const {
-                  "label": "All claims",
-                },
+                bottomAction: ActionButton.all("All claims"),
               ),
               const SizedBox(height: 16),
               InlineList(
                 title: "Policies",
                 data: policies,
                 bottomLabel: "+5 more",
-                bottomAction: const {
-                  "label": "All policies",
-                },
+                bottomAction: ActionButton.all("All policies"),
               ),
               const SizedBox(height: 16),
               InlineList(
+                leading: Icons.paid,
                 title: "Life contributions",
-                titleAction: const {
-                  "label": "Make Contribution",
-                  "leftIcon": Icons.add,
-                },
+                titleAction: ActionButton.add("Make Contribution"),
                 data: lifeContributions,
                 bottomLabel: "+12 more",
-                bottomAction: const {
-                  "label": "All contributions",
-                },
+                bottomAction: ActionButton.all("All contributions"),
               ),
             ],
           ),
