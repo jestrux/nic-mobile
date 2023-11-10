@@ -143,25 +143,7 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
                 data: resources,
                 leading: Icons.description,
               ),
-              // const SectionTitle(title: "Resources"),
-              // ...resources
-              //     .map(
-              //       (resource) => Padding(
-              //         padding: const EdgeInsets.only(top: 4, bottom: 4),
-              //         child: ListItem(
-              //           leading: const Icon(Icons.description),
-              //           title: resource.label,
-              //           description: resource.description,
-              //           action: ActionButton.flat(
-              //             "Download",
-              //             leftIcon: Icons.download,
-              //             onClick: (item) => openUrl(resource.resourceUrl),
-              //           ),
-              //         ),
-              //       ),
-              //     )
-              //     .toList(),
-              const SizedBox(height: 14),
+              const SizedBox(height: 20),
               PageSection(
                 padding: EdgeInsets.zero,
                 title: "Watch and Learn",
