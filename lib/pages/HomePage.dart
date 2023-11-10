@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/constants.dart';
@@ -209,27 +210,17 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               _buildAdsBar(),
               const SizedBox(height: 12),
-              // const InlineList(
-              //     title: "Your Commissions",
-              //     titleAction: {
-              //       "label": "View all",
-              //       "rightIcon": Icons.keyboard_double_arrow_right
-              //     },
-              //     // themeColor: Colors.lightGreen,
-              //     data: [
-              //       {
-              //         "leading": Icons.monetization_on,
-              //         "title": "TZS 300,000",
-              //         "description": "Total collected this week",
-              //         // "action": {
-              //         //   "label": "View all",
-              //         //   "filled": false,
-              //         //   "flat": true,
-              //         //   "rightIcon": Icons.keyboard_double_arrow_right
-              //         // },
-              //       }
-              //     ]),
-              // const SizedBox(height: 12),
+              InlineList(
+                  title: "Your Commissions",
+                  titleAction: ActionButton.all("Open dashboard"),
+                  data: [
+                    ActionItem(
+                      leading: Icons.monetization_on,
+                      label: "TZS 300,000",
+                      trailing: "Collected this week",
+                    ),
+                  ]),
+              const SizedBox(height: 12),
               PageSection(
                 title: "Buy Bima",
                 titleAction: ActionButton.all(
