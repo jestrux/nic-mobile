@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/models/ActionButton.dart';
+import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
 
 class InlineList extends StatelessWidget {
   final String? title;
-  final Map<String, dynamic>? titleAction;
-  final List<Map<String, dynamic>> data;
+  final ActionButton? titleAction;
+  final List<ActionItem> data;
   final String? bottomLabel;
-  final Map<String, dynamic>? bottomAction;
+  final ActionButton? bottomAction;
 
   const InlineList({
     this.title,
@@ -49,15 +51,15 @@ class InlineList extends StatelessWidget {
                 .map(
                   (i, entry) {
                     List<Widget> trailingWidgets = [
-                      if (entry["trailing"] != null)
+                      if (entry.trailing != null)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 1, right: 2),
                           child: Text(
-                            entry["trailing"],
+                            entry.trailing,
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
-                      if (entry["onClick"] != null)
+                      if (entry.onClick != null)
                         const Opacity(
                           opacity: 0.5,
                           child: Icon(
@@ -67,11 +69,8 @@ class InlineList extends StatelessWidget {
                         )
                     ];
 
-                    Widget? trailing;
                     if (trailingWidgets.isNotEmpty) {
-                      trailing = Row(
-                        children: trailingWidgets,
-                      );
+                      entry.trailing = Row(children: trailingWidgets);
                     }
 
                     return MapEntry(
@@ -87,15 +86,7 @@ class InlineList extends StatelessWidget {
                             ),
                           ),
                         ),
-                        child: ListItem(
-                          // margin: const EdgeInsets.only(top: 4, bottom: 6),
-                          flat: true,
-                          leading: entry["leading"],
-                          title: entry["title"],
-                          description: entry["description"],
-                          trailing: trailing,
-                          action: entry["action"],
-                        ),
+                        child: ListItem.fromContent(entry),
                       ),
                     );
                   },
@@ -105,7 +96,6 @@ class InlineList extends StatelessWidget {
           ),
         ),
         Row(
-          // alignment: Alignment.centerRight,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             if (bottomLabel != null)
@@ -115,10 +105,7 @@ class InlineList extends StatelessWidget {
               ),
             if (bottomAction != null)
               MiniButton(
-                flat: true,
-                label: bottomAction!['label'],
-                rightIcon:
-                    bottomAction!['icon'] ?? Icons.keyboard_double_arrow_right,
+                action: bottomAction!,
               )
           ],
         ),

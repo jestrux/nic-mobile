@@ -29,16 +29,13 @@ class ChoiceItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color borderColor =
-        modeWhite ? Colors.white54 : Colors.black.withOpacity(0.08);
-    Color iconColor = modeWhite ? Colors.white54 : const Color(0xFF999999);
     Color selectedBgColor = modeWhite
         ? Colors.white.withOpacity(0.11)
         : Colors.black.withOpacity(0.06);
 
-    var defaultContentPadding = size == ChoiceItemSize.SM
-        ? const EdgeInsets.symmetric(vertical: 12, horizontal: 16)
-        : null;
+    var defaultContentPadding = leading != null
+        ? const EdgeInsets.symmetric(vertical: 8, horizontal: 20)
+        : const EdgeInsets.symmetric(vertical: 12, horizontal: 20);
 
     double selectedIndicatorSize = size == ChoiceItemSize.SM ? 18 : 24;
 
@@ -58,6 +55,25 @@ class ChoiceItem extends StatelessWidget {
         ),
         child: Row(
           children: <Widget>[
+            if (leading != null)
+              Theme(
+                data: Theme.of(context).copyWith(
+                  iconTheme: Theme.of(context).iconTheme.copyWith(
+                        size: 14,
+                        color: colorScheme(context).primary,
+                      ),
+                ),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: colorScheme(context).surfaceVariant.withOpacity(0.6),
+                  ),
+                  margin: const EdgeInsets.only(right: 10),
+                  child: leading,
+                ),
+              ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +93,7 @@ class ChoiceItem extends StatelessWidget {
                 ],
               ),
             ),
-            const Spacer(),
+            // const Spacer(),
             if (selected != null)
               Icon(
                 selected! ? Icons.check_circle : Icons.circle_outlined,

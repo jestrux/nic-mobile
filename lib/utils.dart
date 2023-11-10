@@ -18,14 +18,21 @@ class Utils {
     Widget buildChoice(choice) {
       if (choicePicker != null) return choicePicker(choice, value);
 
+      var choiceLabel = choice;
+      var choiceIcon;
+
+      if (choice is Map) {
+        choiceIcon = choice['icon'] == null ? null : Icon(choice['icon']);
+        choiceLabel = choice["label"];
+      }
+
       return ChoiceItem(
-        choice,
-        modeWhite: false,
-        size: ChoiceItemSize.SM,
-        padding: const EdgeInsets.symmetric(
-          vertical: 12,
-          horizontal: 20,
-        ),
+        choiceLabel,
+        leading: choiceIcon,
+        // padding: const EdgeInsets.symmetric(
+        //   vertical: 12,
+        //   horizontal: 20,
+        // ),
         selected: value == null
             ? null
             : value.toString().toLowerCase() == choice.toString().toLowerCase(),

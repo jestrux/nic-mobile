@@ -54,12 +54,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   List<Map<String, dynamic>> lifeContributions = [
     {
-      "leading": const Icon(Icons.paid),
+      "leading": Icons.paid,
       "title": "TZS 50,000",
       "trailing": "October 15th",
     },
     {
-      "leading": const Icon(Icons.paid),
+      "leading": Icons.paid,
       "title": "TZS 33,700",
       "trailing": "July 21st",
     },
@@ -116,15 +116,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 // title: "Quick Actions",
                 actions: [
                   {
-                    "icon": "profile",
+                    "icon": Icons.account_circle,
                     "name": "Account details",
                   },
                   {
-                    "icon": "logout",
+                    "icon": Icons.logout,
                     "name": "Logout",
                   },
                 ],
-                shape: ActionCardShape.rounded,
+                shape: ActionItemShape.rounded,
               ),
               const SizedBox(height: 16),
               InlineList(

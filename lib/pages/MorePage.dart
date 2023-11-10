@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nic/components/ActionCard.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/ListItem.dart';
+import 'package:nic/components/PageSection.dart';
 import 'package:nic/utils.dart';
 
 class MorePage extends StatefulWidget {
@@ -58,7 +60,21 @@ class _MorePageState extends State<MorePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
+              const PageSection(
+                actions: [
+                  {
+                    "icon": Icons.explore,
+                    "name": "Nearby branches",
+                  },
+                  {
+                    "icon": Icons.security_update,
+                    "name": "Update app",
+                  },
+                ],
+                shape: ActionItemShape.rounded,
+              ),
+              const SizedBox(height: 20),
               InlineList(data: [
                 {"title": "Language", "trailing": "English", "onClick": () {}},
                 {"title": "Theme", "trailing": "Automatic", "onClick": () {}},

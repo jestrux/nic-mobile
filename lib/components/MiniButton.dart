@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nic/models/ActionButton.dart';
 
 class MiniButton extends StatelessWidget {
+  final ActionButton action;
   final IconData? leftIcon;
   final IconData? rightIcon;
   final String label;
@@ -8,6 +10,7 @@ class MiniButton extends StatelessWidget {
   final bool flat;
   final Color? color;
   final Color? background;
+
   const MiniButton({
     Key? key,
     required this.label,
@@ -21,6 +24,14 @@ class MiniButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var label = action.label;
+    var filled = action.filled;
+    var flat = action.flat;
+    var color = action.color;
+    var background = action.background;
+    var leftIcon = action.leftIcon;
+    var rightIcon = action.rightIcon;
+
     var colorScheme = Theme.of(context).colorScheme;
     var textColor = filled
         ? colorScheme.onPrimary

@@ -33,17 +33,6 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
       {
         "icon": "wallet",
         "name": "Life Contributions",
-        "action": () async {
-          String? selectedChoice = await Utils.showChoicePicker(
-            context,
-            // title: "Select action",
-            // selected: currency,
-            // value: "Show contributions",
-            choices: ["Show contributions", "Make contribution"],
-          );
-
-          if (selectedChoice != null) Utils.showToast(selectedChoice);
-        },
       },
       {
         "icon": "contributions",
@@ -108,19 +97,6 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
         "image":
             "https://images.unsplash.com/photo-1554134449-8ad2b1dea29e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDMwfHxjb2luc3xlbnwwfHx8fDE2OTk0NTg1MDd8MA&ixlib=rb-4.0.3&q=80&w=1080",
         "name": "Lipa Kidogo kidogo",
-        "action": () async {
-          String? selectedChoice = await Utils.showChoicePicker(
-            context,
-            choices: [
-              "Call Us",
-              "Send Email",
-              "Submit Feedback",
-              "Submit Complaint"
-            ],
-          );
-
-          if (selectedChoice != null) Utils.showToast(selectedChoice);
-        },
       },
     ];
   }
@@ -170,7 +146,7 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
                 padding: EdgeInsets.zero,
                 // title: "Handy tips",
                 actions: quickTipsActions(),
-                shape: ActionCardShape.portrait,
+                shape: ActionItemShape.portrait,
                 columns: 3,
               ),
               const SizedBox(height: 16),
@@ -178,7 +154,7 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
                 padding: EdgeInsets.zero,
                 title: "Quick Actions",
                 actions: quickActions(),
-                shape: ActionCardShape.rounded,
+                shape: ActionItemShape.rounded,
                 columns: 2,
               ),
               const SizedBox(height: 16),
@@ -201,7 +177,7 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
                 padding: EdgeInsets.zero,
                 title: "Watch and Learn",
                 actions: watchAndlearnActions(),
-                shape: ActionCardShape.video,
+                shape: ActionItemShape.video,
                 columns: 2,
               ),
               // const SectionTitle(title: "FAQs"),
