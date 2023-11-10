@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/ActionCard.dart';
 import 'package:nic/components/MiniButton.dart';
+import 'package:nic/models/ActionButton.dart';
+import 'package:nic/models/ActionItem.dart';
 
 class PageSection extends StatelessWidget {
   final EdgeInsets? padding;
   final String? title;
-  final Map<String, dynamic>? titleAction;
-  final List<Map<String, dynamic>>? actions;
-  final ActionCardShape? shape;
-  final MaterialColor? theme;
+  final ActionButton? titleAction;
+  final List<ActionItem>? content;
+  final ActionItemShape? shape;
   final int? columns;
   const PageSection({
     Key? key,
     this.padding,
     this.title,
     this.titleAction,
-    this.actions,
+    this.content,
     this.shape,
-    this.theme,
     this.columns,
   }) : super(key: key);
 
@@ -27,21 +27,19 @@ class PageSection extends StatelessWidget {
     // var defaultPadding = const EdgeInsets.symmetric(horizontal: 16);
 
     Widget buildActions({
-      required List<Map<String, dynamic>> actions,
-      ActionCardShape? shape,
+      required List<ActionItem> content,
+      ActionItemShape? shape,
       int? columns,
-      MaterialColor? theme,
     }) {
-      bool video = shape == ActionCardShape.video;
-      bool rounded = shape == ActionCardShape.rounded;
-      bool portrait = shape == ActionCardShape.portrait;
+      bool video = shape == ActionItemShape.video;
+      bool rounded = shape == ActionItemShape.rounded;
 
       var shapeMap = {
-        ActionCardShape.rounded: 1 / 0.26,
-        ActionCardShape.square: 1 / 1,
-        ActionCardShape.portrait: 1 / 1.4,
-        ActionCardShape.video: 16 / 12,
-        ActionCardShape.regular: 1 / 0.32,
+        ActionItemShape.rounded: 1 / 0.26,
+        ActionItemShape.square: 1 / 1,
+        ActionItemShape.portrait: 1 / 1.4,
+        ActionItemShape.video: 16 / 12,
+        ActionItemShape.regular: 1 / 0.32,
       };
 
       return GridView(
@@ -59,26 +57,22 @@ class PageSection extends StatelessWidget {
           mainAxisSpacing: video ? 10 : 8,
           crossAxisCount: columns ?? 2,
           childAspectRatio:
-              shapeMap[shape] ?? shapeMap[ActionCardShape.regular]!,
+              shapeMap[shape] ?? shapeMap[ActionItemShape.regular]!,
         ),
-        children: actions
-            .map(
-              (action) => ActionCard(
-                action: action,
-                themeColor: theme,
-                shape: shape,
-              ),
-            )
-            .toList(),
+        children: content.map(
+          (action) {
+            action.shape ??= shape;
+            return ActionCard(action: action);
+          },
+        ).toList(),
       );
     }
 
     Widget buildCardSection({
       EdgeInsets? padding,
       String? title,
-      actions,
-      ActionCardShape? shape,
-      MaterialColor? theme,
+      content,
+      ActionItemShape? shape,
       int? columns,
     }) {
       return Column(
@@ -93,9 +87,8 @@ class PageSection extends StatelessWidget {
             SizedBox(height: titleAction != null ? 0 : 4),
           ],
           buildActions(
-            actions: actions,
+            content: content,
             shape: shape,
-            theme: theme,
             columns: columns,
           ),
         ],
@@ -105,7 +98,7 @@ class PageSection extends StatelessWidget {
     return buildCardSection(
       padding: padding,
       title: title,
-      actions: actions,
+      content: content,
       shape: shape,
       columns: columns,
     );
@@ -115,7 +108,7 @@ class PageSection extends StatelessWidget {
 class SectionTitle extends StatelessWidget {
   final EdgeInsets? padding;
   final String title;
-  final Map<String, dynamic>? action;
+  final ActionButton? action;
 
   const SectionTitle({
     required this.title,
@@ -139,11 +132,12 @@ class SectionTitle extends StatelessWidget {
           ),
           const Spacer(),
           if (action != null)
-            MiniButton(
-              label: action!["label"],
-              leftIcon: action!["leftIcon"],
-              rightIcon: action!["rightIcon"],
-              flat: true,
+            MiniButton.fromAction(
+              action!,
+              onClick: () {
+                if (action!.onClick == null) return;
+                action!.onClick!("");
+              },
             ),
         ],
       ),

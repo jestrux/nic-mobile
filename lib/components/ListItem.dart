@@ -3,58 +3,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nic/components/CardWrapper.dart';
 import 'package:nic/components/MiniButton.dart';
+import 'package:nic/models/ActionButton.dart';
+import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
 
 class ListItem extends StatelessWidget {
-  final MaterialColor? themeColor;
   final bool? flat;
   final String title;
-  final EdgeInsets? margin;
   final String? description;
-  final Map<String, dynamic>? action;
+  final ActionButton? action;
   final String? image;
   final dynamic trailing;
   final dynamic leading;
+  final ActionItem? content;
 
   const ListItem({
     Key? key,
-    this.themeColor,
     this.flat,
-    this.margin,
     required this.title,
     this.description,
     this.image,
     this.leading,
     this.trailing,
     this.action,
+    this.content,
   }) : super(key: key);
+
+  ListItem.fromContent(ActionItem this.content, {this.flat, super.key})
+      : title = content.label,
+        description = content.description,
+        image = content.image,
+        leading = content.leading,
+        trailing = content.trailing,
+        action = content.action;
 
   @override
   Widget build(BuildContext context) {
-    Function? onAction;
-    String? actionLabel;
-    bool? actionIsFilled;
-    bool? actionIsFlat;
-    IconData? actionLeftIcon;
-    IconData? actionRightIcon;
-
-    if (action != null) {
-      actionLabel = action!["label"];
-      actionIsFilled = action!["filled"];
-      actionIsFlat = action!["flat"];
-      onAction = action!["onClick"];
-      actionLeftIcon = action!["leftIcon"];
-      actionRightIcon = action!["rightIcon"];
-    }
-
     var theme = Theme.of(context);
     var iconBackground = colorScheme(context).primary.withOpacity(0.1);
     var iconColor = colorScheme(context).primary;
 
-    if (themeColor != null) {
-      iconBackground = themeColor!.shade100.withOpacity(0.7);
-      iconColor = themeColor!.shade900;
-    }
+    // if (themeColor != null) {
+    //   iconBackground = themeColor!.shade100.withOpacity(0.7);
+    //   iconColor = themeColor!.shade900;
+    // }
 
     Widget? leadingWidget = leading == null
         ? null
@@ -85,7 +77,9 @@ class ListItem extends StatelessWidget {
                         BlendMode.srcIn,
                       ),
                     )
-                  : leading,
+                  : leading is IconData
+                      ? Icon(leading)
+                      : leading,
             ),
           );
 
@@ -105,7 +99,7 @@ class ListItem extends StatelessWidget {
       );
     }
 
-    var content = Row(
+    var itemContent = Row(
       children: [
         // SizedBox(width: image != null ? 0 : 8),
         if (leadingWidget != null) leadingWidget,
@@ -128,60 +122,56 @@ class ListItem extends StatelessWidget {
                     opacity: 0.7,
                     child: Text(
                       description!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                      ),
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ),
                 ),
             ],
           ),
         ),
-        if (trailing != null && actionLabel == null)
+        if (trailing != null && action == null)
           Opacity(
             opacity: 0.6,
             child: trailing is String
                 ? Text(
                     trailing,
-                    style: const TextStyle(
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(fontSize: 12),
                   )
                 : trailing,
           ),
-        if (actionLabel != null)
-          MiniButton(
-            leftIcon: actionLeftIcon,
-            rightIcon: actionRightIcon,
-            label: actionLabel,
-            flat: actionIsFlat ?? false,
-            filled: actionIsFilled ?? false,
-            background: themeColor?.shade500,
+        if (action != null)
+          Padding(
+            padding: EdgeInsets.only(right: action!.flat ? 4 : 0),
+            child: MiniButton.fromAction(
+              action!,
+              onClick: () {
+                if (action!.onClick == null) return;
+                action!.onClick!(content);
+              },
+            ),
           )
       ],
     );
 
     if (flat ?? false) {
       return Container(
-        padding: margin,
         constraints: BoxConstraints(
           minHeight: description != null ? 56 : 44,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: content,
+          child: itemContent,
         ),
       );
     }
 
     return Container(
-      padding: margin,
       constraints: BoxConstraints(
         minHeight: description != null ? 56 : 44,
       ),
       child: CardWrapper(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: content,
+        child: itemContent,
       ),
     );
   }

@@ -2,34 +2,25 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nic/components/ClickableContent.dart';
+import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
 
-enum ActionCardShape { regular, square, portrait, rounded, video }
-
 class ActionCard extends StatelessWidget {
-  final Map<String, dynamic> action;
-  final ActionCardShape? shape;
-  final MaterialColor? themeColor;
+  final ActionItem action;
   const ActionCard({
     Key? key,
     required this.action,
-    this.shape,
-    this.themeColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String? image = action["image"];
-    // String? shape = action["shape"];
-    // ActionCardShape _shape =
-    //     image != null ? ActionCardShape.regular : ActionCardShape.rounded;
-    // if ((shape ?? "") == "regular") _shape = ActionCardShape.regular;
-    // double radius = _shape == ActionCardShape.rounded ? 50 : 8;
+    String? image = action.image;
+    ActionItemShape shape = action.shape ?? ActionItemShape.rounded;
 
-    bool square = shape == ActionCardShape.square;
-    bool rounded = shape == ActionCardShape.rounded;
-    bool portrait = shape == ActionCardShape.portrait;
-    bool video = shape == ActionCardShape.video;
+    bool square = shape == ActionItemShape.square;
+    bool rounded = shape == ActionItemShape.rounded;
+    bool portrait = shape == ActionItemShape.portrait;
+    bool video = shape == ActionItemShape.video;
 
     var cardBackground =
         colorScheme(context).surfaceVariant.withOpacity(rounded ? 0 : 0.3);
@@ -38,34 +29,45 @@ class ActionCard extends StatelessWidget {
     var iconBackground = colorScheme(context).primary.withOpacity(0.15);
     var iconColor = colorScheme(context).primary;
 
-    if (themeColor != null) {
-      iconBackground = themeColor!.shade100.withOpacity(0.5);
-      iconColor = themeColor!.shade900;
-    }
+    // if (themeColor != null) {
+    //   iconBackground = themeColor!.shade100.withOpacity(0.5);
+    //   iconColor = themeColor!.shade900;
+    // }
 
-    Widget icon = action["icon"] == null
+    var icon = action.icon;
+    Widget iconWidget = icon == null
         ? Container()
-        : Container(
-            height: 30,
-            width: 30,
-            margin: const EdgeInsets.symmetric(vertical: 6),
-            // padding: const EdgeInsets.all(8),
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: square
-                  ? action['background'] ?? Colors.orange.shade300
-                  : iconBackground,
-              borderRadius: BorderRadius.all(
-                Radius.circular(square ? 50 : radius),
-              ),
+        : Theme(
+            data: Theme.of(context).copyWith(
+              iconTheme: Theme.of(context).iconTheme.copyWith(
+                    size: 18,
+                    color: square ? Colors.white : iconColor,
+                  ),
             ),
-            child: SvgPicture.asset(
-              "assets/img/quick-actions/${action["icon"]}.svg",
-              semanticsLabel: action["name"],
-              colorFilter: ColorFilter.mode(
-                square ? Colors.white : iconColor,
-                BlendMode.srcIn,
+            child: Container(
+              height: 30,
+              width: 30,
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              // padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: square
+                    ? action.background ?? Colors.orange.shade300
+                    : iconBackground,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(square ? 50 : radius),
+                ),
               ),
+              child: icon is String
+                  ? SvgPicture.asset("assets/img/quick-actions/$icon.svg",
+                      semanticsLabel: action.label,
+                      colorFilter: ColorFilter.mode(
+                        square ? Colors.white : iconColor,
+                        BlendMode.srcIn,
+                      ))
+                  : icon is IconData
+                      ? Icon(icon)
+                      : icon,
             ),
           );
 
@@ -85,11 +87,11 @@ class ActionCard extends StatelessWidget {
                   ),
                 ),
               )
-            : icon,
+            : iconWidget,
         SizedBox(width: rounded ? 6 : 8),
         Expanded(
           child: Text(
-            action['name'],
+            action.label,
             style: const TextStyle(
               fontSize: 11,
               height: 1.5,
@@ -114,10 +116,10 @@ class ActionCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              icon,
+              iconWidget,
               Spacer(),
               Text(
-                action['name'],
+                action.label,
                 style: const TextStyle(
                   fontSize: 12,
                   // height: 1.5,
@@ -131,9 +133,6 @@ class ActionCard extends StatelessWidget {
     );
 
     Widget PortraitCard = Container(
-      decoration: BoxDecoration(
-          // color: cardBackground,
-          ),
       child: Stack(
         children: [
           Container(
@@ -173,7 +172,7 @@ class ActionCard extends StatelessWidget {
               children: [
                 const Spacer(),
                 Text(
-                  action['name'],
+                  action.label,
                   style: const TextStyle(
                     fontSize: 12,
                     height: 1.3,
@@ -221,7 +220,7 @@ class ActionCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            action['name'],
+            action.label,
             maxLines: 1,
             style: const TextStyle(
               fontSize: 11,
@@ -239,7 +238,14 @@ class ActionCard extends StatelessWidget {
           ? BorderRadius.circular(0)
           : BorderRadius.all(Radius.circular(radius)),
       child: ClickableContent(
-        onClick: action['action'],
+        color: video ? Colors.transparent : null,
+        onClick: () {
+          if (action.onClick != null) {
+            action.onClick!(action);
+          } else if (action.resourceUrl != null) {
+            openUrl(action.resourceUrl!);
+          }
+        },
         child: Container(
           decoration: video
               ? null

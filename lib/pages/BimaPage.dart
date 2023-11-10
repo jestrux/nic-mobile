@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nic/components/ActionCard.dart';
 import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/data/actions.dart';
+import 'package:nic/models/ActionButton.dart';
+import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
 
 class BimaPage extends StatefulWidget {
@@ -97,33 +99,26 @@ class _BimaPageState extends State<BimaPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               const SizedBox(height: 4),
-              const PageSection(
+              PageSection(
                 // title: "Quick Actions",
-                actions: [
-                  {
-                    "icon": "calculator",
-                    "name": "Get a Quick Quote",
-                  },
-                  {
-                    "icon": "status",
-                    "name": "Bima Status",
-                  },
-                  {
-                    "icon": "renewable",
-                    "name": "Bima Renewal",
-                  },
+                content: [
+                  getQuickQuoteAction,
+                  bimaStatusAction,
+                  bimaRenewalAction,
                 ],
-                shape: ActionCardShape.rounded,
+                shape: ActionItemShape.rounded,
               ),
               const SizedBox(height: 16),
               const SectionTitle(title: "All products"),
               ...products.map((product) {
-                return ListItem(
-                  margin: const EdgeInsets.only(top: 4, bottom: 6),
-                  image: product["image"],
-                  leading: product["icon"],
-                  title: product["name"],
-                  action: const {"label": "Purchase"},
+                return Padding(
+                  padding: const EdgeInsets.only(top: 4, bottom: 4),
+                  child: ListItem(
+                    image: product["image"],
+                    leading: product["icon"],
+                    title: product["name"],
+                    action: const ActionButton(label: "Purchase"),
+                  ),
                 );
               }).toList(),
             ],

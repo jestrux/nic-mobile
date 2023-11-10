@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nic/components/ChoiceItem.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 ColorScheme colorScheme(BuildContext context) {
   return Theme.of(context).colorScheme;
+}
+
+Future<void> openUrl(String? url) async {
+  if (url == null) return;
+
+  if (!await launchUrl(Uri.parse(url))) {
+    throw Exception('Could not launch $url');
+  }
 }
 
 class Utils {
@@ -18,19 +27,29 @@ class Utils {
     Widget buildChoice(choice) {
       if (choicePicker != null) return choicePicker(choice, value);
 
+      var choiceLabel = choice;
+      var choiceValue = choice;
+      var choiceIcon;
+
+      if (choice is Map) {
+        choiceIcon = choice['icon'] == null ? null : Icon(choice['icon']);
+        choiceLabel = choice["label"];
+        choiceValue = choice["value"] ?? choice["label"];
+      }
+
       return ChoiceItem(
-        choice,
-        modeWhite: false,
-        size: ChoiceItemSize.SM,
-        padding: const EdgeInsets.symmetric(
-          vertical: 12,
-          horizontal: 20,
-        ),
+        choiceLabel,
+        leading: choiceIcon,
+        // padding: const EdgeInsets.symmetric(
+        //   vertical: 12,
+        //   horizontal: 20,
+        // ),
         selected: value == null
             ? null
-            : value.toString().toLowerCase() == choice.toString().toLowerCase(),
+            : value.toString().toLowerCase() ==
+                choiceValue.toString().toLowerCase(),
         onClick: () {
-          Navigator.of(context).pop(choice);
+          Navigator.of(context).pop(choiceValue);
         },
       );
     }

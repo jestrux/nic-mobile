@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:nic/components/ActionCard.dart';
+import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/data/actions.dart';
+import 'package:nic/models/ActionButton.dart';
+import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
 
 class UtilitiesPage extends StatefulWidget {
@@ -12,116 +15,70 @@ class UtilitiesPage extends StatefulWidget {
 }
 
 class _UtilitiesPageState extends State<UtilitiesPage> {
-  List<Map<String, dynamic>> quickActions() {
-    return [
-      {
-        "icon": "contract",
-        "name": "Claim Status",
-      },
-      {
-        "icon": "add-file",
-        "name": "Report Claim",
-      },
-      {
-        "icon": "status",
-        "name": "Bima Status",
-      },
-      {
-        "icon": "renewable",
-        "name": "Bima Renewal",
-      },
-      {
-        "icon": "wallet",
-        "name": "Life Contributions",
-        "action": () async {
-          String? selectedChoice = await Utils.showChoicePicker(
-            context,
-            // title: "Select action",
-            // selected: currency,
-            // value: "Show contributions",
-            choices: ["Show contributions", "Make contribution"],
-          );
-
-          if (selectedChoice != null) Utils.showToast(selectedChoice);
-        },
-      },
-      {
-        "icon": "contributions",
-        "name": "Changia Bima",
-      },
-    ];
-  }
-
-  List<Map<String, dynamic>> resources = [
-    {
-      "title": "Claim form",
-    },
-    {
-      "title": "Vendor form",
-    }
+  List<ActionItem> resources = [
+    ActionItem(
+      label: "Claim form",
+      resourceUrl: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+      action: ActionButton.flat(
+        "Download",
+        leftIcon: Icons.download,
+        onClick: (item) => openUrl(item.resourceUrl),
+      ),
+    ),
+    ActionItem(
+      label: "Vendor form",
+      resourceUrl: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+      onClick: (item) => openUrl(item.resourceUrl),
+      action: ActionButton.flat(
+        "Download",
+        leftIcon: Icons.download,
+        onClick: (item) => openUrl(item.resourceUrl),
+      ),
+    ),
   ];
 
-  List<Map<String, dynamic>> watchAndlearnActions() {
+  List<ActionItem> watchAndlearnActions() {
     return [
-      {
-        "image":
+      ActionItem(
+        image:
             "https://i.ytimg.com/vi/AA0dSQCRBJY/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGEggZShXMA8=&rs=AOn4CLCWAkGVhpgTFtn9OBWGAz4oAx1P6w",
-        "name": "Wekeza na BIMA ya Maisha (BeamLife) Kutoka NIC INSURANCE",
-        "video": "https://www.youtube.com/watch?v=AA0dSQCRBJY",
-      },
-      {
-        "image":
+        label: "Wekeza na BIMA ya Maisha (BeamLife) Kutoka NIC INSURANCE",
+        resourceUrl: "https://www.youtube.com/watch?v=AA0dSQCRBJY",
+      ),
+      ActionItem(
+        image:
             "https://i.ytimg.com/vi/XLKhaVLFXJ4/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGFIgXihlMA8=&rs=AOn4CLCeamp7ZEtndZ-lX25ncg4gD2V2Kw",
-        "name":
+        label:
             "Wakulima washikwa mkono na NIC Insurance kwa kuanzisha BIMA ya Kilimo",
-        "video": "https://www.youtube.com/watch?v=XLKhaVLFXJ4",
-      },
-      {
-        "image":
+        resourceUrl: "https://www.youtube.com/watch?v=XLKhaVLFXJ4",
+      ),
+      ActionItem(
+        image:
             "https://i.ytimg.com/vi/KOLJORmuvTQ/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGFIgXihlMA8=&rs=AOn4CLCeamp7ZEtndZ-lX25ncg4gD2V2Kw",
-        "name":
+        label:
             "Zifahamu Faida za BIMA ya Maisha (BeamLife) kutoka NIC Insurance",
-        "video": "https://www.youtube.com/watch?v=KOLJORmuvTQ",
-      },
+        resourceUrl: "https://www.youtube.com/watch?v=KOLJORmuvTQ",
+      ),
     ];
   }
 
-  List<Map<String, dynamic>> quickTipsActions() {
+  List<ActionItem> quickTipsActions() {
     return [
-      {
-        "background": Colors.orange.shade300,
-        "icon": "calculator",
-        "image":
+      ActionItem(
+        label: "Become an Agent",
+        image:
             "https://images.unsplash.com/photo-1626178793926-22b28830aa30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGJyb2tlcnxlbnwwfHx8fDE2OTk0NTc4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "name": "Become an Agent",
-      },
-      {
-        "background": Colors.green.shade300,
-        "icon": "location",
-        "image":
+      ),
+      ActionItem(
+        label: "Rent One of Our Spaces",
+        image:
             "https://images.unsplash.com/photo-1631193816258-28b44b21e78b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDExfHxvZmZpY2UlMjBzcGFjZXxlbnwwfHx8fDE2OTk1MTQ5ODl8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "name": "Rent One of Our Spaces",
-      },
-      {
-        "background": Colors.blue.shade300,
-        "icon": "customer-support",
-        "image":
+      ),
+      ActionItem(
+        label: "Lipa Kidogo kidogo",
+        image:
             "https://images.unsplash.com/photo-1554134449-8ad2b1dea29e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDMwfHxjb2luc3xlbnwwfHx8fDE2OTk0NTg1MDd8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "name": "Lipa Kidogo kidogo",
-        "action": () async {
-          String? selectedChoice = await Utils.showChoicePicker(
-            context,
-            choices: [
-              "Call Us",
-              "Send Email",
-              "Submit Feedback",
-              "Submit Complaint"
-            ],
-          );
-
-          if (selectedChoice != null) Utils.showToast(selectedChoice);
-        },
-      },
+      ),
     ];
   }
 
@@ -168,51 +125,50 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
               const SizedBox(height: 4),
               PageSection(
                 padding: EdgeInsets.zero,
-                // title: "Handy tips",
-                actions: quickTipsActions(),
-                shape: ActionCardShape.portrait,
+                content: quickTipsActions(),
+                shape: ActionItemShape.portrait,
                 columns: 3,
               ),
               const SizedBox(height: 16),
               PageSection(
                 padding: EdgeInsets.zero,
                 title: "Quick Actions",
-                actions: quickActions(),
-                shape: ActionCardShape.rounded,
+                content: utilitiesPageActions,
+                shape: ActionItemShape.rounded,
                 columns: 2,
               ),
               const SizedBox(height: 16),
-              const SectionTitle(title: "Resources"),
-              ...resources
-                  .map((resource) => ListItem(
-                        margin: const EdgeInsets.only(top: 4, bottom: 6),
-                        leading: const Icon(Icons.description),
-                        title: resource["title"],
-                        description: resource["description"],
-                        action: const {
-                          "leftIcon": Icons.download,
-                          "label": "Download",
-                          // "flat": true
-                        },
-                      ))
-                  .toList(),
+              InlineList(
+                title: "Resources",
+                data: resources,
+                leading: Icons.description,
+              ),
+              // const SectionTitle(title: "Resources"),
+              // ...resources
+              //     .map(
+              //       (resource) => Padding(
+              //         padding: const EdgeInsets.only(top: 4, bottom: 4),
+              //         child: ListItem(
+              //           leading: const Icon(Icons.description),
+              //           title: resource.label,
+              //           description: resource.description,
+              //           action: ActionButton.flat(
+              //             "Download",
+              //             leftIcon: Icons.download,
+              //             onClick: (item) => openUrl(resource.resourceUrl),
+              //           ),
+              //         ),
+              //       ),
+              //     )
+              //     .toList(),
               const SizedBox(height: 14),
               PageSection(
                 padding: EdgeInsets.zero,
                 title: "Watch and Learn",
-                actions: watchAndlearnActions(),
-                shape: ActionCardShape.video,
+                content: watchAndlearnActions(),
+                shape: ActionItemShape.video,
                 columns: 2,
               ),
-              // const SectionTitle(title: "FAQs"),
-              // ...resources
-              //     .map((resource) => ListItem(
-              //           margin: const EdgeInsets.only(top: 4, bottom: 6),
-              //           leading: const Icon(Icons.keyboard_arrow_down),
-              //           title: resource["title"],
-              //           description: resource["description"],
-              //         ))
-              //     .toList(),
             ],
           ),
         ),

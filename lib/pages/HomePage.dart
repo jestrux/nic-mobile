@@ -1,15 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:nic/components/ActionCard.dart';
-import 'package:nic/components/CardWrapper.dart';
-import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/constants.dart';
+import 'package:nic/data/actions.dart';
+import 'package:nic/models/ActionButton.dart';
+import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final void Function(int) goToMainPage;
+  const HomePage({required this.goToMainPage, Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -20,177 +21,50 @@ class _HomePageState extends State<HomePage> {
 
   void route() {}
 
-  List<Map<String, dynamic>> quickActions() {
-    return [
-      // {
-      //   "icon": "contract",
-      //   "name": "Claim Status",
-      // },
-      {
-        "icon": "add-file",
-        "name": "Report Claim",
-      },
-      {
-        "icon": "status",
-        "name": "Bima Status",
-      },
-      // {
-      //   "icon": "renewable",
-      //   "name": "Bima Renewal",
-      // },
-      {
-        "icon": "wallet",
-        "name": "Life Contributions",
-        "action": () async {
-          String? selectedChoice = await Utils.showChoicePicker(
-            context,
-            choices: ["Show contributions", "Make contribution"],
-          );
-
-          if (selectedChoice != null) Utils.showToast(selectedChoice);
+  void makePaymentAction(item) async {
+    String? selectedChoice = await Utils.showChoicePicker(
+      context,
+      choices: [
+        {
+          "icon": Icons.attach_money,
+          "label": "Pay Now",
         },
-      },
-      {
-        "icon": "contributions",
-        "name": "Changia Bima",
-      },
-      // {
-      //   "icon": "document",
-      //   "name": "Pending Bima",
-      //   "actions": () {},
-      // },
-      // {
-      //   "icon": "folder",
-      //   "name": "Your Claims",
-      //   "actions": () {},
-      // },
-    ];
+        {
+          "icon": Icons.question_mark,
+          "label": "Payment Information",
+        },
+      ],
+    );
+
+    if (selectedChoice != null) Utils.showToast(selectedChoice);
   }
 
-  List<Map<String, dynamic>> buyBimaActions() {
-    return [
-      {
-        "background": Colors.orange.shade300,
-        "icon": "save-heart",
-        "image":
-            "https://images.unsplash.com/photo-1560346740-a8678c61a524?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDM2fHxibGFjayUyMGZhbWlseXxlbnwwfHx8fDE2ODQzNTYwNDB8MA&ixlib=rb-4.0.3&q=80&w=900",
-        "name": "Life & Saving",
-      },
-      {
-        "background": Colors.green.shade300,
-        "icon": "car",
-        "image":
-            "https://bsmedia.business-standard.com/_media/bs/img/article/2019-05/25/full/1558730112-9901.jpg",
-        "name": "Magari",
-      },
-      {
-        "background": Colors.purple.shade300,
-        "icon": "house",
-        "image":
-            "https://www.nicinsurance.co.tz/img/uploads/pier_files/Linda-Mjengo_1690709063.png",
-        "name": "Linda Mjengo",
-      },
-      {
-        "icon": "motorcycle",
-        "image":
-            "https://images.unsplash.com/photo-1625043484550-df60256f6ea5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDZ8fG1vdG9yJTIwYmlrZXxlbnwwfHx8fDE2OTQ0MzMzNzR8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "name": "Pikipiki / Bajaji",
-      },
-      {
-        "icon": "airplane",
-        "id": "UHJvZHVjdE5vZGU6MTc0",
-        "image":
-            "https://images.unsplash.com/photo-1544016768-982d1554f0b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDI3fHxhaXJwbGFuZXxlbnwwfHx8fDE2OTk0NDk5MDl8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "name": "Travel Insurance",
-      },
-      // {
-      //   "icon": "car",
-      //   "id": "UHJvZHVjdE5vZGU6MjY=",
-      //   "image":
-      //       "https://www.nicinsurance.co.tz/img/uploads/pier_files/Motor-Insurance__1690709184.jpg",
-      //   "name": "Bima Kubwa ya Binafsi"
-      // },
-    ];
-  }
-
-  List<Map<String, dynamic>> quickTipsActions() {
-    return [
-      {
-        "background": Colors.orange.shade300,
-        "icon": "calculator",
-        "image":
-            "https://images.unsplash.com/photo-1626178793926-22b28830aa30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGJyb2tlcnxlbnwwfHx8fDE2OTk0NTc4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "name": "Become an Agent",
-      },
-      {
-        "background": Colors.green.shade300,
-        "icon": "location",
-        "image":
-            "https://images.unsplash.com/photo-1515150144380-bca9f1650ed9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDh8fGZhcm18ZW58MHx8fHwxNjk5NDU4MDc1fDA&ixlib=rb-4.0.3&q=80&w=1080",
-        "name": "Insure your farm",
-      },
-      {
-        "background": Colors.blue.shade300,
-        "icon": "customer-support",
-        "image":
-            "https://images.unsplash.com/photo-1554134449-8ad2b1dea29e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDMwfHxjb2luc3xlbnwwfHx8fDE2OTk0NTg1MDd8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "name": "Lipa Kidogo kidogo",
-        "action": () async {
-          String? selectedChoice = await Utils.showChoicePicker(
-            context,
-            choices: [
-              "Call Us",
-              "Send Email",
-              "Submit Feedback",
-              "Submit Complaint"
-            ],
-          );
-
-          if (selectedChoice != null) Utils.showToast(selectedChoice);
+  void customerSupportAction(item) async {
+    String? selectedChoice = await Utils.showChoicePicker(
+      context,
+      choices: [
+        {
+          "icon": Icons.phone,
+          "label": "Call Us",
         },
-      },
-    ];
-  }
-
-  List<Map<String, dynamic>> otherActions() {
-    return [
-      {
-        "background": Colors.orange.shade300,
-        "icon": "calculator",
-        "name": "Get a Quick Quote",
-      },
-      {
-        "background": Colors.green.shade300,
-        "icon": "money",
-        "name": "Make payment",
-        "action": () async {
-          String? selectedChoice = await Utils.showChoicePicker(
-            context,
-            choices: ["Pay Now", "Payment Info"],
-          );
-
-          if (selectedChoice != null) Utils.showToast(selectedChoice);
-        }
-      },
-      {
-        "background": Colors.blue.shade300,
-        "icon": "customer-support",
-        "name": "Customer Support",
-        "action": () async {
-          String? selectedChoice = await Utils.showChoicePicker(
-            context,
-            choices: [
-              "Call Us",
-              "Send Email",
-              "Submit Feedback",
-              "Submit Complaint"
-            ],
-          );
-
-          if (selectedChoice != null) Utils.showToast(selectedChoice);
+        {
+          "icon": Icons.mail,
+          "label": "Send Email",
         },
-      },
-    ];
+        {
+          "icon": Icons.chat,
+          "label": "Feedback / Complaint",
+        },
+      ],
+    );
+
+    if (selectedChoice == "Call Us") {
+      openUrl("tel:${Constants.supportPhoneNumber}");
+    } else if (selectedChoice == "Send Email") {
+      openUrl("mailto:${Constants.supportEmail}");
+    } else if (selectedChoice == "Feedback / Complaint") {
+      openUrl(Constants.contactsUrl);
+    }
   }
 
   Widget _buildAdsBar() {
@@ -334,39 +208,55 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               _buildAdsBar(),
-              // const SizedBox(height: 12),
-              // const ListItem(
-              //   themeColor: Colors.lightGreen,
-              //   margin: EdgeInsets.symmetric(horizontal: 16),
-              //   leading: Icon(Icons.monetization_on),
-              //   title: "TZS 300,000",
-              //   description: "Total commission this week",
-              //   action: {"label": "View all", "filled": true},
-              // ),
               const SizedBox(height: 12),
+              // const InlineList(
+              //     title: "Your Commissions",
+              //     titleAction: {
+              //       "label": "View all",
+              //       "rightIcon": Icons.keyboard_double_arrow_right
+              //     },
+              //     // themeColor: Colors.lightGreen,
+              //     data: [
+              //       {
+              //         "leading": Icons.monetization_on,
+              //         "title": "TZS 300,000",
+              //         "description": "Total collected this week",
+              //         // "action": {
+              //         //   "label": "View all",
+              //         //   "filled": false,
+              //         //   "flat": true,
+              //         //   "rightIcon": Icons.keyboard_double_arrow_right
+              //         // },
+              //       }
+              //     ]),
+              // const SizedBox(height: 12),
               PageSection(
                 title: "Buy Bima",
-                titleAction: const {
-                  "label": "All products",
-                  "rightIcon": Icons.keyboard_double_arrow_right,
-                },
-                actions: buyBimaActions(),
-              ),
-              const SizedBox(height: 20),
-              PageSection(
-                title: "Quick actions",
-                titleAction: const {
-                  "label": "All actions",
-                  "rightIcon": Icons.keyboard_double_arrow_right,
-                },
-                actions: quickActions(),
-                shape: ActionCardShape.rounded,
+                titleAction: ActionButton.all(
+                  "All products",
+                  onClick: (item) => widget.goToMainPage(1),
+                ),
+                content: buyBimaActions,
+                shape: ActionItemShape.regular,
               ),
               const SizedBox(height: 16),
               PageSection(
-                title: "Quick Help",
-                actions: otherActions(),
-                shape: ActionCardShape.square,
+                title: "Common Actions",
+                titleAction: ActionButton.all(
+                  "All actions",
+                  onClick: (item) => widget.goToMainPage(2),
+                ),
+                content: homePageQuickActions,
+                shape: ActionItemShape.rounded,
+              ),
+              const SizedBox(height: 16),
+              PageSection(
+                title: "Self Service",
+                content: otherActions(
+                  makePaymentAction: makePaymentAction,
+                  customerSupportAction: customerSupportAction,
+                ),
+                shape: ActionItemShape.square,
                 columns: 3,
               ),
             ],
