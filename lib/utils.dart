@@ -6,7 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:nic/components/ChoiceItem.dart';
 import 'package:nic/components/ClickableContent.dart';
-import 'package:nic/components/Loader.dart';
+import 'package:nic/components/FormActions.dart';
 import 'package:nic/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,95 +17,6 @@ void devLog(value) {
 }
 
 enum NicAlertType { success, error, noIcon }
-
-class AlertActions extends StatelessWidget {
-  final String okayText;
-  final Function onOkay;
-  final String cancelText;
-  final Function? onCancel;
-  final EdgeInsets? padding;
-  final bool loading;
-
-  const AlertActions({
-    Key? key,
-    this.okayText = "Okay",
-    this.onOkay = Constants.randoFunction,
-    this.cancelText = "Cancel",
-    this.onCancel,
-    this.loading = false,
-    this.padding,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: padding ??
-          const EdgeInsets.symmetric(
-            vertical: 6,
-            horizontal: 12,
-          ),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            width: 0.5,
-            color: colorScheme(context).outlineVariant,
-          ),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          if (onCancel != null)
-            TextButton(
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all(
-                  colorScheme(context).onBackground,
-                ),
-                visualDensity: VisualDensity.compact,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.symmetric(
-                    horizontal: 12,
-                  ),
-                ),
-              ),
-              onPressed: () {
-                onCancel!();
-              },
-              child: const Text("Cancel"),
-            ),
-          const SizedBox(width: 8),
-          FilledButton(
-            style: ButtonStyle(
-              visualDensity: VisualDensity.compact,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              padding: MaterialStateProperty.all(
-                const EdgeInsets.symmetric(
-                  horizontal: 12,
-                ),
-              ),
-            ),
-            onPressed: loading ? null : () => onOkay(),
-            child: Row(
-              children: [
-                if (loading)
-                  const Padding(
-                    padding: EdgeInsets.only(right: 6),
-                    child: Loader(
-                      message: "",
-                      loaderSize: 14,
-                      loaderStrokeWidth: 2,
-                    ),
-                  ),
-                Text(okayText),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class AlertContent extends StatelessWidget {
   final String? title;
@@ -182,22 +93,23 @@ class AlertContent extends StatelessWidget {
                                           : Icons.mood_bad,
                                     ),
                                   ),
-                                if (!noTitle)
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      top: noPadding ? 12 : 0,
-                                      bottom: 6,
-                                    ),
-                                    child: Text(
-                                      title!,
-                                      // textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        // color: Constants.secondaryColor,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
+                                noTitle
+                                    ? const SizedBox(height: 10)
+                                    : Padding(
+                                        padding: EdgeInsets.only(
+                                          top: noPadding ? 12 : 0,
+                                          bottom: 8,
+                                        ),
+                                        child: Text(
+                                          title!,
+                                          // textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            // color: Constants.secondaryColor,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
                                 if (child != null) child!,
                                 if (description != null)
                                   Text(
@@ -213,7 +125,7 @@ class AlertContent extends StatelessWidget {
                             ),
                           ),
                           if (!noActions)
-                            AlertActions(
+                            FormActions(
                               cancelText: cancelText,
                               okayText: okayText,
                               onOkay: onOkay,

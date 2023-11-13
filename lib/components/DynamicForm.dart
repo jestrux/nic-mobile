@@ -28,14 +28,14 @@ class DynamicFormField {
 
 class DynamicForm extends StatefulWidget {
   final List<DynamicFormField> fields;
-  final Future Function(Map<String, dynamic>) handler;
-  final Function(dynamic)? onSuccess;
+  final Future Function(Map<String, dynamic>) onSave;
+  final Function(dynamic response)? onSuccess;
   final Widget Function(Function onSubmit, bool loading)? builder;
 
   const DynamicForm({
     Key? key,
     required this.fields,
-    required this.handler,
+    required this.onSave,
     this.onSuccess,
     this.builder,
   }) : super(key: key);
@@ -61,7 +61,7 @@ class _DynamicFormState extends State<DynamicForm> {
     dynamic response;
 
     try {
-      response = widget.handler(form.instantValue);
+      response = await widget.onSave(form.instantValue);
       devLog("Policy: $response");
     } catch (e) {
       devLog("Failed to fetch dynamic form: $e");
