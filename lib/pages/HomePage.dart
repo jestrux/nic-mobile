@@ -1,7 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:nic/components/AdsBar.dart';
 import 'package:nic/components/InlineList.dart';
-import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/constants.dart';
 import 'package:nic/data/actions.dart';
@@ -68,101 +67,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Widget _buildAdsBar() {
-    return AspectRatio(
-      aspectRatio: 1 / 0.35,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 0.6,
-            color: colorScheme(context).outlineVariant,
-          ),
-          borderRadius: const BorderRadius.all(
-            Radius.circular(12),
-          ),
-          image: const DecorationImage(
-            fit: BoxFit.cover,
-            image: CachedNetworkImageProvider(
-              "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGZhbmN5JTIwaG91c2V8ZW58MHx8fHwxNjk5MzQ5OTM1fDA&ixlib=rb-4.0.3&q=80&w=900",
-            ),
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(12),
-          ),
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withOpacity(0),
-                      Colors.black12,
-                      Colors.black54,
-                      Colors.black
-                    ],
-                    // stops: const [0, 0.8, 1],
-                  ),
-                ),
-              ),
-              Positioned(
-                  bottom: 12,
-                  left: 16,
-                  right: 12,
-                  child: DefaultTextStyle(
-                    style: TextStyle(color: Colors.white),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Linda Mjengo",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                              ),
-                              const SizedBox(height: 2),
-                              Opacity(
-                                opacity: 0.85,
-                                child: Text(
-                                  "Insurance against fire, floods, buglary",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
-                                        fontSize: 11,
-                                        color: Colors.white,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const MiniButton(
-                          label: "Learn more",
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                  ))
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -208,7 +112,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              _buildAdsBar(),
+              const AdsBanner(),
               const SizedBox(height: 12),
               InlineList(
                   title: "Your Commissions",

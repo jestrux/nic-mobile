@@ -26,8 +26,9 @@ class ActionCard extends StatelessWidget {
         colorScheme(context).surfaceVariant.withOpacity(rounded ? 0 : 0.3);
 
     double radius = rounded ? 50 : 10;
-    var iconBackground = colorScheme(context).primary.withOpacity(0.15);
-    var iconColor = colorScheme(context).primary;
+    var iconBackground =
+        colorScheme(context).secondaryContainer; //.primary.withOpacity(0.15);
+    var iconColor = colorScheme(context).primary; //.onSecondaryContainer;
 
     // if (themeColor != null) {
     //   iconBackground = themeColor!.shade100.withOpacity(0.5);

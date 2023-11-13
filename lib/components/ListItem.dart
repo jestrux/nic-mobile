@@ -40,8 +40,8 @@ class ListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var iconBackground = colorScheme(context).primary.withOpacity(0.1);
-    var iconColor = colorScheme(context).primary;
+    var iconBackground = colorScheme(context).secondaryContainer;
+    var iconColor = colorScheme(context).onSecondaryContainer; //.primary
 
     // if (themeColor != null) {
     //   iconBackground = themeColor!.shade100.withOpacity(0.7);
