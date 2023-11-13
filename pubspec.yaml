@@ -39,6 +39,10 @@ dependencies:
     cached_network_image: ^3.3.0
     url_launcher: ^6.2.1
     google_fonts: ^6.1.0
+    graphql_flutter: ^5.1.2
+    flutter_form_builder: ^9.1.1
+    form_builder_validators: ^9.1.0
+    intl: ^0.18.1
 
 dev_dependencies:
     flutter_test:

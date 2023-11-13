@@ -11,6 +11,8 @@ class PageSection extends StatelessWidget {
   final List<ActionItem>? content;
   final ActionItemShape? shape;
   final int? columns;
+  final void Function(ActionItem)? onItemClick;
+
   const PageSection({
     Key? key,
     this.padding,
@@ -19,6 +21,7 @@ class PageSection extends StatelessWidget {
     this.content,
     this.shape,
     this.columns,
+    this.onItemClick,
   }) : super(key: key);
 
   @override
@@ -62,6 +65,9 @@ class PageSection extends StatelessWidget {
         children: content.map(
           (action) {
             action.shape ??= shape;
+            if (action.onClick == null && onItemClick != null) {
+              action.onClick = (d) => onItemClick!(action);
+            }
             return ActionCard(action: action);
           },
         ).toList(),
@@ -135,8 +141,7 @@ class SectionTitle extends StatelessWidget {
             MiniButton.fromAction(
               action!,
               onClick: () {
-                if (action!.onClick == null) return;
-                action!.onClick!("");
+                if (action!.onClick != null) action!.onClick!("");
               },
             ),
         ],

@@ -16,7 +16,7 @@ class ActionItem {
   late dynamic trailing;
   late dynamic leading;
   String? value;
-  final void Function(dynamic)? onClick;
+  late void Function(dynamic)? onClick;
 
   ActionItem({
     required this.label,

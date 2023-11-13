@@ -7,7 +7,6 @@ import 'package:nic/pages/HomePage.dart';
 import 'package:nic/pages/MorePage.dart';
 import 'package:nic/pages/ProfilePage.dart';
 import 'package:nic/pages/UtilitiesPage.dart';
-import 'package:nic/utils.dart';
 
 void main() => runApp(const NICKiganjani());
 

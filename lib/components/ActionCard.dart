@@ -239,7 +239,7 @@ class ActionCard extends StatelessWidget {
           ? BorderRadius.circular(0)
           : BorderRadius.all(Radius.circular(radius)),
       child: ClickableContent(
-        color: video ? Colors.transparent : null,
+        inkColor: video ? Colors.transparent : null,
         onClick: () {
           if (action.onClick != null) {
             action.onClick!(action);

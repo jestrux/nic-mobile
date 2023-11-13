@@ -7,11 +7,11 @@ class ClickableContent extends StatelessWidget {
   final Widget? child;
   final EdgeInsets padding;
   final BoxBorder? border;
-  final Color? color;
+  final Color? inkColor;
   const ClickableContent({
     super.key,
     this.child,
-    this.color,
+    this.inkColor,
     this.onClick = Constants.randoFunction,
     this.padding = EdgeInsets.zero,
     this.border,
@@ -19,7 +19,7 @@ class ClickableContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var actualColor = color ?? colorScheme(context).surfaceVariant;
+    var actualColor = inkColor ?? colorScheme(context).surfaceVariant;
 
     return Material(
       type: MaterialType.transparency,
