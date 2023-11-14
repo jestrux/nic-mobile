@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:nic/components/ChoiceItem.dart';
@@ -214,7 +216,6 @@ class _GetQuoteState extends State<GetQuote> {
 
     try {
       quotationDetails = await getQuotationDetails(productId: widget.productId);
-      devLog("Quotation: $quotationDetails");
     } catch (e) {
       Navigator.of(context).pop();
       openErrorAlert(message: e.toString());
@@ -231,8 +232,6 @@ class _GetQuoteState extends State<GetQuote> {
     if (quotationDetails != null) {
       var quotation = {...quotationDetails!};
       quotation.removeWhere((key, value) => key == "form");
-
-      devLog("Quotation: $quotationDetails");
 
       return Column(
         children: [
@@ -291,6 +290,41 @@ class _GetQuoteState extends State<GetQuote> {
               "value": quotationDetails!["totalPremium"]
             },
           })
+        ],
+      );
+    }
+
+    if (quotationDetails?["form"] != null) {
+      var form = List.from(quotationDetails!["form"]);
+
+      return Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(
+              top: 12,
+              bottom: 4,
+            ),
+            child: Text(
+              "More details",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          DynamicForm(
+            fields: form.map((e) {
+              return DynamicFormField(
+                name: "searchKey",
+                label: "Policy Reference No.",
+                placeholder: "Enter policy number or plate number",
+              );
+            }).toList(),
+            onCancel: () => Navigator.of(context).pop(),
+            // submitLabel: "Check",
+            onSubmit: (data) async {},
+            onSuccess: (data) {},
+          ),
         ],
       );
     }

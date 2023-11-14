@@ -4,7 +4,43 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/utils.dart';
 
-enum DynamicFormFieldType { text, select }
+enum DynamicFormFieldType {
+  text,
+  date,
+  number,
+  choice,
+  boolean,
+  checkbox,
+  radio
+}
+
+var dynamicFormFieldTypeMap = {
+  "integer": DynamicFormFieldType.number,
+  "decimal": DynamicFormFieldType.number,
+  "currency": DynamicFormFieldType.number,
+
+  "bool": DynamicFormFieldType.boolean,
+
+  "radio": DynamicFormFieldType.radio,
+  "checkbox": DynamicFormFieldType.checkbox,
+
+  // "checkbox": DynamicFormFieldType.choice,
+  "select": DynamicFormFieldType.choice,
+  "bank": DynamicFormFieldType.choice,
+  "branch": DynamicFormFieldType.choice,
+  "corporate": DynamicFormFieldType.choice,
+
+  "future_date": DynamicFormFieldType.date,
+  "past_date": DynamicFormFieldType.date,
+  "days_of_year": DynamicFormFieldType.date,
+  "date": DynamicFormFieldType.date,
+  "datetime": DynamicFormFieldType.date,
+  "past_datetime": DynamicFormFieldType.date,
+  "future_datetime": DynamicFormFieldType.date,
+
+  // textarea: "choice",
+  // file: "choice",
+};
 
 class DynamicFormFieldChoice {
   final String label;
@@ -18,12 +54,14 @@ class DynamicFormField {
   final String? label;
   final DynamicFormFieldType type;
   final String? placeholder;
+  final List<Map<String, dynamic>>? choices;
 
   const DynamicFormField({
     required this.name,
     this.label,
     this.type = DynamicFormFieldType.text,
     this.placeholder,
+    this.choices,
   });
 }
 
@@ -82,6 +120,87 @@ class _DynamicFormState extends State<DynamicForm> {
     return response;
   }
 
+  Widget _buildFormField(DynamicFormField field) {
+    Widget fieldWidget = FormBuilderTextField(
+      name: field.name,
+      validator: FormBuilderValidators.compose([
+        FormBuilderValidators.required(
+            // errorText: "Enter policy number or plate number",
+            ),
+        // FormBuilderValidators.email(),
+      ]),
+      autofocus: widget.fields.length == 1,
+      decoration: field.label == null && field.placeholder == null
+          ? const InputDecoration()
+          : InputDecoration(
+              label: field.label != null ? Text(field.label!) : null,
+              hintText: field.placeholder != null ? field.placeholder! : null,
+            ),
+    );
+
+    if (field.type == DynamicFormFieldType.choice) {
+      fieldWidget = FormBuilderDropdown<String>(
+        name: field.name,
+        validator: FormBuilderValidators.compose(
+          [FormBuilderValidators.required()],
+        ),
+        decoration: InputDecoration(
+          labelText: field.label,
+          // initialValue: 'Male',
+          suffix: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              _formKey.currentState!.fields['gender']?.reset();
+            },
+          ),
+          hintText: field.placeholder ?? "Choose one",
+        ),
+        items: List.from(field.choices ?? [])
+            .map(
+              (choice) => DropdownMenuItem<String>(
+                alignment: AlignmentDirectional.center,
+                value: choice["value"],
+                child: Text("${choice["label"]}"),
+              ),
+            )
+            .toList(),
+      );
+    }
+
+    if (field.type == DynamicFormFieldType.radio) {
+      fieldWidget = FormBuilderChoiceChip(
+        name: field.name,
+        decoration: InputDecoration(
+          labelText: field.label,
+          // initialValue: 'Male',
+          suffix: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              _formKey.currentState!.fields['gender']?.reset();
+            },
+          ),
+          hintText: field.placeholder ?? "Choose one",
+        ),
+        validator: FormBuilderValidators.compose(
+          [FormBuilderValidators.required()],
+        ),
+        options: List.from(field.choices ?? [])
+            .map(
+              (choice) => FormBuilderChipOption(
+                value: choice["value"],
+                child: Text("${choice["label"]}"),
+              ),
+            )
+            .toList(),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: fieldWidget,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -91,34 +210,7 @@ class _DynamicFormState extends State<DynamicForm> {
           child: FormBuilder(
             key: _formKey,
             child: Column(
-              children: widget.fields
-                  .map(
-                    (field) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: FormBuilderTextField(
-                        name: field.name,
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(
-                              // errorText: "Enter policy number or plate number",
-                              ),
-                          // FormBuilderValidators.email(),
-                        ]),
-                        autofocus: widget.fields.length == 1,
-                        decoration:
-                            field.label == null && field.placeholder == null
-                                ? const InputDecoration()
-                                : InputDecoration(
-                                    label: field.label != null
-                                        ? Text(field.label!)
-                                        : null,
-                                    hintText: field.placeholder != null
-                                        ? field.placeholder!
-                                        : null,
-                                  ),
-                      ),
-                    ),
-                  )
-                  .toList(),
+              children: widget.fields.map(_buildFormField).toList(),
             ),
           ),
         ),

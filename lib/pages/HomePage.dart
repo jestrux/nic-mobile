@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/AdsBar.dart';
+import 'package:nic/components/DynamicForm.dart';
+import 'package:nic/components/DynamicForm/proccessFields.dart';
+import 'package:nic/components/DynamicForm/sampleFields.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/modals/BimaStatus.dart';
@@ -20,6 +23,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  processedFields() {
+    var fields = processFields(fields: sampleFields);
+    devLog("Sample fields: $fields");
+
+    return fields!
+        .map(
+          (field) => DynamicFormField(
+            name: field["name"],
+            label: field["label"],
+          ),
+        )
+        .toList();
+  }
+
   void navigate() {}
 
   void route() {}
@@ -115,9 +132,10 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               const AdsBanner(),
               const SizedBox(height: 12),
-              // AlertContent(
-
-              // ),
+              DynamicForm(
+                fields: processedFields(),
+                onSubmit: (d) async {},
+              ),
               InlineList(
                 title: "Your Commissions",
                 titleAction: ActionButton.all("Open dashboard"),

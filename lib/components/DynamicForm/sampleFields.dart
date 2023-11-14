@@ -1,0 +1,100 @@
+List<Map<String, dynamic>> sampleFields = [
+  {
+    "id": 21812,
+    "trigger": null,
+    "name": "Please_select_pensave_term_in_years_IMIS__FIELD_21812",
+    "tag": "PolicyTermTimeSelect,QuoteQuestion",
+    "min_value": null,
+    "max_value": null,
+    "commence": false,
+    "answered_question": null,
+    "tira": false,
+    "label": "Please select pensave term (in years)",
+    "description": "",
+    "declaration": false,
+    "type": "select",
+    "possible_names": [],
+    "group": {
+      "id": "None",
+      "checklist": "1839",
+      "name": "NONE",
+      "type": "None",
+      "multiple": false
+    },
+    "max_length": 500,
+    "required": true,
+    "choices": [
+      {"name": "5", "value": "1879_IMIS_21812"},
+      {"name": "6", "value": "1878_IMIS_21812"},
+      {"name": "7", "value": "1877_IMIS_21812"},
+      {"name": "8", "value": "1876_IMIS_21812"},
+      {"name": "9", "value": "1875_IMIS_21812"},
+      {"name": "10", "value": "1874_IMIS_21812"},
+      {"name": "11", "value": "1873_IMIS_21812"},
+      {"name": "12", "value": "1872_IMIS_21812"},
+      {"name": "13", "value": "1871_IMIS_21812"},
+      {"name": "14", "value": "1870_IMIS_21812"},
+      {"name": "15", "value": "1869_IMIS_21812"}
+    ],
+    "childs": []
+  },
+  {
+    "id": 21813,
+    "trigger": null,
+    "name": "How_much_would_you_save_IMIS__FIELD_21813",
+    "tag": "QuoteQuestion",
+    "min_value": null,
+    "max_value": null,
+    "commence": false,
+    "answered_question": null,
+    "tira": false,
+    "label": "How much would you save",
+    "description": "",
+    "declaration": false,
+    "type": "integer",
+    "possible_names": [],
+    "group": {
+      "id": "None",
+      "checklist": "1839",
+      "name": "NONE",
+      "type": "None",
+      "multiple": false
+    },
+    "help_text": "How much would you save",
+    "max_length": 500,
+    "required": true,
+    "childs": []
+  },
+  {
+    "id": 21814,
+    "trigger": null,
+    "name": "On_what_frequency_would_you_remit_your_saving_IMIS__FIELD_21814",
+    "tag": "PremiumPaymentFrequency,QuoteQuestion",
+    "min_value": null,
+    "max_value": null,
+    "commence": false,
+    "answered_question": null,
+    "tira": false,
+    "label": "On what frequency would you remit your saving?",
+    "description": "",
+    "declaration": false,
+    "type": "radio",
+    "possible_names": [],
+    "group": {
+      "id": "None",
+      "checklist": "1839",
+      "name": "NONE",
+      "type": "None",
+      "multiple": false
+    },
+    "max_length": 500,
+    "required": true,
+    "choices": [
+      {"name": "Monthly", "value": "1883_IMIS_21814"},
+      {"name": "Quarterly", "value": "1882_IMIS_21814"},
+      {"name": "Semi-annually", "value": "1881_IMIS_21814"},
+      {"name": "Annually", "value": "1880_IMIS_21814"}
+    ],
+    "childs": []
+  }
+];

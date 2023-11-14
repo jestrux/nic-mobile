@@ -1,5 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,6 +16,12 @@ void devLog(value) {
   if (kDebugMode) {
     print(value);
   }
+}
+
+String randomId([int? len]) {
+  var r = Random();
+  return String.fromCharCodes(
+      List.generate(len ?? 6, (index) => r.nextInt(33) + 89));
 }
 
 enum AlertType { success, error, custom }
@@ -60,6 +68,7 @@ class AlertContent extends StatelessWidget {
             Column(
               children: [
                 Container(
+                  constraints: const BoxConstraints(minHeight: 80),
                   width: double.infinity,
                   margin: EdgeInsets.symmetric(
                     vertical: isCustom ? 12 : 32,
@@ -109,8 +118,8 @@ class AlertContent extends StatelessWidget {
                                     ? const SizedBox(height: 10)
                                     : Padding(
                                         padding: EdgeInsets.only(
-                                          top: isCustom ? 12 : 0,
-                                          bottom: 4,
+                                          top: isCustom ? 24 : 0,
+                                          bottom: 8,
                                         ),
                                         child: Text(
                                           title!,
