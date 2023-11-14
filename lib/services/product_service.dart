@@ -81,28 +81,33 @@ Future<Map<String, dynamic>?> getQuotationDetails({
     throw ("Failed to fetch quotation. Please try again later.");
   }
 
-  quotationForm = jsonDecode(
+  var fullQuotationForm = jsonDecode(
     jsonDecode(quotationFormResponse),
   );
 
-  devLog("Quotation form: $quotationForm");
+  quotationForm = List.from(fullQuotationForm)
+      .map((e) => List.from(e["fields"] ?? []))
+      .expand((element) => element)
+      .toList();
 
-  return quotation;
+  if (quotationForm.isEmpty) {
+    try {
+      return await submitQuote(productId: productId, quote: quotation["quote"]);
+    } catch (e) {
+      devLog("Submit quote error $e");
+    }
+  }
 
-  // if (quotationForm == null) {
-  //   return await submitQuote(productId: productId, quote: quotation["quote"]);
-  // }
-
-  // quotation["form"] = quotationForm;
-
-  return quotation;
+  return {...quotation, "form": quotationForm};
 }
 
 Future<Map<String, dynamic>?> submitQuote({
   required String productId,
-  required String quote,
+  required dynamic quote,
   Map<String, dynamic>? data,
 }) async {
+  devLog("Submit quote...");
+
   String queryString =
       r"""mutation($product: ID!, $quote: Int!, $data: JSONString!, $underwriteChannel: Int!){
     quote(product:$product,quote: $quote,data: $data, underwriteChannel: $underwriteChannel){
@@ -132,6 +137,8 @@ Future<Map<String, dynamic>?> submitQuote({
     devLog("Submit quote: No data found");
     throw ("Failed to fetch quotation. Please try again later.");
   }
+
+  devLog("Quotation details: ${result.data!['quote']}");
 
   Map<String, dynamic>? quoteResponse;
 

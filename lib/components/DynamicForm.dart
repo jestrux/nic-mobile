@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:nic/components/FormActions.dart';
 import 'package:nic/utils.dart';
 
 enum DynamicFormFieldType { text, select }
@@ -28,15 +29,19 @@ class DynamicFormField {
 
 class DynamicForm extends StatefulWidget {
   final List<DynamicFormField> fields;
-  final Future Function(Map<String, dynamic>) onSave;
+  final String? submitLabel;
+  final Future Function(Map<String, dynamic>) onSubmit;
   final Function(dynamic response)? onSuccess;
+  final Function? onCancel;
   final Widget Function(Function onSubmit, bool loading)? builder;
 
   const DynamicForm({
     Key? key,
     required this.fields,
-    required this.onSave,
+    required this.onSubmit,
+    this.submitLabel,
     this.onSuccess,
+    this.onCancel,
     this.builder,
   }) : super(key: key);
 
@@ -61,7 +66,7 @@ class _DynamicFormState extends State<DynamicForm> {
     dynamic response;
 
     try {
-      response = await widget.onSave(form.instantValue);
+      response = await widget.onSubmit(form.instantValue);
       devLog("Policy: $response");
     } catch (e) {
       devLog("Failed to fetch dynamic form: $e");
@@ -117,7 +122,14 @@ class _DynamicFormState extends State<DynamicForm> {
             ),
           ),
         ),
-        if (widget.builder != null) widget.builder!(onSubmit, loading)
+        widget.builder != null
+            ? widget.builder!(onSubmit, loading)
+            : FormActions(
+                loading: loading,
+                onCancel: widget.onCancel,
+                okayText: widget.submitLabel ?? "Submit",
+                onOkay: onSubmit,
+              )
       ],
     );
   }

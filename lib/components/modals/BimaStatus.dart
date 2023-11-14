@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
-import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/KeyValueView.dart';
 import 'package:nic/models/policy_model.dart';
 import 'package:nic/services/policy_service.dart';
@@ -59,18 +58,10 @@ class _BimaStatusState extends State<BimaStatus> {
               placeholder: "Enter policy number or plate number",
             ),
           ],
-          onSave: getPolicy,
+          onCancel: () => Navigator.of(context).pop(),
+          submitLabel: "Check",
+          onSubmit: getPolicy,
           onSuccess: showPolicySummary,
-          builder: (onSubmit, loading) {
-            return FormActions(
-              loading: loading,
-              onCancel: () {
-                Navigator.of(context).pop();
-              },
-              okayText: "Check",
-              onOkay: onSubmit,
-            );
-          },
         ),
       ],
     );

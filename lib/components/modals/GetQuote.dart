@@ -216,6 +216,7 @@ class _GetQuoteState extends State<GetQuote> {
       quotationDetails = await getQuotationDetails(productId: widget.productId);
       devLog("Quotation: $quotationDetails");
     } catch (e) {
+      Navigator.of(context).pop();
       openErrorAlert(message: e.toString());
     }
 
@@ -233,7 +234,24 @@ class _GetQuoteState extends State<GetQuote> {
 
       devLog("Quotation: $quotationDetails");
 
-      return KeyValueView(data: quotation);
+      return Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(
+              top: 12,
+              bottom: 4,
+            ),
+            child: Text(
+              "Quote details",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          KeyValueView(data: quotation)
+        ],
+      );
     }
 
     return Container();
@@ -241,10 +259,42 @@ class _GetQuoteState extends State<GetQuote> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [_buildContent()],
-      ),
-    );
+    if (loading) return const Loader();
+
+    if (quotationDetails?["premium"] != null) {
+      var premiumVat =
+          quotationDetails!["totalPremium"] - quotationDetails!["premium"];
+
+      return Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(
+              top: 12,
+              bottom: 4,
+            ),
+            child: Text(
+              "Quote details",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          KeyValueView(data: {
+            "Base Premium": {
+              "type": "money",
+              "value": quotationDetails!["premium"]
+            },
+            "Premium VAT": {"type": "money", "value": premiumVat},
+            "Total Premium": {
+              "type": "money",
+              "value": quotationDetails!["totalPremium"]
+            },
+          })
+        ],
+      );
+    }
+
+    return Container();
   }
 }

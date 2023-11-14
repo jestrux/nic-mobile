@@ -32,6 +32,10 @@ class KeyValueView extends StatelessWidget {
                 }
 
                 if (type == "date") value = formatDate(value, format: "dayM");
+
+                if (type == "money") {
+                  value = formatMoney(value, currency: "TZS");
+                }
               }
 
               Widget valueWidget = Text(

@@ -133,28 +133,36 @@ class AlertContent extends StatelessWidget {
                                     ),
                                   ),
                                 if (child != null) child!,
+                                if (!isCustom)
+                                  Container(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 120,
+                                    ),
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.only(top: 12),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      child: FilledButton(
+                                        style: ButtonStyle(
+                                          visualDensity: VisualDensity.compact,
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                          padding: MaterialStateProperty.all(
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                            ),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text(okayText),
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
-                          if (!isCustom)
-                            Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: FilledButton(
-                                style: ButtonStyle(
-                                  visualDensity: VisualDensity.compact,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  padding: MaterialStateProperty.all(
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {},
-                                child: Text(okayText),
-                              ),
-                            ),
                         ],
                       ),
                       Positioned(
@@ -212,7 +220,7 @@ Future<dynamic> openAlert({
 }
 
 void openErrorAlert({
-  String? title = "Error",
+  String? title = "Something went wrong!",
   required String message,
 }) {
   openAlert(
@@ -231,6 +239,15 @@ void openSuccessAlert({
     title: title,
     message: message,
   );
+}
+
+String formatMoney(dynamic number, {String? currency}) {
+  var num = number.toString();
+  currency = currency == null ? "" : "$currency ";
+
+  if (num.isEmpty) return "${currency}0";
+
+  return "$currency${NumberFormat('#,###,###').format(double.parse(num))}";
 }
 
 String formatDate(

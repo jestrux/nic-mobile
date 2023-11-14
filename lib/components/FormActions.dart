@@ -81,6 +81,7 @@ class FormActions extends StatelessWidget {
                       message: "",
                       loaderSize: 14,
                       loaderStrokeWidth: 2,
+                      small: true,
                     ),
                   ),
                 Text(okayText),
