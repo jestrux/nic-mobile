@@ -9,6 +9,9 @@ class Constants {
   static const contactsUrl = "https://www.nicinsurance.co.tz/contact-us";
   static const portalUrl = "https://www.nicinsurance.co.tz";
 
+  static final GlobalKey<NavigatorState> globalAppKey =
+      GlobalKey<NavigatorState>();
+
   static void randoFunction() {
     return;
   }

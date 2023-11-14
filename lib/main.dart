@@ -23,6 +23,7 @@ class NICKiganjani extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: Constants.globalAppKey,
       home: const MyApp(),
       theme: themeWithFont(
           ThemeData(useMaterial3: true, colorScheme: lightColorScheme)),

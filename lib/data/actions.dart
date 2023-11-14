@@ -10,8 +10,21 @@ var bimaRenewalAction =
 var lifeContributionsAction =
     ActionItem(label: "Life Contributions", icon: Icons.wallet);
 var changiaBimaAction = ActionItem(label: "Changia Bima", icon: Icons.savings);
-var getQuickQuoteAction =
-    ActionItem(label: "Changia Bima", icon: Icons.calculate);
+var getQuickQuoteAction = ActionItem(
+  label: "Get a Quick Quote",
+  background: Colors.orange.shade300,
+  icon: Icons.calculate,
+);
+var makePaymentAction = ActionItem(
+  label: "Make payment",
+  background: Colors.green.shade300,
+  icon: Icons.paid,
+);
+var customerSupportAction = ActionItem(
+  label: "Customer Support",
+  background: Colors.blue.shade300,
+  icon: Icons.headset_mic,
+);
 
 List<ActionItem> homePageQuickActions = [
   reportClaimAction,
@@ -73,28 +86,3 @@ List<ActionItem> buyBimaActions = [
         "https://www.nicinsurance.co.tz/img/uploads/pier_files/Motor-Insurance__1690709184.jpg",
   ),
 ];
-
-List<ActionItem> otherActions({
-  makePaymentAction,
-  customerSupportAction,
-}) {
-  return [
-    ActionItem(
-      label: "Get a Quick Quote",
-      background: Colors.orange.shade300,
-      icon: Icons.calculate,
-    ),
-    ActionItem(
-      label: "Make payment",
-      background: Colors.green.shade300,
-      icon: Icons.paid,
-      onClick: makePaymentAction,
-    ),
-    ActionItem(
-      label: "Customer Support",
-      background: Colors.blue.shade300,
-      icon: Icons.headset_mic,
-      onClick: customerSupportAction,
-    ),
-  ];
-}

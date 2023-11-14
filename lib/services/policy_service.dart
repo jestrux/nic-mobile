@@ -39,7 +39,7 @@ Future<PolicyModel?> fetchPolicyStatus({String? searchKey}) async {
       "token": "",
       "cursor": "",
       "company": "",
-      "underwriteChannel": 4
+      "underwriteChannel": 2
     },
   );
 

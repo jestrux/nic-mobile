@@ -16,43 +16,39 @@ void devLog(value) {
   }
 }
 
-enum NicAlertType { success, error, noIcon }
+enum AlertType { success, error, custom }
 
 class AlertContent extends StatelessWidget {
   final String? title;
-  final String? description;
+  final String? message;
   final Widget? child;
-  final NicAlertType? type;
+  final AlertType? type;
   final String okayText;
   final Function onOkay;
   final String cancelText;
   final Function? onCancel;
-  final bool noPadding;
-  final bool noActions;
 
   const AlertContent({
     Key? key,
     this.title,
-    this.description,
+    this.message,
     this.child,
-    this.type = NicAlertType.noIcon,
+    this.type = AlertType.custom,
     this.okayText = "Okay",
     this.onOkay = Constants.randoFunction,
     this.cancelText = "Cancel",
     this.onCancel,
-    this.noPadding = false,
-    this.noActions = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var noTitle = title == null || title!.isEmpty;
+    var isCustom = type == AlertType.custom;
 
     return SafeArea(
       child: Material(
         color: Colors.transparent,
         child: Stack(
-          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ClickableContent(
               inkColor: Colors.transparent,
@@ -64,7 +60,11 @@ class AlertContent extends StatelessWidget {
             Column(
               children: [
                 Container(
-                  margin: const EdgeInsets.only(top: 12),
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(
+                    vertical: isCustom ? 12 : 32,
+                    horizontal: isCustom ? 0 : 32,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     color: colorScheme(context).surface,
@@ -76,63 +76,85 @@ class AlertContent extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Container(
-                            padding: noPadding
+                            width: double.infinity,
+                            padding: isCustom
                                 ? EdgeInsets.zero
-                                : const EdgeInsets.all(12),
+                                : const EdgeInsets.all(20),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                if (type != NicAlertType.noIcon)
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: noTitle ? 10 : 14),
+                                if (!isCustom)
+                                  Container(
+                                    height: 24,
+                                    width: 24,
+                                    decoration: BoxDecoration(
+                                      color: type == AlertType.success
+                                          ? Colors.green
+                                          : Colors.red.shade900,
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    margin: EdgeInsets.only(
+                                      bottom: noTitle ? 10 : 8,
+                                    ),
                                     child: Icon(
-                                      type == NicAlertType.success
-                                          ? Icons.thumb_up
-                                          : Icons.mood_bad,
+                                      type == AlertType.success
+                                          ? Icons.check
+                                          : Icons.priority_high,
+                                      color: Colors.white,
+                                      size: 16,
                                     ),
                                   ),
                                 noTitle
                                     ? const SizedBox(height: 10)
                                     : Padding(
                                         padding: EdgeInsets.only(
-                                          top: noPadding ? 12 : 0,
-                                          bottom: 8,
+                                          top: isCustom ? 12 : 0,
+                                          bottom: 4,
                                         ),
                                         child: Text(
                                           title!,
-                                          // textAlign: TextAlign.center,
                                           style: const TextStyle(
-                                            // color: Constants.secondaryColor,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                       ),
-                                if (child != null) child!,
-                                if (description != null)
-                                  Text(
-                                    description!,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: noTitle ? 18 : 16,
-                                      height: 1.5,
-                                      color: Colors.black.withOpacity(0.7),
+                                if (message != null)
+                                  Opacity(
+                                    opacity: noTitle ? 1 : 0.85,
+                                    child: Text(
+                                      message!,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: noTitle ? 16 : 14,
+                                        height: 1.5,
+                                      ),
                                     ),
                                   ),
+                                if (child != null) child!,
                               ],
                             ),
                           ),
-                          if (!noActions)
-                            FormActions(
-                              cancelText: cancelText,
-                              okayText: okayText,
-                              onOkay: onOkay,
-                              onCancel: onCancel,
-                              padding: noPadding ? EdgeInsets.zero : null,
+                          if (!isCustom)
+                            Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: FilledButton(
+                                style: ButtonStyle(
+                                  visualDensity: VisualDensity.compact,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  padding: MaterialStateProperty.all(
+                                    const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {},
+                                child: Text(okayText),
+                              ),
                             ),
-                          // const SizedBox(height: 12),
                         ],
                       ),
                       Positioned(
@@ -162,35 +184,52 @@ class AlertContent extends StatelessWidget {
   }
 }
 
-void showAlert(
-  BuildContext context, {
+Future<dynamic> openAlert({
   String? title,
-  String? description,
+  String? message,
   Widget? child,
-  NicAlertType? type = NicAlertType.noIcon,
+  AlertType? type = AlertType.custom,
   String okayText = "Okay",
   onOkay = Constants.randoFunction,
   String cancelText = "Cancel",
   onCancel,
-  noPadding = false,
-  noActions = false,
 }) {
-  showDialog(
-    context: context,
+  return showDialog(
+    context: Constants.globalAppKey.currentContext!,
     builder: (BuildContext context) {
       return AlertContent(
         type: type,
         title: title,
-        description: description,
+        message: message,
         okayText: okayText,
         onOkay: onOkay,
         onCancel: onCancel,
         cancelText: cancelText,
-        noPadding: noPadding,
-        noActions: noActions,
         child: child,
       );
     },
+  );
+}
+
+void openErrorAlert({
+  String? title = "Error",
+  required String message,
+}) {
+  openAlert(
+    type: AlertType.error,
+    title: title,
+    message: message,
+  );
+}
+
+void openSuccessAlert({
+  String? title = "Success",
+  required String message,
+}) {
+  openAlert(
+    type: AlertType.success,
+    title: title,
+    message: message,
   );
 }
 
@@ -240,186 +279,267 @@ Future<void> openUrl(String? url) async {
   }
 }
 
-class Utils {
-  static Future<dynamic> showChoicePicker(
-    BuildContext context, {
-    String? title,
-    List<dynamic>? choices,
-    dynamic value,
-    bool grid = false,
-    Widget Function(String choice, dynamic selected)? choicePicker,
-  }) {
-    Widget buildChoice(choice) {
-      if (choicePicker != null) return choicePicker(choice, value);
+class ChoicePickerContent extends StatefulWidget {
+  final bool confirm;
+  final List<dynamic> choices;
+  final dynamic value;
+  final bool grid;
+  final Function onSelect;
 
-      var choiceLabel = choice;
-      var choiceValue = choice;
-      var choiceIcon;
+  const ChoicePickerContent({
+    Key? key,
+    this.confirm = false,
+    required this.choices,
+    this.value,
+    this.grid = false,
+    required this.onSelect,
+  }) : super(key: key);
 
-      if (choice is Map) {
-        choiceIcon = choice['icon'] == null ? null : Icon(choice['icon']);
-        choiceLabel = choice["label"];
-        choiceValue = choice["value"] ?? choice["label"];
-      }
+  @override
+  State<ChoicePickerContent> createState() => _ChoicePickerContentState();
+}
 
-      return ChoiceItem(
-        choiceLabel,
-        leading: choiceIcon,
-        // padding: const EdgeInsets.symmetric(
-        //   vertical: 12,
-        //   horizontal: 20,
-        // ),
-        selected: value == null
-            ? null
-            : value.toString().toLowerCase() ==
-                choiceValue.toString().toLowerCase(),
-        onClick: () {
-          Navigator.of(context).pop(choiceValue);
-        },
-      );
-    }
+class _ChoicePickerContentState extends State<ChoicePickerContent> {
+  dynamic value;
 
-    Widget buildChoices() {
-      if (choices == null) return Container();
+  @override
+  void initState() {
+    value = widget.value;
 
-      List<Widget> choiceItems = choices.map((choice) {
-        var halfWidth = (MediaQuery.of(context).size.shortestSide / 2) - 20;
-        return Container(
-          width: grid ? halfWidth : double.infinity,
-          margin: EdgeInsets.symmetric(
-            vertical: grid ? 4 : 0,
-            horizontal: grid ? 4 : 0,
-          ),
-          child: buildChoice(choice),
-        );
-      }).toList();
-
-      if (grid) return Wrap(children: choiceItems);
-
-      return Column(children: choiceItems);
-    }
-
-    return Utils.showBottomSheet(
-      context,
-      padding: EdgeInsets.zero,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title != null && title.isNotEmpty)
-            Container(
-              margin: const EdgeInsets.symmetric(
-                vertical: 6,
-                horizontal: 20,
-              ),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          SizedBox(
-            width: double.infinity,
-            child: buildChoices(),
-          ),
-          const SizedBox(height: 10)
-        ],
-      ),
-    );
+    super.initState();
   }
 
-  static Future<dynamic> showBottomSheet(
-    BuildContext context, {
-    Widget? child,
-    dismissible = true,
-    padding,
-  }) {
-    var actualPadding = padding ??
-        const EdgeInsets.only(
-          left: 12,
-          right: 12,
-          bottom: 16,
-          top: 8,
-        );
-    return showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      enableDrag: dismissible,
-      isDismissible: dismissible,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return AnimatedPadding(
-          padding: MediaQuery.of(context).viewInsets,
-          duration: const Duration(milliseconds: 100),
-          curve: Curves.decelerate,
-          child: Wrap(
-            children: [
-              Container(
-                alignment: Alignment.center,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 560),
-                    decoration: BoxDecoration(
-                      color: colorScheme(context).background,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
-                    ),
-                    padding: actualPadding,
-                    child: Column(children: [
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Spacer(),
-                          Container(
-                            height: 6,
-                            width: 90,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color: colorScheme(context)
-                                  .onBackground
-                                  .withOpacity(0.1),
-                            ),
-                          ),
-                          const Spacer()
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      child ?? Container(),
-                    ]),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
+  Widget buildChoice(choice) {
+    // var context = Constants.globalAppKey.currentContext!;
+    // if (choicePicker != null) return choicePicker(choice, value);
+
+    var choiceLabel = choice;
+    var choiceValue = choice;
+    var choiceIcon;
+
+    if (choice is Map) {
+      choiceIcon = choice['icon'] == null ? null : Icon(choice['icon']);
+      choiceLabel = choice["label"];
+      choiceValue = choice["value"] ?? choice["label"];
+    }
+
+    return ChoiceItem(
+      choiceLabel,
+      leading: choiceIcon,
+      // padding: const EdgeInsets.symmetric(
+      //   vertical: 12,
+      //   horizontal: 20,
+      // ),
+      selected: !widget.confirm
+          ? null
+          : value.toString().toLowerCase() ==
+              choiceValue.toString().toLowerCase(),
+      onClick: () {
+        if (widget.confirm) {
+          setState(() {
+            value = choiceValue;
+          });
+        } else {
+          widget.onSelect(choiceValue);
+        }
       },
     );
   }
 
-  static showToast(String message, {String type = "success"}) {
-    Color backgroundColor = Colors.black;
-    Color textColor = Colors.white;
+  Widget buildChoices(List<dynamic> choices) {
+    // var choiceWidth = grid
+    //     ? (MediaQuery.of(context).size.shortestSide / 2) - 20
+    //     : double.infinity;
 
-    if (type == "error") {
-      backgroundColor = Colors.redAccent[100]!;
-      textColor = Colors.black;
-    }
+    List<Widget> choiceItems = choices.map((choice) {
+      return Container(
+        // width: choiceWidth,
+        // margin: EdgeInsets.all(grid ? 4 : 0),
+        child: buildChoice(choice),
+      );
+    }).toList();
 
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      backgroundColor: backgroundColor,
-      textColor: textColor,
-      fontSize: 16.0,
+    // if (grid) return Wrap(children: choiceItems);
+
+    return Column(children: choiceItems);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget? actionButtons = !widget.confirm
+        ? null
+        : FormActions(
+            okayText: "Continue",
+            onOkay: () {
+              if (value == null) return showToast("Please select one");
+
+              widget.onSelect(value);
+            },
+            onCancel: () {
+              Navigator.of(context).pop();
+            },
+          );
+
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        children: [
+          buildChoices(widget.choices),
+          if (actionButtons != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: actionButtons,
+            ),
+        ],
+      ),
     );
   }
+}
+
+Future<dynamic> showChoicePicker({
+  String? title,
+  required List<dynamic> choices,
+  dynamic value,
+  bool grid = false,
+  bool? confirm,
+  bool useAlert = false,
+  Widget Function(String choice, dynamic selected)? choicePicker,
+}) {
+  var context = Constants.globalAppKey.currentContext!;
+  Widget choicePickerContent = ChoicePickerContent(
+    choices: choices,
+    value: value,
+    confirm: confirm ?? false,
+    onSelect: (value) {
+      Navigator.of(context).pop(value);
+    },
+  );
+
+  if (useAlert) {
+    return openAlert(
+      title: title,
+      child: choicePickerContent,
+    );
+  }
+
+  return openBottomSheet(
+    padding: EdgeInsets.zero,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null && title.isNotEmpty)
+          Container(
+            margin: const EdgeInsets.only(
+              bottom: 6,
+              left: 20,
+              right: 20,
+            ),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        SizedBox(
+          width: double.infinity,
+          child: choicePickerContent,
+        ),
+        // const SizedBox(height: 10)
+      ],
+    ),
+  );
+}
+
+Future<dynamic> openBottomSheet({
+  Widget? child,
+  dismissible = true,
+  padding,
+}) {
+  var actualPadding = padding ??
+      const EdgeInsets.only(
+        left: 12,
+        right: 12,
+        bottom: 16,
+        top: 8,
+      );
+  return showModalBottomSheet(
+    isScrollControlled: true,
+    context: Constants.globalAppKey.currentContext!,
+    enableDrag: dismissible,
+    isDismissible: dismissible,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return AnimatedPadding(
+        padding: MediaQuery.of(context).viewInsets,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.decelerate,
+        child: Wrap(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 560),
+                  decoration: BoxDecoration(
+                    color: colorScheme(context).background,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  padding: actualPadding,
+                  child: Column(children: [
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        const Spacer(),
+                        Container(
+                          height: 6,
+                          width: 90,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: colorScheme(context)
+                                .onBackground
+                                .withOpacity(0.1),
+                          ),
+                        ),
+                        const Spacer()
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    child ?? Container(),
+                  ]),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+showToast(String message, {String type = "success"}) {
+  Color backgroundColor = Colors.black;
+  Color textColor = Colors.white;
+
+  if (type == "error") {
+    backgroundColor = Colors.redAccent[100]!;
+    textColor = Colors.black;
+  }
+
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.CENTER,
+    backgroundColor: backgroundColor,
+    textColor: textColor,
+    fontSize: 16.0,
+  );
 }

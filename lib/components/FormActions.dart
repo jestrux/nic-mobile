@@ -26,16 +26,17 @@ class FormActions extends StatelessWidget {
     return Container(
       padding: padding ??
           const EdgeInsets.symmetric(
-            vertical: 6,
+            vertical: 8,
             horizontal: 12,
           ),
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
             width: 0.5,
-            color: colorScheme(context).outlineVariant,
+            color: colorScheme(context).onBackground.withOpacity(0.04),
           ),
         ),
+        color: colorScheme(context).onBackground.withOpacity(0.04),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,

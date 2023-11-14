@@ -3,8 +3,10 @@ import 'package:nic/components/AdsBar.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/modals/BimaStatus.dart';
+import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/constants.dart';
 import 'package:nic/data/actions.dart';
+import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
@@ -22,9 +24,8 @@ class _HomePageState extends State<HomePage> {
 
   void route() {}
 
-  void makePaymentAction(item) async {
-    String? selectedChoice = await Utils.showChoicePicker(
-      context,
+  void handleMakePaymentAction() async {
+    String? selectedChoice = await showChoicePicker(
       choices: [
         {
           "icon": Icons.attach_money,
@@ -37,12 +38,11 @@ class _HomePageState extends State<HomePage> {
       ],
     );
 
-    if (selectedChoice != null) Utils.showToast(selectedChoice);
+    if (selectedChoice != null) showToast(selectedChoice);
   }
 
-  void customerSupportAction(item) async {
-    String? selectedChoice = await Utils.showChoicePicker(
-      context,
+  void handleCustomerSupportAction() async {
+    String? selectedChoice = await showChoicePicker(
       choices: [
         {
           "icon": Icons.phone,
@@ -115,6 +115,9 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               const AdsBanner(),
               const SizedBox(height: 12),
+              // AlertContent(
+
+              // ),
               InlineList(
                 title: "Your Commissions",
                 titleAction: ActionButton.all("Open dashboard"),
@@ -147,26 +150,62 @@ class _HomePageState extends State<HomePage> {
                 shape: ActionItemShape.rounded,
                 onItemClick: (action) {
                   if (action.label == bimaStatusAction.label) {
-                    showAlert(
-                      context,
+                    // openErrorAlert(
+                    //   title: "Failed to fetch policy",
+                    //   message:
+                    //       "Please make sure your internet is on and then try again.",
+                    // );
+                    openAlert(
                       title: "Bima Status",
-                      child: const BimaStatusForm(),
-                      noActions: true,
-                      noPadding: true,
+                      child: const BimaStatus(),
                     );
-                    // Utils.showBottomSheet(context, child: const BimaStatus());
+                    // openBottomSheet(child: const BimaStatus());
                   }
                 },
               ),
               const SizedBox(height: 16),
               PageSection(
                 title: "Self Service",
-                content: otherActions(
-                  makePaymentAction: makePaymentAction,
-                  customerSupportAction: customerSupportAction,
-                ),
+                content: [
+                  getQuickQuoteAction,
+                  makePaymentAction,
+                  customerSupportAction,
+                ],
+                // otherActions(
+                //   makePaymentAction: makePaymentAction,
+                //   customerSupportAction: customerSupportAction,
+                // ),
                 shape: ActionItemShape.square,
                 columns: 3,
+                onItemClick: (action) async {
+                  if (action.label == getQuickQuoteAction.label) {
+                    var productId = await showChoicePicker(
+                      useAlert: true,
+                      confirm: true,
+                      title: "Select product to get a quote",
+                      choices: products.map((product) {
+                        return {
+                          "label": product["name"],
+                          "value": product["id"]
+                        };
+                      }).toList(),
+                    );
+
+                    if (productId != null) {
+                      openAlert(
+                        child: GetQuote(productId: productId),
+                      );
+                    }
+                  }
+
+                  if (action.label == makePaymentAction.label) {
+                    handleMakePaymentAction();
+                  }
+
+                  if (action.label == customerSupportAction.label) {
+                    handleCustomerSupportAction();
+                  }
+                },
               ),
             ],
           ),

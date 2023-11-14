@@ -6,14 +6,14 @@ import 'package:nic/models/policy_model.dart';
 import 'package:nic/services/policy_service.dart';
 import 'package:nic/utils.dart';
 
-class BimaStatusForm extends StatefulWidget {
-  const BimaStatusForm({Key? key}) : super(key: key);
+class BimaStatus extends StatefulWidget {
+  const BimaStatus({Key? key}) : super(key: key);
 
   @override
-  State<BimaStatusForm> createState() => _BimaStatusFormState();
+  State<BimaStatus> createState() => _BimaStatusState();
 }
 
-class _BimaStatusFormState extends State<BimaStatusForm> {
+class _BimaStatusState extends State<BimaStatus> {
   Future<PolicyModel?> getPolicy(Map<String, dynamic> values) async {
     return await fetchPolicyStatus(searchKey: values["searchKey"]);
   }
@@ -25,17 +25,23 @@ class _BimaStatusFormState extends State<BimaStatusForm> {
 
     Navigator.of(context).pop();
 
-    showAlert(
-      context,
+    var expired = thePolicy.isExpired!;
+
+    openAlert(
       title: "Policy Details",
-      noActions: true,
       child: KeyValueView(
         data: {
           "Policy Number": thePolicy.policyNumber,
           "Assured / Insured": thePolicy.policyPropertyName,
           "Policy Start Date": {"type": "date", "value": thePolicy.startDate},
           "Policy End Date": {"type": "date", "value": thePolicy.endDate},
-          "Status": thePolicy.statusName,
+          "Status": {
+            "type": "status",
+            "value": expired ? "Expired" : "Active",
+            "variant": expired
+                ? KeyValueStatusVariant.danger
+                : KeyValueStatusVariant.success,
+          },
         },
       ),
     );

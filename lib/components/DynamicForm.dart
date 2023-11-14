@@ -65,7 +65,7 @@ class _DynamicFormState extends State<DynamicForm> {
       devLog("Policy: $response");
     } catch (e) {
       devLog("Failed to fetch dynamic form: $e");
-      Utils.showToast("Failed to fetch");
+      showToast("Failed to fetch");
     } finally {
       setState(() {
         loading = false;
@@ -82,7 +82,7 @@ class _DynamicFormState extends State<DynamicForm> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
           child: FormBuilder(
             key: _formKey,
             child: Column(

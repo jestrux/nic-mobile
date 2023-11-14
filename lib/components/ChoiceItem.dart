@@ -13,7 +13,6 @@ class ChoiceItem extends StatelessWidget {
   final String? subtitle;
   final ChoiceItemSize size;
   final bool? selected;
-  final bool modeWhite;
 
   const ChoiceItem(
     this.title, {
@@ -21,7 +20,6 @@ class ChoiceItem extends StatelessWidget {
     this.padding,
     this.leading,
     this.subtitle = "",
-    this.modeWhite = true,
     this.size = ChoiceItemSize.MD,
     this.selected,
     this.onClick = Constants.randoFunction,
@@ -29,10 +27,6 @@ class ChoiceItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color selectedBgColor = modeWhite
-        ? Colors.white.withOpacity(0.11)
-        : Colors.black.withOpacity(0.06);
-
     var defaultContentPadding = leading != null
         ? const EdgeInsets.symmetric(vertical: 8, horizontal: 20)
         : const EdgeInsets.symmetric(vertical: 12, horizontal: 20);
@@ -51,7 +45,9 @@ class ChoiceItem extends StatelessWidget {
           //   ),
           // ),
           // borderRadius: const BorderRadius.all(Radius.circular(5)),
-          color: selected ?? false ? selectedBgColor : Colors.transparent,
+          color: selected ?? false
+              ? colorScheme(context).onSurface.withOpacity(0.08)
+              : Colors.transparent,
         ),
         child: Row(
           children: <Widget>[
@@ -99,7 +95,7 @@ class ChoiceItem extends StatelessWidget {
                 selected! ? Icons.check_circle : Icons.circle_outlined,
                 color: selected!
                     ? colorScheme(context).primary
-                    : colorScheme(context).onBackground.withOpacity(0.35),
+                    : colorScheme(context).onBackground.withOpacity(0.2),
                 size: selectedIndicatorSize,
               ),
           ],
