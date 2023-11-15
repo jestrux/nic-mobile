@@ -1,3 +1,4 @@
+import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/utils.dart';
 
 processChildren(Map<String, dynamic> field) {
@@ -26,10 +27,11 @@ processChildren(Map<String, dynamic> field) {
   }, []);
 }
 
-List<dynamic>? processFields({fields, data, noGroups, fullWidthFields}) {
+List<DynamicFormField>? processFields(
+    {fields, data, noGroups, fullWidthFields}) {
   if (fields == null) return null;
 
-  var processedFields = List.from(fields)
+  var fieldsWithChildren = List.from(fields)
       .fold([], (agg, field) {
         var childFields = [];
         var choices = List.from(field['choices'] ?? []).map((choice) {
@@ -58,7 +60,7 @@ List<dynamic>? processFields({fields, data, noGroups, fullWidthFields}) {
       .where((element) => element["type"] != "file")
       .toList();
 
-  return processedFields.fold([], (agg, dynamic _field) {
+  var processedFields = fieldsWithChildren.fold([], (agg, dynamic _field) {
     Map<String, dynamic> field = _field;
     // var field = (Map<String, dynamic>) _field;
 
@@ -134,4 +136,18 @@ List<dynamic>? processFields({fields, data, noGroups, fullWidthFields}) {
 
     return agg;
   }).toList();
+
+  return processedFields
+      .map(
+        (field) => DynamicFormField(
+          name: field["name"],
+          label: field["label"],
+          choices: field["choices"],
+          max: field["max_value"],
+          min: field["min_value"],
+          type: dynamicFormFieldTypeMap[field["type"]] ??
+              DynamicFormFieldType.text,
+        ),
+      )
+      .toList();
 }

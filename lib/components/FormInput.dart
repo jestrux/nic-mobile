@@ -75,6 +75,7 @@ class FormInput extends StatefulWidget {
 
 class _FormInputState extends State<FormInput> {
   final TextEditingController inputController = TextEditingController();
+  bool overrideObscureText = false;
 
   List<TextInputFormatter> _getFormatters() {
     if (widget.money) {
@@ -104,7 +105,7 @@ class _FormInputState extends State<FormInput> {
                   : MaxLengthEnforcement.truncateAfterCompositionEnds,
           focusNode: widget.focusNode,
           autofocus: widget.autoFocus ?? false,
-          obscureText: widget.obscureText,
+          obscureText: overrideObscureText ? false : widget.obscureText,
           textAlign: widget.textAlign,
           readOnly: widget.readOnly || widget.onClick != null,
           keyboardType: widget.type,
@@ -157,22 +158,60 @@ class _FormInputState extends State<FormInput> {
           },
           inputFormatters: _getFormatters(),
         ),
-        if (widget.onClear != null &&
-            widget.value != null &&
-            widget.value!.isNotEmpty)
+        if (widget.onClear != null || widget.obscureText)
           Positioned(
-            right: 0,
+            right: 4,
             top: 0,
             bottom: 0,
             child: Opacity(
               opacity: 0.65,
-              child: IconButton(
-                icon: const Icon(Icons.close, size: 18),
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  inputController.text = "";
-                  widget.onClear!();
-                },
+              child: Row(
+                children: [
+                  if (widget.obscureText)
+                    IconButton(
+                      style: ButtonStyle(
+                        visualDensity: VisualDensity.compact,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                            horizontal: 4,
+                          ),
+                        ),
+                      ),
+                      icon: Icon(
+                        overrideObscureText
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        size: 18,
+                      ),
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        setState(() {
+                          overrideObscureText = !overrideObscureText;
+                        });
+                      },
+                    ),
+                  if (widget.onClear != null &&
+                      widget.value != null &&
+                      widget.value!.isNotEmpty)
+                    IconButton(
+                      style: ButtonStyle(
+                        visualDensity: VisualDensity.compact,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                            horizontal: 4,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.close, size: 18),
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        inputController.text = "";
+                        widget.onClear!();
+                      },
+                    ),
+                ],
               ),
             ),
           ),

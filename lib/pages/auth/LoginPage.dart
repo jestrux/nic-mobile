@@ -188,6 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                     _title(),
                     const SizedBox(height: 30),
                     DynamicForm(
+                      payloadFormat: DynamicFormPayloadFormat.regular,
                       fields: const [
                         DynamicFormField(
                           label: "Username",
@@ -202,6 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                       submitLabel: "Login",
                       onSubmit: (data) async {
+                        await Future.delayed(Duration(seconds: 2));
                         devLog("Login form data: $data");
                       },
                     ),
