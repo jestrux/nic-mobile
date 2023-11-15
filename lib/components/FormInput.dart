@@ -209,14 +209,11 @@ class _FormInputState extends State<FormInput> {
                 ),
               ),
               if (widget.icon != null)
-                Opacity(
-                  opacity: 0.5,
-                  child: Icon(
-                    widget.icon,
-                    size: widget.iconSize,
-                    color: hintColor,
-                  ),
-                )
+                Icon(
+                  widget.icon,
+                  size: widget.iconSize,
+                  color: hintColor,
+                ),
             ],
           ),
         ),

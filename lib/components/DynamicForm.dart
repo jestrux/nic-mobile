@@ -3,6 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/FormInput.dart';
+import 'package:nic/components/Loader.dart';
 import 'package:nic/utils.dart';
 
 enum DynamicFormFieldType {
@@ -13,7 +14,8 @@ enum DynamicFormFieldType {
   choice,
   boolean,
   checkbox,
-  radio
+  radio,
+  password
 }
 
 var keyboardTypeMap = {
@@ -22,13 +24,15 @@ var keyboardTypeMap = {
 };
 
 var dynamicFormFieldTypeMap = {
+  "text": DynamicFormFieldType.text,
+  "password": DynamicFormFieldType.password,
+
   "integer": DynamicFormFieldType.number,
   "decimal": DynamicFormFieldType.number,
   "currency": DynamicFormFieldType.number,
 
   "bool": DynamicFormFieldType.boolean,
 
-  "email": DynamicFormFieldType.email,
   "radio": DynamicFormFieldType.radio,
   "checkbox": DynamicFormFieldType.checkbox,
 
@@ -277,6 +281,7 @@ class _DynamicFormState extends State<DynamicForm> {
           icon: icon,
           onClick: onClick,
           autoFocus: widget.fields.length == 1,
+          obscureText: field.type == DynamicFormFieldType.password,
         );
 
         return Padding(
@@ -332,12 +337,53 @@ class _DynamicFormState extends State<DynamicForm> {
         ),
         widget.builder != null
             ? widget.builder!(onSubmit, loading)
-            : FormActions(
-                loading: loading,
-                onCancel: widget.onCancel,
-                okayText: widget.submitLabel ?? "Submit",
-                onOkay: onSubmit,
-              )
+            : widget.onCancel == null
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: FilledButton(
+                      style: ButtonStyle(
+                        visualDensity: VisualDensity.compact,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                            vertical: 20,
+                            horizontal: 12,
+                          ),
+                        ),
+                      ),
+                      onPressed: loading ? null : () => onSubmit(),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (loading)
+                            const Padding(
+                              padding: EdgeInsets.only(right: 6),
+                              child: Loader(
+                                message: "",
+                                loaderSize: 14,
+                                loaderStrokeWidth: 2,
+                                small: true,
+                              ),
+                            ),
+                          Text(
+                            widget.submitLabel ?? "Submit",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : FormActions(
+                    loading: loading,
+                    onCancel: widget.onCancel,
+                    okayText: widget.submitLabel ?? "Submit",
+                    onOkay: onSubmit,
+                  ),
+        const SizedBox(height: 20),
       ],
     );
   }
