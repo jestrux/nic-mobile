@@ -59,9 +59,7 @@ class _MorePageState extends State<MorePage> {
                     value: currentTheme,
                   );
 
-                  if (theme != null) {
-                    setTheme(context: context, theme: theme);
-                  }
+                  if (theme != null) persistAppTheme(theme);
                 },
               ),
             ]),

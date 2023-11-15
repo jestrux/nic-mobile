@@ -9,24 +9,37 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future setupPreferences(BuildContext context) async {
   return await SharedPreferences.getInstance().then((prefs) async {
-    var user = prefs.getString("user");
-    var theme = prefs.getString("theme") ?? "system";
+    var user = prefs.getString("authUser");
+    var theme = prefs.getString("appTheme") ?? "system";
 
     Map<String, dynamic>? authUser = user == null ? null : jsonDecode(user);
 
-    Provider.of<AppProvider>(context, listen: false).setAuthUser(authUser);
-    setTheme(context: context, theme: theme);
+    persistAuthUser(authUser);
+    persistAppTheme(theme);
   });
 }
 
-Future setTheme({
-  required BuildContext context,
-  required String theme,
-}) async {
+Future persistAuthUser(Map<String, dynamic>? user) async {
   return await SharedPreferences.getInstance().then((prefs) async {
-    prefs.setString("theme", theme);
+    if (user == null) {
+      prefs.remove("authUser");
+    } else {
+      prefs.setString("authUser", jsonEncode(user));
+    }
+
+    Provider.of<AppProvider>(
+      Constants.globalAppKey.currentContext!,
+      listen: false,
+    ).setAuthUser(user);
+  });
+}
+
+Future persistAppTheme(String theme) async {
+  return await SharedPreferences.getInstance().then((prefs) async {
+    prefs.setString("appTheme", theme);
 
     var context = Constants.globalAppKey.currentContext!;
+
     Provider.of<AppProvider>(context, listen: false).setTheme(theme);
 
     NICKiganjani.of(context).changeTheme(
