@@ -64,10 +64,13 @@ class PageSection extends StatelessWidget {
         ),
         children: content.map(
           (action) {
-            action.shape ??= shape;
-            if (action.onClick == null && onItemClick != null) {
-              action.onClick = (d) => onItemClick!(action);
-            }
+            action = action.cloneWith(
+              shape: shape,
+              onClick: action.onClick == null && onItemClick != null
+                  ? () => onItemClick!(action)
+                  : null,
+            );
+
             return ActionCard(action: action);
           },
         ).toList(),

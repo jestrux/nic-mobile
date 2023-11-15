@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/DynamicForm/proccessFields.dart';
 import 'package:nic/components/DynamicForm/sampleFields.dart';
-import 'package:nic/utils.dart';
+import 'package:nic/components/RoundedHeaderPage.dart';
 
 class FormPage extends StatefulWidget {
-  const FormPage({Key? key}) : super(key: key);
+  final String title;
+  const FormPage({Key? key, this.title = "Form page"}) : super(key: key);
 
   @override
   State<FormPage> createState() => _FormPageState();
@@ -14,7 +15,6 @@ class FormPage extends StatefulWidget {
 class _FormPageState extends State<FormPage> {
   processedFields() {
     var fields = processFields(fields: sampleFields);
-    devLog("Sample fields: $fields");
 
     return fields!
         .map(
@@ -22,6 +22,8 @@ class _FormPageState extends State<FormPage> {
             name: field["name"],
             label: field["label"],
             choices: field["choices"],
+            max: field["max_value"],
+            min: field["min_value"],
             type: dynamicFormFieldTypeMap[field["type"]] ??
                 DynamicFormFieldType.text,
           ),
@@ -31,50 +33,20 @@ class _FormPageState extends State<FormPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      // backgroundColor: Constants.primaryColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Form page".toUpperCase(),
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                    color: Colors.white,
-                    letterSpacing: 1.5,
-                  ),
+    return RoundedHeaderPage(
+      // showBackButton: true,
+      title: widget.title.toUpperCase(),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 12),
+            DynamicForm(
+              fields: processedFields(),
+              onSubmit: (d) async {},
             ),
           ],
-        ),
-        automaticallyImplyLeading: false,
-      ),
-      body: Container(
-        height: double.infinity,
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: colorScheme(context).background,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 12),
-              DynamicForm(
-                fields: processedFields(),
-                onSubmit: (d) async {},
-              ),
-            ],
-          ),
         ),
       ),
     );

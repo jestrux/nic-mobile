@@ -29,31 +29,34 @@ processChildren(Map<String, dynamic> field) {
 List<dynamic>? processFields({fields, data, noGroups, fullWidthFields}) {
   if (fields == null) return null;
 
-  var processedFields = List.from(fields).fold([], (agg, field) {
-    var childFields = [];
-    var choices = List.from(field['choices'] ?? []).map((choice) {
-      var choiceLabel = choice;
-      var choiceValue = choice;
+  var processedFields = List.from(fields)
+      .fold([], (agg, field) {
+        var childFields = [];
+        var choices = List.from(field['choices'] ?? []).map((choice) {
+          var choiceLabel = choice;
+          var choiceValue = choice;
 
-      if (choice is Map) {
-        choiceLabel = choice["name"] ?? choice["label"];
-        choiceValue = choice["value"] ?? choiceLabel;
-      }
+          if (choice is Map) {
+            choiceLabel = choice["name"] ?? choice["label"];
+            choiceValue = choice["value"] ?? choiceLabel;
+          }
 
-      return {"label": choiceLabel, "value": choiceValue};
-    }).toList();
-    // var childs = List.from(field['childs'] ?? []);
+          return {"label": choiceLabel, "value": choiceValue};
+        }).toList();
+        // var childs = List.from(field['childs'] ?? []);
 
-    // if (choices.isNotEmpty && childs.isNotEmpty) {
-    //   childFields = processChildren(field);
-    // }
+        // if (choices.isNotEmpty && childs.isNotEmpty) {
+        //   childFields = processChildren(field);
+        // }
 
-    field['choices'] = choices;
+        field['choices'] = choices;
 
-    childFields = childFields.expand((element) => element).toList();
+        childFields = childFields.expand((element) => element).toList();
 
-    return [...agg, field, ...childFields];
-  }).toList();
+        return [...agg, field, ...childFields];
+      })
+      .where((element) => element["type"] != "file")
+      .toList();
 
   return processedFields.fold([], (agg, dynamic _field) {
     Map<String, dynamic> field = _field;
@@ -72,6 +75,13 @@ List<dynamic>? processFields({fields, data, noGroups, fullWidthFields}) {
     var label = field["label"];
     var choices = field["choices"];
     var defaultValue = field["defaultValue"];
+
+    if (type == "future_date") {
+      field["min_value"] = DateTime.now();
+    }
+    if (type == "past_date") {
+      field["max_value"] = DateTime.now();
+    }
 
     var fieldProps = {...field};
     fieldProps

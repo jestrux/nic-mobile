@@ -242,7 +242,7 @@ class ActionCard extends StatelessWidget {
         inkColor: video ? Colors.transparent : null,
         onClick: () {
           if (action.onClick != null) {
-            action.onClick!(action);
+            action.onClick!();
           } else if (action.resourceUrl != null) {
             openUrl(action.resourceUrl!);
           }

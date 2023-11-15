@@ -46,14 +46,14 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     var pages = [
-      const FormPage(),
-      // HomePage(
-      //   goToMainPage: (page) {
-      //     setState(() {
-      //       currentPageIndex = page;
-      //     });
-      //   },
-      // ),
+      // const FormPage(),
+      HomePage(
+        goToMainPage: (page) {
+          setState(() {
+            currentPageIndex = page;
+          });
+        },
+      ),
       const BimaPage(),
       const UtilitiesPage(),
       const ProfilePage(),

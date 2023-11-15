@@ -2,17 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:nic/components/FormActions.dart';
+import 'package:nic/components/FormInput.dart';
 import 'package:nic/utils.dart';
 
 enum DynamicFormFieldType {
   text,
   date,
   number,
+  email,
   choice,
   boolean,
   checkbox,
   radio
 }
+
+var keyboardTypeMap = {
+  DynamicFormFieldType.number: TextInputType.number,
+  DynamicFormFieldType.email: TextInputType.emailAddress,
+};
 
 var dynamicFormFieldTypeMap = {
   "integer": DynamicFormFieldType.number,
@@ -21,6 +28,7 @@ var dynamicFormFieldTypeMap = {
 
   "bool": DynamicFormFieldType.boolean,
 
+  "email": DynamicFormFieldType.email,
   "radio": DynamicFormFieldType.radio,
   "checkbox": DynamicFormFieldType.checkbox,
 
@@ -55,6 +63,8 @@ class DynamicFormField {
   final DynamicFormFieldType type;
   final String? placeholder;
   final List<Map<String, dynamic>>? choices;
+  final dynamic min;
+  final dynamic max;
 
   const DynamicFormField({
     required this.name,
@@ -62,6 +72,8 @@ class DynamicFormField {
     this.type = DynamicFormFieldType.text,
     this.placeholder,
     this.choices,
+    this.min,
+    this.max,
   });
 }
 
@@ -121,83 +133,187 @@ class _DynamicFormState extends State<DynamicForm> {
   }
 
   Widget _buildFormField(DynamicFormField field) {
-    Widget fieldWidget = FormBuilderTextField(
+    var isBooleanField = field.type == DynamicFormFieldType.boolean;
+
+    return FormBuilderField(
       name: field.name,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: FormBuilderValidators.compose([
         FormBuilderValidators.required(
-            // errorText: "Enter policy number or plate number",
-            ),
-        // FormBuilderValidators.email(),
+          errorText:
+              isBooleanField ? "You have to accept this condition" : null,
+        ),
+        if (isBooleanField) FormBuilderValidators.equal(true)
       ]),
-      autofocus: widget.fields.length == 1,
-      decoration: field.label == null && field.placeholder == null
-          ? const InputDecoration()
-          : InputDecoration(
-              label: field.label != null ? Text(field.label!) : null,
-              hintText: field.placeholder != null ? field.placeholder! : null,
+      builder: (FormFieldState<dynamic> fieldState) {
+        var textColor = fieldState.errorText != null && !isBooleanField
+            ? colorScheme(context).error
+            : colorScheme(context).onSurface;
+
+        IconData? icon;
+        Function? onClick;
+        String? hint = field.placeholder;
+        String? selectedValueLabel;
+
+        if ([DynamicFormFieldType.choice, DynamicFormFieldType.radio]
+            .contains(field.type)) {
+          var choices = field.choices ?? [];
+          hint = "Choose one";
+          icon = Icons.expand_more_rounded;
+
+          var selectedChoice = choices
+              .cast<Map<String, dynamic>?>()
+              .singleWhere((element) => element!["value"] == fieldState.value,
+                  orElse: () => null);
+
+          selectedValueLabel = selectedChoice?["label"];
+
+          onClick = () async {
+            var selectedChioce = await showChoicePicker(
+              title: field.placeholder ?? "Choose one",
+              choices: choices,
+              value: "No",
+            );
+
+            if (selectedChioce != null) {
+              fieldState.didChange(selectedChioce);
+            }
+          };
+        }
+
+        if (field.type == DynamicFormFieldType.date) {
+          hint = hint ?? "Select date";
+          icon = Icons.event;
+
+          // selectedValueLabel = formatDate(fieldState.value, format: 'MM/yyyy');
+          selectedValueLabel = formatDate(fieldState.value, format: "dayMY");
+
+          onClick = () async {
+            var newDate = await selectDate(
+              value: fieldState.value,
+              minDate: field.min,
+              maxDate: field.max,
+            );
+            if (newDate != null) {
+              fieldState.didChange(newDate);
+            }
+          };
+        }
+
+        Widget? fieldWidget;
+        var fieldLabel = Text(
+          field.label!,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 13,
+            // letterSpacing: 0.5,
+          ),
+        );
+
+        if (field.type == DynamicFormFieldType.boolean) {
+          fieldWidget = InkWell(
+            onTap: () {
+              fieldState.didChange(!(fieldState.value ?? false));
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Checkbox(
+                  value: fieldState.value ?? false,
+                  onChanged: (newValue) {
+                    fieldState.didChange(newValue);
+                  },
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: fieldLabel,
+                  ),
+                ),
+              ],
             ),
-    );
+          );
+        }
 
-    if (field.type == DynamicFormFieldType.choice) {
-      fieldWidget = FormBuilderDropdown<String>(
-        name: field.name,
-        validator: FormBuilderValidators.compose(
-          [FormBuilderValidators.required()],
-        ),
-        decoration: InputDecoration(
-          labelText: field.label,
-          // initialValue: 'Male',
-          suffix: IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () {
-              _formKey.currentState!.fields['gender']?.reset();
-            },
-          ),
-          hintText: field.placeholder ?? "Choose one",
-        ),
-        items: List.from(field.choices ?? [])
-            .map(
-              (choice) => DropdownMenuItem<String>(
-                alignment: AlignmentDirectional.center,
-                value: choice["value"],
-                child: Text("${choice["label"]}"),
+        if (field.type == DynamicFormFieldType.radio) {
+          var choices = field.choices ?? [];
+          var yesNoChoices = choices.length > 1 &&
+              ["Yes", "No"].contains(
+                choices[0]["label"],
+              );
+
+          if (yesNoChoices) {
+            fieldWidget = Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Wrap(
+                spacing: 6,
+                children: field.choices!
+                    .map(
+                      (choice) => ChoiceChip(
+                        visualDensity: VisualDensity.compact,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 6,
+                        ),
+                        showCheckmark: false,
+                        label: Text("${choice['label']}"),
+                        selected: fieldState.value == choice['value'],
+                        onSelected: (bool selected) {
+                          fieldState
+                              .didChange(selected ? choice['value'] : null);
+                        },
+                      ),
+                    )
+                    .toList(),
               ),
-            )
-            .toList(),
-      );
-    }
+            );
+          }
+        }
 
-    if (field.type == DynamicFormFieldType.radio) {
-      fieldWidget = FormBuilderChoiceChip(
-        name: field.name,
-        decoration: InputDecoration(
-          labelText: field.label,
-          // initialValue: 'Male',
-          suffix: IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () {
-              _formKey.currentState!.fields['gender']?.reset();
-            },
+        fieldWidget ??= FormInput(
+          hint: hint ?? "",
+          value: selectedValueLabel ?? fieldState.value,
+          icon: icon,
+          onClick: onClick,
+          autoFocus: widget.fields.length == 1,
+        );
+
+        return Padding(
+          padding: EdgeInsets.only(
+            left: isBooleanField ? 6 : 16,
+            top: isBooleanField ? 0 : 10,
+            bottom: 10,
+            right: 16,
           ),
-          hintText: field.placeholder ?? "Choose one",
-        ),
-        validator: FormBuilderValidators.compose(
-          [FormBuilderValidators.required()],
-        ),
-        options: List.from(field.choices ?? [])
-            .map(
-              (choice) => FormBuilderChipOption(
-                value: choice["value"],
-                child: Text("${choice["label"]}"),
-              ),
-            )
-            .toList(),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: fieldWidget,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              if (field.label != null && !isBooleanField)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 3),
+                  child: fieldLabel,
+                ),
+              fieldWidget,
+              if (fieldState.errorText != null)
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: isBooleanField ? 20 : 8,
+                    top: isBooleanField ? 8 : 0,
+                  ),
+                  child: Text(
+                    fieldState.errorText!,
+                    style: TextStyle(
+                      color: colorScheme(context).error,
+                      fontSize: 10,
+                      // letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -206,7 +322,7 @@ class _DynamicFormState extends State<DynamicForm> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          padding: const EdgeInsets.only(bottom: 16),
           child: FormBuilder(
             key: _formKey,
             child: Column(

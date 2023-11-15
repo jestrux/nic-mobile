@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/AdsBar.dart';
-import 'package:nic/components/DynamicForm.dart';
-import 'package:nic/components/DynamicForm/proccessFields.dart';
-import 'package:nic/components/DynamicForm/sampleFields.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/modals/BimaStatus.dart';
@@ -12,6 +9,7 @@ import 'package:nic/data/actions.dart';
 import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/pages/FormPage.dart';
 import 'package:nic/utils.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,20 +21,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  processedFields() {
-    var fields = processFields(fields: sampleFields);
-    devLog("Sample fields: $fields");
-
-    return fields!
-        .map(
-          (field) => DynamicFormField(
-            name: field["name"],
-            label: field["label"],
-          ),
-        )
-        .toList();
-  }
-
   void navigate() {}
 
   void route() {}
@@ -132,10 +116,6 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               const AdsBanner(),
               const SizedBox(height: 12),
-              DynamicForm(
-                fields: processedFields(),
-                onSubmit: (d) async {},
-              ),
               InlineList(
                 title: "Your Commissions",
                 titleAction: ActionButton.all("Open dashboard"),
@@ -156,6 +136,15 @@ class _HomePageState extends State<HomePage> {
                 ),
                 content: buyBimaActions,
                 shape: ActionItemShape.regular,
+                onItemClick: (action) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => FormPage(
+                        title: action.label,
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 16),
               PageSection(

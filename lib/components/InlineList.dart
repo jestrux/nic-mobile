@@ -71,13 +71,14 @@ class InlineList extends StatelessWidget {
                         )
                     ];
 
-                    if (trailingWidgets.isNotEmpty) {
-                      entry.trailing = Row(children: trailingWidgets);
-                    }
-
-                    if (entry.leading == null && leading != null) {
-                      entry.leading = leading;
-                    }
+                    entry = entry.cloneWith(
+                      leading: entry.leading == null && leading != null
+                          ? leading
+                          : null,
+                      trailing: trailingWidgets.isNotEmpty
+                          ? Row(children: trailingWidgets)
+                          : null,
+                    );
 
                     return MapEntry(
                       i,
