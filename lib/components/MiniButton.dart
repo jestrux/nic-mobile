@@ -10,7 +10,7 @@ class MiniButton extends StatelessWidget {
   final bool flat;
   final Color? color;
   final Color? background;
-  final VoidCallback? onClick;
+  final Function? onClick;
 
   const MiniButton({
     Key? key,

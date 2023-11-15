@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nic/components/CardWrapper.dart';
+import 'package:nic/components/ClickableContent.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
@@ -15,6 +16,7 @@ class ListItem extends StatelessWidget {
   final String? image;
   final dynamic trailing;
   final dynamic leading;
+  final Function? onClick;
   final ActionItem? content;
 
   const ListItem({
@@ -27,6 +29,7 @@ class ListItem extends StatelessWidget {
     this.trailing,
     this.action,
     this.content,
+    this.onClick,
   }) : super(key: key);
 
   ListItem.fromContent(ActionItem this.content, {this.flat, super.key})
@@ -35,7 +38,8 @@ class ListItem extends StatelessWidget {
         image = content.image,
         leading = content.leading,
         trailing = content.trailing,
-        action = content.action;
+        action = content.action,
+        onClick = content.onClick;
 
   @override
   Widget build(BuildContext context) {
@@ -153,25 +157,33 @@ class ListItem extends StatelessWidget {
       ],
     );
 
+    var handleClick = onClick == null ? null : () => onClick!();
+
     if (flat ?? false) {
-      return Container(
-        constraints: BoxConstraints(
-          minHeight: description != null ? 56 : 44,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: itemContent,
+      return ClickableContent(
+        onClick: handleClick,
+        child: Container(
+          constraints: BoxConstraints(
+            minHeight: description != null ? 56 : 44,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: itemContent,
+          ),
         ),
       );
     }
 
-    return Container(
-      constraints: BoxConstraints(
-        minHeight: description != null ? 56 : 44,
-      ),
-      child: CardWrapper(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: itemContent,
+    return ClickableContent(
+      onClick: handleClick,
+      child: Container(
+        constraints: BoxConstraints(
+          minHeight: description != null ? 56 : 44,
+        ),
+        child: CardWrapper(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: itemContent,
+        ),
       ),
     );
   }

@@ -21,6 +21,8 @@ class ClickableContent extends StatelessWidget {
   Widget build(BuildContext context) {
     var actualColor = inkColor ?? colorScheme(context).surfaceVariant;
 
+    if (onClick == null) return child ?? Container();
+
     return Material(
       type: MaterialType.transparency,
       child: Ink(
