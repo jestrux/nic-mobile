@@ -75,6 +75,7 @@ class RoundedHeaderPage extends StatelessWidget {
                 // automaticallyImplyLeading: showBackButton,
               ),
               body: Container(
+                height: double.infinity,
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
                   color: colorScheme(context).surface,
