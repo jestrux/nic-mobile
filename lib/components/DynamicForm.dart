@@ -206,7 +206,7 @@ class _DynamicFormState extends State<DynamicForm> {
 
         Widget? fieldWidget;
         var fieldLabel = Text(
-          field.label!,
+          field.label ?? "",
           style: TextStyle(
             color: textColor,
             fontSize: 13,
@@ -282,6 +282,9 @@ class _DynamicFormState extends State<DynamicForm> {
           onClick: onClick,
           autoFocus: widget.fields.length == 1,
           obscureText: field.type == DynamicFormFieldType.password,
+          onChange: (value) {
+            fieldState.didChange(value);
+          },
         );
 
         return Padding(
