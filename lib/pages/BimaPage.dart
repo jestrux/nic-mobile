@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/data/actions.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
-import 'package:nic/utils.dart';
 
 class BimaPage extends StatefulWidget {
   const BimaPage({Key? key}) : super(key: key);
@@ -60,69 +60,38 @@ class _BimaPageState extends State<BimaPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      // backgroundColor: Constants.primaryColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Bima Products".toUpperCase(),
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                    color: Colors.white,
-                    letterSpacing: 1.5,
-                  ),
+    return RoundedHeaderPage(
+      title: "Bima Products",
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 4),
+            PageSection(
+              // title: "Quick Actions",
+              content: [
+                getQuickQuoteAction,
+                bimaStatusAction,
+                bimaRenewalAction,
+              ],
+              shape: ActionItemShape.rounded,
             ),
+            const SizedBox(height: 16),
+            const SectionTitle(title: "All products"),
+            ...products.map((product) {
+              return Padding(
+                padding: const EdgeInsets.only(top: 4, bottom: 4),
+                child: ListItem(
+                  image: product["image"],
+                  leading: product["icon"],
+                  title: product["name"],
+                  action: const ActionButton(label: "Purchase"),
+                ),
+              );
+            }).toList(),
           ],
-        ),
-        automaticallyImplyLeading: false,
-      ),
-      body: Container(
-        height: double.infinity,
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: colorScheme(context).background,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 4),
-              PageSection(
-                // title: "Quick Actions",
-                content: [
-                  getQuickQuoteAction,
-                  bimaStatusAction,
-                  bimaRenewalAction,
-                ],
-                shape: ActionItemShape.rounded,
-              ),
-              const SizedBox(height: 16),
-              const SectionTitle(title: "All products"),
-              ...products.map((product) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 4, bottom: 4),
-                  child: ListItem(
-                    image: product["image"],
-                    leading: product["icon"],
-                    title: product["name"],
-                    action: const ActionButton(label: "Purchase"),
-                  ),
-                );
-              }).toList(),
-            ],
-          ),
         ),
       ),
     );

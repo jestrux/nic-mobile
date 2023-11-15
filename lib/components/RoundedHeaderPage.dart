@@ -18,6 +18,14 @@ class RoundedHeaderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var headerText = Text((title ?? "").toUpperCase(),
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              color: Colors.white,
+              letterSpacing: 1.5,
+            ));
     return Container(
       // backgroundColor: Colors.transparent,
       color: Constants.primaryColor,
@@ -46,28 +54,18 @@ class RoundedHeaderPage extends StatelessWidget {
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (showLogo)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: Image.asset(
-                          'assets/img/icon.png',
-                          width: 40,
-                        ),
-                      ),
-                    if (title != null)
-                      Expanded(
-                        child: Text(
-                          title!.toUpperCase(),
-                          textAlign: TextAlign.center,
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    letterSpacing: 1.5,
-                                  ),
-                        ),
-                      ),
+                    ...(showLogo
+                        ? [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12),
+                              child: Image.asset(
+                                'assets/img/icon.png',
+                                width: 40,
+                              ),
+                            ),
+                            if (title != null) headerText,
+                          ]
+                        : [if (title != null) Expanded(child: headerText)]),
                     if (ModalRoute.of(context)!.canPop)
                       const SizedBox(width: 56),
                   ],
