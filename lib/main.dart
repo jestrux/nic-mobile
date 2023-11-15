@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:nic/color_schemes.g.dart';
 import 'package:nic/constants.dart';
 import 'package:nic/pages/BimaPage.dart';
+import 'package:nic/pages/FormPage.dart';
 import 'package:nic/pages/HomePage.dart';
 import 'package:nic/pages/MorePage.dart';
 import 'package:nic/pages/ProfilePage.dart';
@@ -45,6 +46,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     var pages = [
+      // const FormPage(),
       HomePage(
         goToMainPage: (page) {
           setState(() {

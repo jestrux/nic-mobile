@@ -1,5 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,6 +16,12 @@ void devLog(value) {
   if (kDebugMode) {
     print(value);
   }
+}
+
+String randomId([int? len]) {
+  var r = Random();
+  return String.fromCharCodes(
+      List.generate(len ?? 6, (index) => r.nextInt(33) + 89));
 }
 
 enum AlertType { success, error, custom }
@@ -60,6 +68,7 @@ class AlertContent extends StatelessWidget {
             Column(
               children: [
                 Container(
+                  constraints: const BoxConstraints(minHeight: 80),
                   width: double.infinity,
                   margin: EdgeInsets.symmetric(
                     vertical: isCustom ? 12 : 32,
@@ -109,8 +118,8 @@ class AlertContent extends StatelessWidget {
                                     ? const SizedBox(height: 10)
                                     : Padding(
                                         padding: EdgeInsets.only(
-                                          top: isCustom ? 12 : 0,
-                                          bottom: 4,
+                                          top: isCustom ? 24 : 0,
+                                          bottom: 8,
                                         ),
                                         child: Text(
                                           title!,
@@ -266,7 +275,7 @@ String formatDate(
   else
     return "";
 
-  if (format == "dayM") {
+  if (["dayM", "dayMY"].contains(format)) {
     var suffix = "th";
     var digit = dateTime.day % 10;
     if ((digit > 0 && digit < 4) && (dateTime.day < 11 || dateTime.day > 13)) {
@@ -275,13 +284,33 @@ String formatDate(
 
     // return DateFormat("MMMM d'$suffix'", locale).format(date);
     var formattedDate = DateFormat("MMMM d'$suffix'").format(dateTime);
-    if (dateTime.year != DateTime.now().year)
+    if (dateTime.year != DateTime.now().year || format == "dayMY")
       formattedDate += ", ${dateTime.year}";
 
     return formattedDate;
   }
 
   return DateFormat(format).format(date);
+}
+
+Future<DateTime?> selectDate({
+  value,
+  minDate,
+  maxDate,
+}) async {
+  var context = Constants.globalAppKey.currentContext!;
+  var now = DateTime.now();
+  var firstDateEver = DateTime(1970, now.month, now.day, now.hour, now.minute);
+
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: value ?? minDate ?? firstDateEver,
+    firstDate: minDate ?? firstDateEver,
+    lastDate:
+        maxDate ?? DateTime(2100, now.month, now.day, now.hour, now.minute),
+  );
+
+  return picked;
 }
 
 ColorScheme colorScheme(BuildContext context) {
@@ -347,8 +376,10 @@ class _ChoicePickerContentState extends State<ChoicePickerContent> {
       //   vertical: 12,
       //   horizontal: 20,
       // ),
-      selected: !widget.confirm
-          ? null
+      selected: value == null
+          ? widget.confirm
+              ? false
+              : null
           : value.toString().toLowerCase() ==
               choiceValue.toString().toLowerCase(),
       onClick: () {

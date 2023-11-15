@@ -9,6 +9,7 @@ import 'package:nic/data/actions.dart';
 import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/pages/FormPage.dart';
 import 'package:nic/utils.dart';
 
 class HomePage extends StatefulWidget {
@@ -115,9 +116,6 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               const AdsBanner(),
               const SizedBox(height: 12),
-              // AlertContent(
-
-              // ),
               InlineList(
                 title: "Your Commissions",
                 titleAction: ActionButton.all("Open dashboard"),
@@ -138,6 +136,15 @@ class _HomePageState extends State<HomePage> {
                 ),
                 content: buyBimaActions,
                 shape: ActionItemShape.regular,
+                onItemClick: (action) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => FormPage(
+                        title: action.label,
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 16),
               PageSection(
