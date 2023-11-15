@@ -120,13 +120,6 @@ Future<Map<String, dynamic>?> submitQuote({
     }
   },""";
 
-  var variables = <String, dynamic>{
-    "product": productId,
-    "quote": quote,
-    "data": data != null ? jsonEncode(data) : "{}",
-    "underwriteChannel": 2,
-  };
-
   final QueryOptions options = QueryOptions(
     document: gql(queryString),
     variables: <String, dynamic>{
@@ -136,8 +129,6 @@ Future<Map<String, dynamic>?> submitQuote({
       "underwriteChannel": 2,
     },
   );
-
-  devLog("Payload: ${jsonEncode(variables)}");
 
   GraphQLClient client = await DataConnection().connectionClient();
   final QueryResult result = await client.query(options);
