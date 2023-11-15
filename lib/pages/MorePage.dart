@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
+import 'package:nic/data/preferences.dart';
+import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
+import 'package:provider/provider.dart';
 
 class MorePage extends StatefulWidget {
   const MorePage({Key? key}) : super(key: key);
@@ -22,6 +25,8 @@ class _MorePageState extends State<MorePage> {
 
   @override
   Widget build(BuildContext context) {
+    var currentTheme = Provider.of<AppProvider>(context).theme;
+
     return RoundedHeaderPage(
       title: "More",
       child: SingleChildScrollView(
@@ -40,15 +45,24 @@ class _MorePageState extends State<MorePage> {
             ),
             const SizedBox(height: 20),
             InlineList(data: [
-              ActionItem(
-                label: "Language",
-                value: "English",
-                onClick: (item) {},
-              ),
+              // ActionItem(
+              //   label: "Language",
+              //   value: "English",
+              //   onClick: (item) {},
+              // ),
               ActionItem(
                 label: "Theme",
-                value: "Automatic",
-                onClick: (item) {},
+                value: currentTheme,
+                onClick: () async {
+                  var theme = await showChoicePicker(
+                    choices: ["light", "dark", "system"],
+                    value: currentTheme,
+                  );
+
+                  if (theme != null) {
+                    setTheme(context: context, theme: theme);
+                  }
+                },
               ),
             ]),
             const SizedBox(height: 20),
