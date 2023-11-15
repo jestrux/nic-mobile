@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/pages/auth/RecoverPassword.dart';
 // import 'package:imis_client_app/screens/auth/register.dart';
 import 'package:nic/pages/control/bContainer.dart';
-import 'package:nic/utils.dart';
 import '../../components/Loader.dart';
 
 class LoginPage extends StatefulWidget {
@@ -174,9 +172,7 @@ class _LoginPageState extends State<LoginPage> {
             Positioned(
                 top: -height * .15,
                 right: -MediaQuery.of(context).size.width * .5,
-                child: const BezierContainer(
-                  customColor: Color(0xff1b5e20),
-                )),
+                child: BezierContainer(customColor: Color(0xff1b5e20),)),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(
@@ -187,23 +183,122 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: height * .2),
                     _title(),
                     const SizedBox(height: 30),
-                    DynamicForm(
-                      fields: const [
-                        DynamicFormField(
-                          label: "Username",
-                          name: "username",
-                          placeholder: 'Email  and Phone Number',
+                    Form(
+                      key: formKey,
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 15),
+                            child: TextFormField(
+                              controller: username,
+                              keyboardType: TextInputType.emailAddress,
+                              obscureText: false,
+                              style: TextStyle(color: Colors.grey[800]),
+                              decoration: InputDecoration(
+                                  hintText: 'Email  and Phone Number',
+                                  hintStyle: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.grey[800]),
+                                  border: InputBorder.none,
+                                  fillColor: const Color(0xfff3f3f4),
+                                  filled: true,
+                                  icon: Icon(Icons.person_outline,
+                                      size: 30.0,
+                                      color: Colors.green[800])),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Field is required";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 15),
+                            child: TextFormField(
+                                controller: password,
+                                obscureText: _obscureText,
+                                style:
+                                TextStyle(color: Colors.grey[800]),
+                                decoration: InputDecoration(
+                                    hintText: 'Password',
+                                    hintStyle: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.grey[800]),
+                                    icon: Icon(
+                                      Icons.lock_outline,
+                                      size: 30.0,
+                                      color: Colors.green[800],
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscureText
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: Colors.grey[600],
+                                      ),
+                                      onPressed: _toggle,
+                                    ),
+                                    border: InputBorder.none,
+                                    fillColor: Color(0xfff3f3f4),
+                                    filled: true),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return "Field is required";
+                                  }
+                                  return null;
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width - 20,
+                      height: 45,
+                      child: FilledButton(
+                        style: ButtonStyle(
+                          visualDensity: VisualDensity.compact,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          padding: MaterialStateProperty.all(
+                            const EdgeInsets.symmetric(
+                              horizontal: 12,
+                            ),
+                          ),
                         ),
-                        DynamicFormField(
-                          label: "Password",
-                          name: "password",
-                          type: DynamicFormFieldType.password,
+                        onPressed: () async {
+                          if (loading == false) {
+                            if (formKey.currentState!.validate()) {
+                              var temp_username;
+                              temp_username = username.text.trim();
+
+                              if (int.tryParse(username.text.trim()) != null){
+                                if (temp_username[0] == "0"){
+                                  temp_username = temp_username.replaceFirst("0", "255");
+                                }
+                                print(temp_username);
+                              }
+
+                            }
+                          }
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (loading)
+                              const Padding(
+                                padding: EdgeInsets.only(right: 6),
+                                child: Loader(
+                                  message: "",
+                                  loaderSize: 14,
+                                  loaderStrokeWidth: 2,
+                                  small: true,
+                                ),
+                              ),
+                            const Text("Login"),
+                          ],
                         ),
-                      ],
-                      submitLabel: "Login",
-                      onSubmit: (data) async {
-                        devLog("Login form data: $data");
-                      },
+                      ),
                     ),
                     InkWell(
                       child: Container(
@@ -215,9 +310,8 @@ class _LoginPageState extends State<LoginPage> {
                                 fontWeight: FontWeight.w500,
                                 color: Colors.grey[800])),
                       ),
-                      onTap: () {
-                        Navigator.of(context).push(CupertinoPageRoute(
-                            builder: (context) => RecoverPassword()));
+                      onTap: (){
+                        Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>RecoverPassword()));
                       },
                     ),
                     _divider(),
@@ -232,7 +326,6 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       ),
-    );
-    ;
+    );;
   }
 }
