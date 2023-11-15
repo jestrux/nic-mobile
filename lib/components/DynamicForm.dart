@@ -383,7 +383,6 @@ class _DynamicFormState extends State<DynamicForm> {
                     okayText: widget.submitLabel ?? "Submit",
                     onOkay: onSubmit,
                   ),
-        const SizedBox(height: 20),
       ],
     );
   }
