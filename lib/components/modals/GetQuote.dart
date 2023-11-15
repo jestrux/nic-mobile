@@ -1,16 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:nic/components/ChoiceItem.dart';
 import 'package:nic/components/DynamicForm.dart';
-import 'package:nic/components/FormActions.dart';
+import 'package:nic/components/DynamicForm/proccessFields.dart';
 import 'package:nic/components/KeyValueView.dart';
 import 'package:nic/components/Loader.dart';
-import 'package:nic/data/products.dart';
-import 'package:nic/models/policy_model.dart';
-import 'package:nic/services/data_connection.dart';
-import 'package:nic/services/policy_service.dart';
 import 'package:nic/services/product_service.dart';
 import 'package:nic/utils.dart';
 
@@ -226,36 +218,6 @@ class _GetQuoteState extends State<GetQuote> {
     });
   }
 
-  Widget _buildContent() {
-    if (loading) return const Loader();
-
-    if (quotationDetails != null) {
-      var quotation = {...quotationDetails!};
-      quotation.removeWhere((key, value) => key == "form");
-
-      return Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(
-              top: 12,
-              bottom: 4,
-            ),
-            child: Text(
-              "Quote details",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          KeyValueView(data: quotation)
-        ],
-      );
-    }
-
-    return Container();
-  }
-
   @override
   Widget build(BuildContext context) {
     if (loading) return const Loader();
@@ -295,7 +257,7 @@ class _GetQuoteState extends State<GetQuote> {
     }
 
     if (quotationDetails?["form"] != null) {
-      var form = List.from(quotationDetails!["form"]);
+      var form = processFields(fields: List.from(quotationDetails!["form"]));
 
       return Column(
         children: [
@@ -312,19 +274,26 @@ class _GetQuoteState extends State<GetQuote> {
               ),
             ),
           ),
-          DynamicForm(
-            fields: form.map((e) {
-              return DynamicFormField(
-                name: "searchKey",
-                label: "Policy Reference No.",
-                placeholder: "Enter policy number or plate number",
-              );
-            }).toList(),
-            onCancel: () => Navigator.of(context).pop(),
-            // submitLabel: "Check",
-            onSubmit: (data) async {},
-            onSuccess: (data) {},
-          ),
+          if (form != null)
+            DynamicForm(
+              fields: form,
+              onCancel: () => Navigator.of(context).pop(),
+              // submitLabel: "Check",
+              onSubmit: (payload) async {
+                return await submitQuote(
+                  productId: widget.productId,
+                  quote: quotationDetails!["quote"],
+                  data: payload['data'],
+                );
+              },
+              onSuccess: (data) {
+                if (data != null) {
+                  setState(() {
+                    quotationDetails = data;
+                  });
+                }
+              },
+            ),
         ],
       );
     }

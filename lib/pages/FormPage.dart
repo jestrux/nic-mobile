@@ -13,24 +13,6 @@ class FormPage extends StatefulWidget {
 }
 
 class _FormPageState extends State<FormPage> {
-  processedFields() {
-    var fields = processFields(fields: sampleFields);
-
-    return fields!
-        .map(
-          (field) => DynamicFormField(
-            name: field["name"],
-            label: field["label"],
-            choices: field["choices"],
-            max: field["max_value"],
-            min: field["min_value"],
-            type: dynamicFormFieldTypeMap[field["type"]] ??
-                DynamicFormFieldType.text,
-          ),
-        )
-        .toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return RoundedHeaderPage(
@@ -43,7 +25,7 @@ class _FormPageState extends State<FormPage> {
           children: <Widget>[
             const SizedBox(height: 12),
             DynamicForm(
-              fields: processedFields(),
+              fields: processFields(fields: sampleFields)!,
               onSubmit: (d) async {},
             ),
             const SizedBox(height: 20),

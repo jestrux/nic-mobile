@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:nic/utils.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -108,6 +110,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   ActionItem(
                     label: "Logout",
                     icon: Icons.logout,
+                    onClick: () {
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => const LoginPage(),
+                        ),
+                      );
+                    },
                   ),
                 ],
                 shape: ActionItemShape.rounded,

@@ -69,6 +69,7 @@ class DynamicFormField {
   final List<Map<String, dynamic>>? choices;
   final dynamic min;
   final dynamic max;
+  final bool canClear;
 
   const DynamicFormField({
     required this.name,
@@ -78,14 +79,18 @@ class DynamicFormField {
     this.choices,
     this.min,
     this.max,
+    this.canClear = false,
   });
 }
+
+enum DynamicFormPayloadFormat { regular, questionAnswer }
 
 class DynamicForm extends StatefulWidget {
   final List<DynamicFormField> fields;
   final String? submitLabel;
   final Future Function(Map<String, dynamic>) onSubmit;
   final Function(dynamic response)? onSuccess;
+  final DynamicFormPayloadFormat payloadFormat;
   final Function? onCancel;
   final Widget Function(Function onSubmit, bool loading)? builder;
 
@@ -97,6 +102,7 @@ class DynamicForm extends StatefulWidget {
     this.onSuccess,
     this.onCancel,
     this.builder,
+    this.payloadFormat = DynamicFormPayloadFormat.questionAnswer,
   }) : super(key: key);
 
   @override
@@ -120,11 +126,27 @@ class _DynamicFormState extends State<DynamicForm> {
     dynamic response;
 
     try {
-      response = await widget.onSubmit(form.instantValue);
-      devLog("Policy: $response");
+      var payload = form.instantValue;
+      Map<String, dynamic>? questionAnswerPayload;
+
+      if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
+        var answers = [];
+
+        for (var question in payload.keys) {
+          answers.add({
+            "field_name": question,
+            "answer": payload[question],
+          });
+        }
+
+        questionAnswerPayload = {"data": answers};
+      }
+
+      devLog("Payload: $response");
+      response = await widget.onSubmit(questionAnswerPayload ?? payload);
     } catch (e) {
       devLog("Failed to fetch dynamic form: $e");
-      showToast("Failed to fetch");
+      openErrorAlert(message: e.toString());
     } finally {
       setState(() {
         loading = false;
@@ -276,6 +298,8 @@ class _DynamicFormState extends State<DynamicForm> {
         }
 
         fieldWidget ??= FormInput(
+          type: keyboardTypeMap[field.type] ?? TextInputType.text,
+          // money: field.type == DynamicFormFieldType.number,
           hint: hint ?? "",
           value: selectedValueLabel ?? fieldState.value,
           icon: icon,
@@ -285,6 +309,11 @@ class _DynamicFormState extends State<DynamicForm> {
           onChange: (value) {
             fieldState.didChange(value);
           },
+          onClear: !field.canClear
+              ? null
+              : () {
+                  fieldState.didChange(null);
+                },
         );
 
         return Padding(
