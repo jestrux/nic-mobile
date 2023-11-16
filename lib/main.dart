@@ -4,7 +4,6 @@ import 'package:nic/color_schemes.g.dart';
 import 'package:nic/constants.dart';
 import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/pages/SplashScreen.dart';
-import 'package:nic/utils.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(const NICKiganjani());

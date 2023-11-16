@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:nic/components/ChoiceItem.dart';
 import 'package:nic/components/ClickableContent.dart';
 import 'package:nic/components/FormActions.dart';
+import 'package:nic/components/FormButton.dart';
 import 'package:nic/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -145,27 +146,18 @@ class AlertContent extends StatelessWidget {
                                 if (!isCustom)
                                   Container(
                                     constraints: const BoxConstraints(
-                                      maxWidth: 120,
+                                      maxWidth: 100,
                                     ),
                                     alignment: Alignment.center,
                                     padding: const EdgeInsets.only(top: 12),
                                     child: SizedBox(
                                       width: double.infinity,
-                                      child: FilledButton(
-                                        style: ButtonStyle(
-                                          visualDensity: VisualDensity.compact,
-                                          tapTargetSize:
-                                              MaterialTapTargetSize.shrinkWrap,
-                                          padding: MaterialStateProperty.all(
-                                            const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                            ),
-                                          ),
-                                        ),
-                                        onPressed: () {
+                                      child: FormButton.filled(
+                                        okayText,
+                                        small: true,
+                                        onClick: () {
                                           Navigator.of(context).pop();
                                         },
-                                        child: Text(okayText),
                                       ),
                                     ),
                                   ),
@@ -342,10 +334,10 @@ class ChoicePickerContent extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ChoicePickerContent> createState() => _ChoicePickerContentState();
+  State<ChoicePickerContent> createState() => ChoicePickerContentState();
 }
 
-class _ChoicePickerContentState extends State<ChoicePickerContent> {
+class ChoicePickerContentState extends State<ChoicePickerContent> {
   dynamic value;
 
   @override
@@ -371,7 +363,11 @@ class _ChoicePickerContentState extends State<ChoicePickerContent> {
         ),
         value: choice["value"],
         groupValue: value,
-        onChanged: (v) {},
+        onChanged: (v) {
+          setState(() {
+            value = choice["value"];
+          });
+        },
       );
     }
 
@@ -450,6 +446,7 @@ Future<dynamic> showChoicePicker({
   ChoicePickerMode mode = ChoicePickerMode.regular,
   Widget Function(String choice, dynamic selected)? choicePicker,
 }) {
+  var choicePickerContentKey = GlobalKey<ChoicePickerContentState>();
   var context = Constants.globalAppKey.currentContext!;
   var formattedChoices = choices.map((choice) {
     var choiceLabel = choice;
@@ -466,6 +463,7 @@ Future<dynamic> showChoicePicker({
   }).toList();
 
   Widget choicePickerContent = ChoicePickerContent(
+    key: choicePickerContentKey,
     choices: formattedChoices,
     value: value,
     confirm: confirm ?? false,
@@ -521,6 +519,13 @@ Future<dynamic> showChoicePicker({
   }
 
   if (mode == ChoicePickerMode.dialog) {
+    void handler([bool cancel = false]) {
+      Navigator.pop(
+        context,
+        cancel ? null : choicePickerContentKey.currentState?.value,
+      );
+    }
+
     return showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -559,11 +564,11 @@ Future<dynamic> showChoicePicker({
         ),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => handler(true),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, 'OK'),
+            onPressed: () => handler(),
             child: const Text('OK'),
           ),
         ],

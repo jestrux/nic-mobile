@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nic/components/Loader.dart';
+import 'package:nic/components/FormButton.dart';
 import 'package:nic/constants.dart';
 import 'package:nic/utils.dart';
 
@@ -42,51 +42,17 @@ class FormActions extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           if (onCancel != null)
-            TextButton(
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all(
-                  colorScheme(context).onBackground,
-                ),
-                visualDensity: VisualDensity.compact,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                padding: MaterialStateProperty.all(
-                  const EdgeInsets.symmetric(
-                    horizontal: 12,
-                  ),
-                ),
-              ),
-              onPressed: () {
-                onCancel!();
-              },
-              child: const Text("Cancel"),
+            FormButton.flat(
+              cancelText,
+              small: true,
+              onClick: () => onCancel!(),
             ),
           const SizedBox(width: 8),
-          FilledButton(
-            style: ButtonStyle(
-              visualDensity: VisualDensity.compact,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              padding: MaterialStateProperty.all(
-                const EdgeInsets.symmetric(
-                  horizontal: 12,
-                ),
-              ),
-            ),
-            onPressed: loading ? null : () => onOkay(),
-            child: Row(
-              children: [
-                if (loading)
-                  const Padding(
-                    padding: EdgeInsets.only(right: 6),
-                    child: Loader(
-                      message: "",
-                      loaderSize: 14,
-                      loaderStrokeWidth: 2,
-                      small: true,
-                    ),
-                  ),
-                Text(okayText),
-              ],
-            ),
+          FormButton.filled(
+            okayText,
+            small: true,
+            loading: loading,
+            onClick: () => onOkay(),
           ),
         ],
       ),

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:nic/components/FormActions.dart';
+import 'package:nic/components/FormButton.dart';
 import 'package:nic/components/FormInput.dart';
-import 'package:nic/components/Loader.dart';
 import 'package:nic/utils.dart';
 
 enum DynamicFormFieldType {
@@ -200,7 +200,7 @@ class _DynamicFormState extends State<DynamicForm> {
             var selectedChioce = await showChoicePicker(
               title: field.placeholder ?? "Choose one",
               choices: choices,
-              value: "No",
+              value: fieldState.value,
               mode: widget.choicePickerMode,
             );
 
@@ -377,39 +377,10 @@ class _DynamicFormState extends State<DynamicForm> {
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                     ),
-                    child: FilledButton(
-                      style: ButtonStyle(
-                        visualDensity: VisualDensity.compact,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        padding: MaterialStateProperty.all(
-                          const EdgeInsets.symmetric(
-                            vertical: 20,
-                            horizontal: 12,
-                          ),
-                        ),
-                      ),
-                      onPressed: loading ? null : () => onSubmit(),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (loading)
-                            const Padding(
-                              padding: EdgeInsets.only(right: 6),
-                              child: Loader(
-                                message: "",
-                                loaderSize: 14,
-                                loaderStrokeWidth: 2,
-                                small: true,
-                              ),
-                            ),
-                          Text(
-                            widget.submitLabel ?? "Submit",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: FormButton.filled(
+                      widget.submitLabel ?? "Submit",
+                      loading: loading,
+                      onClick: onSubmit,
                     ),
                   )
                 : FormActions(
