@@ -627,54 +627,56 @@ Future<dynamic> openBottomSheet({
     isDismissible: dismissible,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return AnimatedPadding(
-        padding: MediaQuery.of(context).viewInsets,
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.decelerate,
-        child: Wrap(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 560),
-                  decoration: BoxDecoration(
-                    color: colorScheme(context).background,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
+      return SafeArea(
+        child: AnimatedPadding(
+          padding: MediaQuery.of(context).viewInsets,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.decelerate,
+          child: Wrap(
+            children: [
+              Container(
+                alignment: Alignment.center,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
-                  padding: actualPadding,
-                  child: Column(children: [
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Spacer(),
-                        Container(
-                          height: 6,
-                          width: 90,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: colorScheme(context)
-                                .onBackground
-                                .withOpacity(0.1),
-                          ),
-                        ),
-                        const Spacer()
-                      ],
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 560),
+                    decoration: BoxDecoration(
+                      color: colorScheme(context).background,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                    child ?? Container(),
-                  ]),
+                    padding: actualPadding,
+                    child: Column(children: [
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Spacer(),
+                          Container(
+                            height: 6,
+                            width: 90,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: colorScheme(context)
+                                  .onBackground
+                                  .withOpacity(0.1),
+                            ),
+                          ),
+                          const Spacer()
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      child ?? Container(),
+                    ]),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     },
