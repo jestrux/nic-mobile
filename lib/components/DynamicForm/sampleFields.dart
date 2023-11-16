@@ -91,7 +91,7 @@ List<Map<String, dynamic>> sampleFields = [
       },
       {
         "id": 103,
-        "trigger": 99,
+        "trigger": 100,
         "name": "99__TRIGGER__Type_of_cover_IMIS__FIELD_103",
         "tag": null,
         "min_value": null,
@@ -102,7 +102,7 @@ List<Map<String, dynamic>> sampleFields = [
         "label": "Type of cover",
         "description": "",
         "declaration": false,
-        "type": "text",
+        "type": "select",
         "possible_names": [
           "99__TRIGGER__Type_of_cover_IMIS__FIELD_103",
           "99__TRIGGER__Type_of_cover_IMIS__FIELD_103"
@@ -117,7 +117,30 @@ List<Map<String, dynamic>> sampleFields = [
         "help_text": "Type of cover",
         "max_length": 500,
         "required": true,
-        "childs": []
+        "choices": [
+          {"name": "No", "value": "100_IMIS_100"},
+          {"name": "Yes", "value": "99_IMIS_100"}
+        ],
+        "childs": [
+          {
+            "trigger": 100,
+            "name": "Inset",
+            "label": "Inset",
+            "type": "radio",
+            "choices": [
+              {"name": "No", "value": "100_IMIS_100"},
+              {"name": "Yes", "value": "99_IMIS_100"}
+            ],
+            "childs": [
+              {
+                "trigger": 99,
+                "name": "Double Inset",
+                "label": "Double Inset",
+                "type": "text",
+              }
+            ]
+          }
+        ]
       }
     ]
   }
