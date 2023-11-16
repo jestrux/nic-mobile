@@ -5,7 +5,8 @@ import 'package:nic/services/data_connection.dart';
 import 'package:nic/models/user_model.dart';
 
 class AuthenticationService {
-  Future<UserModel?> login(String? username, String? password) async {
+  Future<UserModel?> loginUser({String? username, String? password}) async {
+    UserModel? userModel;
     String login = r"""
        mutation($username: String!, $password: String!){
         tokenAuth(username: $username, password: $password){
@@ -48,9 +49,7 @@ class AuthenticationService {
     final QueryResult result = await client.mutate(options);
     if (result.data != null && result.hasException == false) {
       // print(result.data);
-      UserModel userModel = UserModel.fromJson(
-        result.data,
-      );
+      userModel = UserModel.fromJson(result.data);
       // var tokenBox = Hive.box("token");
       // tokenBox.put("token", userModel.token);
       // Repository().setToken(userModel);
@@ -69,7 +68,7 @@ class AuthenticationService {
       //   return userModel;
       // }
     }
-    return null;
+    return userModel;
   }
 
   Future<Map<String, dynamic>?> register(
@@ -234,12 +233,13 @@ class AuthenticationService {
     if (result.data != null) {
       if (result.data!['searchUser']['edges'].length > 0) {
         var user = result.data!['searchUser']['edges'][0]['node'];
-        userObj = RecoverUserModel(
-            firstName: user['user']['firstName'],
-            lastName: user['user']['lastName'],
-            email: user['user']['email'],
-            phone: user['phone'],
-            id: user['user']['id']);
+        userObj = RecoverUserModel.fromJson(user);
+        // userObj = RecoverUserModel(
+        //     firstName: user['user']['firstName'],
+        //     lastName: user['user']['lastName'],
+        //     email: user['user']['email'],
+        //     phone: user['phone'],
+        //     id: user['user']['id']);
       }
     }
     return userObj;

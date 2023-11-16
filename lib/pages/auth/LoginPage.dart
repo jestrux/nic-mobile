@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
+import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/auth/RecoverPassword.dart';
-// import 'package:imis_client_app/screens/auth/register.dart';
+import 'package:nic/pages/auth/RegisterPage.dart';
 import 'package:nic/pages/control/bContainer.dart';
 import 'package:nic/utils.dart';
-import '../../components/Loader.dart';
+import 'package:nic/services/authentication_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,17 +18,21 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   var formKey = GlobalKey<FormState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  TextEditingController username = TextEditingController();
-  TextEditingController password = TextEditingController();
-  bool loading = false;
+  Future<UserModel?> tokenAuth(Map<String, dynamic> values) async {
+    return await AuthenticationService().loginUser(username:  values["username"], password : values["password"]);
+  }
 
-  // Initially password is obscure
-  bool _obscureText = true;
+  showResponse(dynamic user) {
+    String? res = "Hey:  ${user.firstName} ${user.middleName}  has just logged-in";
+    showToast(res);
+  }
+
+
 
   // Toggles the password show status
   void _toggle() {
     setState(() {
-      _obscureText = !_obscureText;
+
     });
   }
 
@@ -59,30 +64,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _entryField(String title, {bool isPassword = false}) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          TextFormField(
-              controller: username,
-              obscureText: isPassword,
-              decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  fillColor: Color(0xfff3f3f4),
-                  filled: true))
-        ],
-      ),
-    );
-  }
 
   Widget _divider() {
     return Container(
@@ -146,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                   fontWeight: FontWeight.w600),
             ),
             onPressed: () {
-              // Navigator.push(context, SlideRightRoute(page: RegisterPage()));
+              Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (context) => RegisterPage()));
             },
           ),
         ],
@@ -202,10 +184,8 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                       submitLabel: "Login",
-                      onSubmit: (data) async {
-                        await Future.delayed(Duration(seconds: 2));
-                        devLog("Login form data: $data");
-                      },
+                      onSubmit: tokenAuth,
+                      onSuccess: showResponse,
                     ),
                     InkWell(
                       child: Container(

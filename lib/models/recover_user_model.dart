@@ -35,14 +35,14 @@ class RecoverUserModel{
         _phone = jsonData['phone'];
       }
       if(jsonData['user'] != null ){
-        if(jsonData['firstName'] != null){
-          _firstName = jsonData['firstName'];
+        if(jsonData['user']['firstName'] != null){
+          _firstName = jsonData['user']['firstName'];
         }
-        if(jsonData['lastName'] != null){
-          _lastName = jsonData['lastName'];
+        if(jsonData['user']['lastName'] != null){
+          _lastName = jsonData['user']['lastName'];
         }
-        if(jsonData['email'] != null){
-          _email = jsonData['email'];
+        if(jsonData['user']['email'] != null){
+          _email = jsonData['user']['email'];
         }
       }
     }
