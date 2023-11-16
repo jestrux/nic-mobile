@@ -70,6 +70,7 @@ class DynamicFormField {
   final List<String>? children;
   final dynamic min;
   final dynamic max;
+  final bool required;
   final bool canClear;
   final Function? show;
 
@@ -82,6 +83,7 @@ class DynamicFormField {
     this.min,
     this.max,
     this.canClear = false,
+    this.required = true,
     this.show,
     this.children,
   });
@@ -293,10 +295,11 @@ class FormField extends StatelessWidget {
       name: field.name,
       // autovalidateMode: !submitAttempted ? null : AutovalidateMode.onUserInteraction,
       validator: FormBuilderValidators.compose([
-        FormBuilderValidators.required(
-          errorText:
-              isBooleanField ? "You have to accept this condition" : null,
-        ),
+        if (field.required)
+          FormBuilderValidators.required(
+            errorText:
+                isBooleanField ? "You have to accept this condition" : null,
+          ),
         if (isBooleanField) FormBuilderValidators.equal(true)
       ]),
       builder: (FormFieldState<dynamic> fieldState) {
@@ -345,12 +348,14 @@ class FormField extends StatelessWidget {
 
           onClick = () async {
             var newDate = await selectDate(
-              value: fieldState.value,
+              value: fieldState.value == null
+                  ? null
+                  : DateTime.parse(fieldState.value),
               minDate: field.min,
               maxDate: field.max,
             );
             if (newDate != null) {
-              fieldState.didChange(newDate);
+              fieldState.didChange(formatDate(newDate));
             }
           };
         }
