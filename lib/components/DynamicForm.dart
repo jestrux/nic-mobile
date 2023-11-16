@@ -67,21 +67,24 @@ class DynamicFormField {
   final DynamicFormFieldType type;
   final String? placeholder;
   final List<Map<String, dynamic>>? choices;
+  final List<String>? children;
   final dynamic min;
   final dynamic max;
   final bool canClear;
   final Function? show;
 
-  const DynamicFormField(
-      {required this.name,
-      this.label,
-      this.type = DynamicFormFieldType.text,
-      this.placeholder,
-      this.choices,
-      this.min,
-      this.max,
-      this.canClear = false,
-      this.show});
+  const DynamicFormField({
+    required this.name,
+    this.label,
+    this.type = DynamicFormFieldType.text,
+    this.placeholder,
+    this.choices,
+    this.min,
+    this.max,
+    this.canClear = false,
+    this.show,
+    this.children,
+  });
 }
 
 enum DynamicFormPayloadFormat { regular, questionAnswer }
@@ -114,18 +117,23 @@ class DynamicForm extends StatefulWidget {
 
 class _DynamicFormState extends State<DynamicForm> {
   final _formKey = GlobalKey<FormBuilderState>();
+  bool submitAttempted = false;
   bool loading = false;
-  List<DynamicFormField> visibleFields = [];
+  List<DynamicFormField> fields = [];
 
   @override
   void initState() {
     super.initState();
-    setVisibleFields(_formKey.currentState?.instantValue);
+    updateFields(_formKey.currentState);
   }
 
   Future<dynamic> onSubmit() async {
     var form = _formKey.currentState;
     if (form == null) return;
+
+    setState(() {
+      submitAttempted = true;
+    });
 
     if (!form.saveAndValidate()) return;
 
@@ -168,11 +176,52 @@ class _DynamicFormState extends State<DynamicForm> {
     return response;
   }
 
-  void setVisibleFields(formValue) {
+  List<String> collectChildren(DynamicFormField field) {
+    if ((field.children ?? []).isEmpty) return [field.name];
+
+    return List.from([]).fold([field.name, ...(field.children!)],
+        (agg, childName) {
+      List<String> children = [];
+
+      try {
+        var child = fields.singleWhere((element) => element.name == childName);
+        children = collectChildren(child);
+      } catch (e) {}
+
+      return [
+        ...agg,
+        ...children,
+      ];
+    });
+  }
+
+  void updateFields(FormBuilderState? form) {
+    var formValue = form?.instantValue;
+    var removedFieldNames = widget.fields
+        .where((element) {
+          return element.show != null && !element.show!(formValue);
+        })
+        .fold([], (agg, field) => [...agg, ...collectChildren(field)])
+        .toSet()
+        .toList();
+
+    var newFields = widget.fields;
+
+    if (removedFieldNames.isNotEmpty) {
+      newFields = widget.fields
+          .where((field) => !removedFieldNames.contains(field.name))
+          .toList();
+
+      if (form != null && formValue != null) {
+        for (var name in removedFieldNames) {
+          form.removeInternalFieldValue(name);
+          // form.fields[name]?.reset();
+        }
+      }
+    }
+
     setState(() {
-      visibleFields = widget.fields.where((element) {
-        return element.show == null || element.show!(formValue);
-      }).toList();
+      fields = newFields;
     });
   }
 
@@ -183,11 +232,12 @@ class _DynamicFormState extends State<DynamicForm> {
         Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: FormBuilder(
+            autovalidateMode:
+                !submitAttempted ? null : AutovalidateMode.onUserInteraction,
             key: _formKey,
-            onChanged: () =>
-                setVisibleFields(_formKey.currentState?.instantValue),
+            onChanged: () => updateFields(_formKey.currentState),
             child: Column(
-              children: visibleFields
+              children: fields
                   .map(
                     (field) => FormField(
                       field: field,
@@ -241,7 +291,7 @@ class FormField extends StatelessWidget {
 
     return FormBuilderField(
       name: field.name,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
+      // autovalidateMode: !submitAttempted ? null : AutovalidateMode.onUserInteraction,
       validator: FormBuilderValidators.compose([
         FormBuilderValidators.required(
           errorText:

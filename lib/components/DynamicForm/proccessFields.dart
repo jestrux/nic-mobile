@@ -24,6 +24,8 @@ formatFieldChoicesAndChilds(Map<String, dynamic> field) {
 }
 
 List<Map<String, dynamic>> processChildren(Map<String, dynamic> field) {
+  if (field['choices'].isEmpty || field['childs'].isEmpty) return [];
+
   Map<String, dynamic> valueMap = {};
 
   for (var choice in List.from(field['choices'])) {
@@ -33,18 +35,11 @@ List<Map<String, dynamic>> processChildren(Map<String, dynamic> field) {
 
   return List.from(field['childs']).fold<List<Map<String, dynamic>>>([],
       (agg, child) {
-    List<Map<String, dynamic>> childFields = [];
-
     child = formatFieldChoicesAndChilds(child);
 
-    var choices = child['choices'];
-    var childs = child['childs'];
+    List<Map<String, dynamic>> childFields = processChildren(child);
 
-    if (choices.isNotEmpty && childs.isNotEmpty) {
-      childFields = processChildren(child);
-    }
-
-    // childFields = childFields.expand((element) => element).toList();
+    child['children'] = childFields.map((child) => child['name']).toList();
 
     var triggerId = child["trigger"].toString();
     var trigger = valueMap[triggerId];
@@ -65,13 +60,8 @@ List<DynamicFormField>? processFields(
       .fold<List<Map<String, dynamic>>>([], (agg, Map<String, dynamic> field) {
         field = formatFieldChoicesAndChilds(field);
         var childFields = processChildren(field);
-        try {
-          devLog("Children: ${childFields.map((field) => field['trigger'])}");
-        } catch (e) {
-          devLog("Children error: $e");
-        }
 
-        // childFields = childFields.expand((element) => element).toList();
+        field['children'] = childFields.map((child) => child['name']).toList();
 
         return [...agg, field, ...childFields];
       })
@@ -159,6 +149,7 @@ List<DynamicFormField>? processFields(
   return processedFields
       .map(
         (field) => DynamicFormField(
+          children: List.from(field["children"]),
           show: field["show"],
           name: field["name"],
           label: field["label"],
