@@ -157,11 +157,9 @@ class ListItem extends StatelessWidget {
       ],
     );
 
-    var handleClick = onClick == null ? null : () => onClick!();
-
     if (flat ?? false) {
       return ClickableContent(
-        onClick: handleClick,
+        onClick: onClick,
         child: Container(
           constraints: BoxConstraints(
             minHeight: description != null ? 56 : 44,
@@ -175,7 +173,7 @@ class ListItem extends StatelessWidget {
     }
 
     return ClickableContent(
-      onClick: handleClick,
+      onClick: onClick,
       child: Container(
         constraints: BoxConstraints(
           minHeight: description != null ? 56 : 44,

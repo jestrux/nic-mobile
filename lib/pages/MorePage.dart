@@ -53,9 +53,11 @@ class _MorePageState extends State<MorePage> {
               ActionItem(
                 label: "Theme",
                 value: currentTheme,
-                onClick: () async {
+                onClick: (clickPosition) async {
                   var theme = await showChoicePicker(
-                    choices: ["light", "dark", "system"],
+                    mode: ChoicePickerMode.menu,
+                    clickPosition: clickPosition,
+                    choices: ["Light", "Dark", "System"],
                     value: currentTheme,
                   );
 

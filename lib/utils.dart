@@ -329,7 +329,7 @@ class ChoicePickerContent extends StatefulWidget {
   final bool confirm;
   final List<dynamic> choices;
   final dynamic value;
-  final bool grid;
+  final ChoicePickerMode? mode;
   final Function onSelect;
 
   const ChoicePickerContent({
@@ -337,7 +337,7 @@ class ChoicePickerContent extends StatefulWidget {
     this.confirm = false,
     required this.choices,
     this.value,
-    this.grid = false,
+    this.mode,
     required this.onSelect,
   }) : super(key: key);
 
@@ -356,58 +356,52 @@ class _ChoicePickerContentState extends State<ChoicePickerContent> {
   }
 
   Widget buildChoice(choice) {
-    // var context = Constants.globalAppKey.currentContext!;
-    // if (choicePicker != null) return choicePicker(choice, value);
-
-    var choiceLabel = choice;
-    var choiceValue = choice;
-    var choiceIcon;
-
-    if (choice is Map) {
-      choiceIcon = choice['icon'] == null ? null : Icon(choice['icon']);
-      choiceLabel = choice["label"];
-      choiceValue = choice["value"] ?? choice["label"];
+    if (widget.mode == ChoicePickerMode.dialog) {
+      return RadioListTile(
+        visualDensity: VisualDensity.compact,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 0,
+          horizontal: 12,
+        ),
+        title: Text(
+          choice["label"],
+          style: const TextStyle(
+            fontSize: 14,
+          ),
+        ),
+        value: choice["value"],
+        groupValue: value,
+        onChanged: (v) {},
+      );
     }
 
     return ChoiceItem(
-      choiceLabel,
-      leading: choiceIcon,
-      // padding: const EdgeInsets.symmetric(
-      //   vertical: 12,
-      //   horizontal: 20,
-      // ),
+      choice["label"],
+      leading: choice["icon"],
       selected: value == null
           ? widget.confirm
               ? false
               : null
           : value.toString().toLowerCase() ==
-              choiceValue.toString().toLowerCase(),
+              choice["value"].toString().toLowerCase(),
       onClick: () {
         if (widget.confirm) {
           setState(() {
-            value = choiceValue;
+            value = choice["value"];
           });
         } else {
-          widget.onSelect(choiceValue);
+          widget.onSelect(choice["value"]);
         }
       },
     );
   }
 
   Widget buildChoices(List<dynamic> choices) {
-    // var choiceWidth = grid
-    //     ? (MediaQuery.of(context).size.shortestSide / 2) - 20
-    //     : double.infinity;
-
     List<Widget> choiceItems = choices.map((choice) {
       return Container(
-        // width: choiceWidth,
-        // margin: EdgeInsets.all(grid ? 4 : 0),
         child: buildChoice(choice),
       );
     }).toList();
-
-    // if (grid) return Wrap(children: choiceItems);
 
     return Column(children: choiceItems);
   }
@@ -444,29 +438,136 @@ class _ChoicePickerContentState extends State<ChoicePickerContent> {
   }
 }
 
+enum ChoicePickerMode { regular, dialog, alert, menu }
+
 Future<dynamic> showChoicePicker({
   String? title,
   required List<dynamic> choices,
   dynamic value,
   bool grid = false,
   bool? confirm,
-  bool useAlert = false,
+  Offset? clickPosition,
+  ChoicePickerMode mode = ChoicePickerMode.regular,
   Widget Function(String choice, dynamic selected)? choicePicker,
 }) {
   var context = Constants.globalAppKey.currentContext!;
+  var formattedChoices = choices.map((choice) {
+    var choiceLabel = choice;
+    var choiceValue = choice;
+    dynamic choiceIcon;
+
+    if (choice is Map) {
+      choiceIcon = choice['icon'] == null ? null : Icon(choice['icon']);
+      choiceLabel = choice["label"];
+      choiceValue = choice["value"] ?? choice["label"];
+    }
+
+    return {"icon": choiceIcon, "label": choiceLabel, "value": choiceValue};
+  }).toList();
+
   Widget choicePickerContent = ChoicePickerContent(
-    choices: choices,
+    choices: formattedChoices,
     value: value,
     confirm: confirm ?? false,
+    mode: mode,
     onSelect: (value) {
       Navigator.of(context).pop(value);
     },
   );
 
-  if (useAlert) {
+  var menuPosition = const RelativeRect.fromLTRB(0, 0, 0, 0);
+
+  if (clickPosition != null) {
+    final screenSize = MediaQuery.of(context).size;
+    menuPosition = RelativeRect.fromLTRB(
+      screenSize.width - clickPosition.dx - 20,
+      clickPosition.dy,
+      20,
+      0,
+    );
+  }
+
+  if (mode == ChoicePickerMode.menu) {
+    return showMenu(
+      context: context,
+      position: menuPosition,
+      items: formattedChoices
+          .map((choice) => PopupMenuItem(
+                value: choice["value"],
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        choice["label"],
+                      ),
+                    ),
+                    if (value == choice["value"])
+                      const Opacity(
+                        opacity: 0.8,
+                        child: Icon(Icons.check, size: 16),
+                      ),
+                  ],
+                ),
+              ))
+          .toList(),
+    );
+  }
+
+  if (mode == ChoicePickerMode.alert) {
     return openAlert(
       title: title,
       child: choicePickerContent,
+    );
+  }
+
+  if (mode == ChoicePickerMode.dialog) {
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: title == null
+            ? null
+            : Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+        titlePadding: const EdgeInsets.only(
+          top: 20,
+          bottom: 14,
+          left: 22,
+          right: 20,
+        ),
+        contentPadding: EdgeInsets.zero,
+        actionsPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+        content: Container(
+          decoration: BoxDecoration(
+            border: Border.symmetric(
+              horizontal: BorderSide(
+                width: 1,
+                color: colorScheme(context).outlineVariant,
+              ),
+            ),
+          ),
+          constraints: const BoxConstraints(
+            maxHeight: 180,
+          ),
+          child: SingleChildScrollView(
+            child: choicePickerContent,
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 

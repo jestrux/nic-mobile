@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> {
               onItemClick: (action) async {
                 if (action.label == getQuickQuoteAction.label) {
                   var productId = await showChoicePicker(
-                    useAlert: true,
+                    mode: ChoicePickerMode.alert,
                     confirm: true,
                     title: "Select product to get a quote",
                     choices: products.map((product) {

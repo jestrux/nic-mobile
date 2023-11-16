@@ -33,7 +33,7 @@ class ChoiceItem extends StatelessWidget {
     double selectedIndicatorSize = size == ChoiceItemSize.SM ? 18 : 24;
 
     return ClickableContent(
-      onClick: onClick == null ? null : () => onClick!(),
+      onClick: onClick,
       child: Container(
         padding: padding ?? defaultContentPadding,
         decoration: BoxDecoration(

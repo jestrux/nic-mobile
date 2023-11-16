@@ -276,6 +276,7 @@ class _GetQuoteState extends State<GetQuote> {
           ),
           if (form != null)
             DynamicForm(
+              choicePickerMode: ChoicePickerMode.dialog,
               fields: form,
               onCancel: () => Navigator.of(context).pop(),
               // submitLabel: "Check",

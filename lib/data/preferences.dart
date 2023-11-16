@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future setupPreferences(BuildContext context) async {
   return await SharedPreferences.getInstance().then((prefs) async {
     var user = prefs.getString("authUser");
-    var theme = prefs.getString("appTheme") ?? "system";
+    var theme = prefs.getString("appTheme") ?? "System";
 
     Map<String, dynamic>? authUser = user == null ? null : jsonDecode(user);
 
@@ -44,9 +44,9 @@ Future persistAppTheme(String theme) async {
 
     NICKiganjani.of(context).changeTheme(
       {
-            "dark": ThemeMode.dark,
-            "light": ThemeMode.light,
-            "system": ThemeMode.system,
+            "Dark": ThemeMode.dark,
+            "Light": ThemeMode.light,
+            "System": ThemeMode.system,
           }[theme] ??
           ThemeMode.system,
     );

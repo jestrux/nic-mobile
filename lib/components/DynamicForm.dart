@@ -91,19 +91,21 @@ class DynamicForm extends StatefulWidget {
   final Future Function(Map<String, dynamic>) onSubmit;
   final Function(dynamic response)? onSuccess;
   final DynamicFormPayloadFormat payloadFormat;
+  final ChoicePickerMode choicePickerMode;
   final Function? onCancel;
   final Widget Function(Function onSubmit, bool loading)? builder;
 
-  const DynamicForm({
-    Key? key,
-    required this.fields,
-    required this.onSubmit,
-    this.submitLabel,
-    this.onSuccess,
-    this.onCancel,
-    this.builder,
-    this.payloadFormat = DynamicFormPayloadFormat.questionAnswer,
-  }) : super(key: key);
+  const DynamicForm(
+      {Key? key,
+      required this.fields,
+      required this.onSubmit,
+      this.submitLabel,
+      this.onSuccess,
+      this.onCancel,
+      this.builder,
+      this.payloadFormat = DynamicFormPayloadFormat.questionAnswer,
+      this.choicePickerMode = ChoicePickerMode.regular})
+      : super(key: key);
 
   @override
   State<DynamicForm> createState() => _DynamicFormState();
@@ -199,6 +201,7 @@ class _DynamicFormState extends State<DynamicForm> {
               title: field.placeholder ?? "Choose one",
               choices: choices,
               value: "No",
+              mode: widget.choicePickerMode,
             );
 
             if (selectedChioce != null) {
