@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:nic/components/AdsBar.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/components/life/dialog.dart';
+import 'package:nic/components/life/searchForm.dart';
 import 'package:nic/components/modals/BimaStatus.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/constants.dart';
@@ -160,6 +162,10 @@ class _HomePageState extends State<HomePage> {
                       child: const BimaStatus(),
                     );
                     // openBottomSheet(child: const BimaStatus());
+                  } else if (action.label == lifeContributionsAction.label) {
+                    openAlert(
+                        title: "Life Contributions",
+                        child: const LifeSearcForm());
                   }
                 },
               ),
