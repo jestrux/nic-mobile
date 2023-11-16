@@ -35,7 +35,6 @@ class _MainAppState extends State<MainApp> {
       backgroundColor: Constants.primaryColor,
       body: pages[currentPageIndex],
       bottomNavigationBar: Container(
-        height: 60,
         decoration: const BoxDecoration(
           border: Border(
             top: BorderSide(
