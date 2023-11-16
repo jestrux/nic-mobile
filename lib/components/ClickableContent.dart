@@ -3,7 +3,7 @@ import 'package:nic/constants.dart';
 import 'package:nic/utils.dart';
 
 class ClickableContent extends StatelessWidget {
-  final VoidCallback? onClick;
+  final Function? onClick;
   final Widget? child;
   final EdgeInsets padding;
   final BoxBorder? border;
@@ -21,6 +21,8 @@ class ClickableContent extends StatelessWidget {
   Widget build(BuildContext context) {
     var actualColor = inkColor ?? colorScheme(context).surfaceVariant;
 
+    if (onClick == null) return child ?? Container();
+
     return Material(
       type: MaterialType.transparency,
       child: Ink(
@@ -32,7 +34,15 @@ class ClickableContent extends StatelessWidget {
           focusColor: actualColor,
           highlightColor: actualColor,
           splashColor: actualColor,
-          onTap: onClick,
+          onTap: () {
+            try {
+              onClick!();
+            } catch (e) {
+              var offset = (context.findRenderObject() as RenderBox)
+                  .localToGlobal(Offset.zero);
+              onClick!(offset);
+            }
+          },
           child: Padding(
             padding: padding,
             child: child,

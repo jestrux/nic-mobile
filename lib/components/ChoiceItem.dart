@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/ClickableContent.dart';
-import 'package:nic/constants.dart';
 import 'package:nic/utils.dart';
 
 enum ChoiceItemSize { MD, SM }
 
 class ChoiceItem extends StatelessWidget {
-  final VoidCallback onClick;
+  final Function? onClick;
   final EdgeInsets? padding;
   final Widget? leading;
   final String title;
@@ -22,7 +21,7 @@ class ChoiceItem extends StatelessWidget {
     this.subtitle = "",
     this.size = ChoiceItemSize.MD,
     this.selected,
-    this.onClick = Constants.randoFunction,
+    this.onClick,
   });
 
   @override

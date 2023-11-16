@@ -104,7 +104,7 @@ Future<Map<String, dynamic>?> getQuotationDetails({
 Future<Map<String, dynamic>?> submitQuote({
   required String productId,
   required dynamic quote,
-  Map<String, dynamic>? data,
+  List<dynamic>? data,
 }) async {
   devLog("Submit quote...");
 

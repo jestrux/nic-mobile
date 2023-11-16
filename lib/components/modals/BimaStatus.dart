@@ -51,6 +51,7 @@ class _BimaStatusState extends State<BimaStatus> {
     return Column(
       children: [
         DynamicForm(
+          payloadFormat: DynamicFormPayloadFormat.regular,
           fields: const [
             DynamicFormField(
               name: "searchKey",

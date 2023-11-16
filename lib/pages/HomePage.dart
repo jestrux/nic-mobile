@@ -1,222 +1,99 @@
 import 'package:flutter/material.dart';
-import 'package:nic/components/AdsBar.dart';
-import 'package:nic/components/InlineList.dart';
-import 'package:nic/components/PageSection.dart';
-import 'package:nic/components/life/dialog.dart';
-import 'package:nic/components/life/searchForm.dart';
-import 'package:nic/components/modals/BimaStatus.dart';
-import 'package:nic/components/modals/GetQuote.dart';
-import 'package:nic/constants.dart';
-import 'package:nic/data/actions.dart';
-import 'package:nic/data/products.dart';
-import 'package:nic/models/ActionButton.dart';
-import 'package:nic/models/ActionItem.dart';
+import 'package:nic/color_schemes.g.dart';
+import 'package:nic/components/DynamicForm.dart';
+import 'package:nic/components/FormActions.dart';
+import 'package:nic/components/KeyValueView.dart';
+import 'package:nic/models/life/LifepolicyMode.dart';
+import 'package:nic/services/life/customer_policies.dart';
 import 'package:nic/utils.dart';
 
-class HomePage extends StatefulWidget {
-  final void Function(int) goToMainPage;
-  const HomePage({required this.goToMainPage, Key? key}) : super(key: key);
+class LifeSearcForm extends StatefulWidget {
+  const LifeSearcForm({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<LifeSearcForm> createState() => _LifeSearcFormState();
 }
 
-class _HomePageState extends State<HomePage> {
-  void navigate() {}
+class _LifeSearcFormState extends State<LifeSearcForm> {
+  final _key = GlobalKey<FormState>();
+  // final Map<String, dynamic> _postData = {};
+  FocusNode _focusNode = FocusNode();
 
-  void route() {}
-
-  void handleMakePaymentAction() async {
-    String? selectedChoice = await showChoicePicker(
-      choices: [
-        {
-          "icon": Icons.attach_money,
-          "label": "Pay Now",
-        },
-        {
-          "icon": Icons.question_mark,
-          "label": "Payment Information",
-        },
-      ],
-    );
-
-    if (selectedChoice != null) showToast(selectedChoice);
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.requestFocus();
   }
 
-  void handleCustomerSupportAction() async {
-    String? selectedChoice = await showChoicePicker(
-      choices: [
-        {
-          "icon": Icons.phone,
-          "label": "Call Us",
-        },
-        {
-          "icon": Icons.mail,
-          "label": "Send Email",
-        },
-        {
-          "icon": Icons.chat,
-          "label": "Feedback / Complaint",
-        },
-      ],
-    );
-
-    if (selectedChoice == "Call Us") {
-      openUrl("tel:${Constants.supportPhoneNumber}");
-    } else if (selectedChoice == "Send Email") {
-      openUrl("mailto:${Constants.supportEmail}");
-    } else if (selectedChoice == "Feedback / Complaint") {
-      openUrl(Constants.contactsUrl);
-    }
+  @override
+  void dispose() {
+    super.dispose();
+    _focusNode.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      // backgroundColor: Constants.primaryColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/img/icon.png',
-              width: 40,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              "Sisi ndiyo Bima".toUpperCase(),
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                    color: Colors.white,
-                    letterSpacing: 1.5,
-                  ),
+    return Container(
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      child: Form(
+        key: _key,
+        child: DynamicForm(
+          fields: const [
+            DynamicFormField(
+              name: "customerKey",
+              label: "Customer Number",
+              placeholder: "Enter Nida number",
             ),
           ],
-        ),
-        automaticallyImplyLeading: false,
-      ),
-      body: Container(
-        height: double.infinity,
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: colorScheme(context).background,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const AdsBanner(),
-              const SizedBox(height: 12),
-              // AlertContent(
-
-              // ),
-              InlineList(
-                title: "Your Commissions",
-                titleAction: ActionButton.all("Open dashboard"),
-                data: [
-                  ActionItem(
-                    leading: Icons.monetization_on,
-                    label: "TZS 300,000",
-                    trailing: "Collected this week",
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              PageSection(
-                title: "Buy Bima",
-                titleAction: ActionButton.all(
-                  "All products",
-                  onClick: (item) => widget.goToMainPage(1),
-                ),
-                content: buyBimaActions,
-                shape: ActionItemShape.regular,
-              ),
-              const SizedBox(height: 16),
-              PageSection(
-                title: "Common Actions",
-                titleAction: ActionButton.all(
-                  "All actions",
-                  onClick: (item) => widget.goToMainPage(2),
-                ),
-                content: homePageQuickActions,
-                shape: ActionItemShape.rounded,
-                onItemClick: (action) {
-                  if (action.label == bimaStatusAction.label) {
-                    // openErrorAlert(
-                    //   title: "Failed to fetch policy",
-                    //   message:
-                    //       "Please make sure your internet is on and then try again.",
-                    // );
-                    openAlert(
-                      title: "Bima Status",
-                      child: const BimaStatus(),
-                    );
-                    // openBottomSheet(child: const BimaStatus());
-                  } else if (action.label == lifeContributionsAction.label) {
-                    openAlert(
-                        title: "Life Contributions",
-                        child: const LifeSearcForm());
-                  }
-                },
-              ),
-              const SizedBox(height: 16),
-              PageSection(
-                title: "Self Service",
-                content: [
-                  getQuickQuoteAction,
-                  makePaymentAction,
-                  customerSupportAction,
-                ],
-                // otherActions(
-                //   makePaymentAction: makePaymentAction,
-                //   customerSupportAction: customerSupportAction,
-                // ),
-                shape: ActionItemShape.square,
-                columns: 3,
-                onItemClick: (action) async {
-                  if (action.label == getQuickQuoteAction.label) {
-                    var productId = await showChoicePicker(
-                      useAlert: true,
-                      confirm: true,
-                      title: "Select product to get a quote",
-                      choices: products.map((product) {
-                        return {
-                          "label": product["name"],
-                          "value": product["id"]
-                        };
-                      }).toList(),
-                    );
-
-                    if (productId != null) {
-                      openAlert(
-                        child: GetQuote(productId: productId),
-                      );
-                    }
-                  }
-
-                  if (action.label == makePaymentAction.label) {
-                    handleMakePaymentAction();
-                  }
-
-                  if (action.label == customerSupportAction.label) {
-                    handleCustomerSupportAction();
-                  }
-                },
-              ),
-            ],
-          ),
+          onCancel: () => Navigator.of(context).pop(),
+          submitLabel: "Check",
+          onSubmit: searchPolicies,
+          onSuccess: customerPolicies,
         ),
       ),
     );
+  }
+
+  Future<dynamic> searchPolicies(Map<String, dynamic> formData) async {
+    return await getCustomerPolicies(customerId: formData['customerKey']);
+  }
+
+  void customerPolicies(dynamic results) async {
+    if (results == null) {
+      return null;
+    }
+
+    Navigator.of(context).pop();
+    if (results is List<LifePolicyModel>) {
+      List<Widget> keyValueViews = [];
+
+      for (var policy in results) {
+        keyValueViews.add(
+          GestureDetector(
+            onTap: () {
+              print("Policy Id: ${policy.policyNumber}");
+            },
+            child: KeyValueView(
+              data: {
+                "Policy Number": policy.productName,
+              },
+            ),
+          ),
+        );
+      }
+
+      if (results.isNotEmpty) {
+        openAlert(
+          title: "Select Policy",
+          child: Column(
+            children: keyValueViews,
+          ),
+        );
+      } else {
+        openErrorAlert(message: "No Policy(ies) for this Data");
+      }
+    } else {
+      print("Invalid type for results. Expected List<LifePolicyModel>.");
+    }
   }
 }

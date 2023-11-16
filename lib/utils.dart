@@ -1,5 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:nic/components/ChoiceItem.dart';
 import 'package:nic/components/ClickableContent.dart';
 import 'package:nic/components/FormActions.dart';
+import 'package:nic/components/FormButton.dart';
 import 'package:nic/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,6 +17,12 @@ void devLog(value) {
   if (kDebugMode) {
     print(value);
   }
+}
+
+String randomId([int? len]) {
+  var r = Random();
+  return String.fromCharCodes(
+      List.generate(len ?? 6, (index) => r.nextInt(33) + 89));
 }
 
 enum AlertType { success, error, custom }
@@ -60,6 +69,7 @@ class AlertContent extends StatelessWidget {
             Column(
               children: [
                 Container(
+                  constraints: const BoxConstraints(minHeight: 80),
                   width: double.infinity,
                   margin: EdgeInsets.symmetric(
                     vertical: isCustom ? 12 : 32,
@@ -109,8 +119,8 @@ class AlertContent extends StatelessWidget {
                                     ? const SizedBox(height: 10)
                                     : Padding(
                                         padding: EdgeInsets.only(
-                                          top: isCustom ? 12 : 0,
-                                          bottom: 4,
+                                          top: isCustom ? 24 : 0,
+                                          bottom: 8,
                                         ),
                                         child: Text(
                                           title!,
@@ -136,27 +146,18 @@ class AlertContent extends StatelessWidget {
                                 if (!isCustom)
                                   Container(
                                     constraints: const BoxConstraints(
-                                      maxWidth: 120,
+                                      maxWidth: 100,
                                     ),
                                     alignment: Alignment.center,
                                     padding: const EdgeInsets.only(top: 12),
                                     child: SizedBox(
                                       width: double.infinity,
-                                      child: FilledButton(
-                                        style: ButtonStyle(
-                                          visualDensity: VisualDensity.compact,
-                                          tapTargetSize:
-                                              MaterialTapTargetSize.shrinkWrap,
-                                          padding: MaterialStateProperty.all(
-                                            const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                            ),
-                                          ),
-                                        ),
-                                        onPressed: () {
+                                      child: FormButton.filled(
+                                        okayText,
+                                        small: true,
+                                        onClick: () {
                                           Navigator.of(context).pop();
                                         },
-                                        child: Text(okayText),
                                       ),
                                     ),
                                   ),
@@ -266,7 +267,7 @@ String formatDate(
   else
     return "";
 
-  if (format == "dayM") {
+  if (["dayM", "dayMY"].contains(format)) {
     var suffix = "th";
     var digit = dateTime.day % 10;
     if ((digit > 0 && digit < 4) && (dateTime.day < 11 || dateTime.day > 13)) {
@@ -275,13 +276,33 @@ String formatDate(
 
     // return DateFormat("MMMM d'$suffix'", locale).format(date);
     var formattedDate = DateFormat("MMMM d'$suffix'").format(dateTime);
-    if (dateTime.year != DateTime.now().year)
+    if (dateTime.year != DateTime.now().year || format == "dayMY")
       formattedDate += ", ${dateTime.year}";
 
     return formattedDate;
   }
 
   return DateFormat(format).format(date);
+}
+
+Future<DateTime?> selectDate({
+  value,
+  minDate,
+  maxDate,
+}) async {
+  var context = Constants.globalAppKey.currentContext!;
+  var now = DateTime.now();
+  var firstDateEver = DateTime(1970, now.month, now.day, now.hour, now.minute);
+
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: value ?? minDate ?? firstDateEver,
+    firstDate: minDate ?? firstDateEver,
+    lastDate:
+        maxDate ?? DateTime(2100, now.month, now.day, now.hour, now.minute),
+  );
+
+  return picked;
 }
 
 ColorScheme colorScheme(BuildContext context) {
@@ -291,8 +312,10 @@ ColorScheme colorScheme(BuildContext context) {
 Future<void> openUrl(String? url) async {
   if (url == null) return;
 
-  if (!await launchUrl(Uri.parse(url))) {
-    throw Exception('Could not launch $url');
+  try {
+    !await launchUrl(Uri.parse(url));
+  } catch (e) {
+    showToast("Invalid url");
   }
 }
 
@@ -300,7 +323,7 @@ class ChoicePickerContent extends StatefulWidget {
   final bool confirm;
   final List<dynamic> choices;
   final dynamic value;
-  final bool grid;
+  final ChoicePickerMode? mode;
   final Function onSelect;
 
   const ChoicePickerContent({
@@ -308,15 +331,15 @@ class ChoicePickerContent extends StatefulWidget {
     this.confirm = false,
     required this.choices,
     this.value,
-    this.grid = false,
+    this.mode,
     required this.onSelect,
   }) : super(key: key);
 
   @override
-  State<ChoicePickerContent> createState() => _ChoicePickerContentState();
+  State<ChoicePickerContent> createState() => ChoicePickerContentState();
 }
 
-class _ChoicePickerContentState extends State<ChoicePickerContent> {
+class ChoicePickerContentState extends State<ChoicePickerContent> {
   dynamic value;
 
   @override
@@ -327,56 +350,56 @@ class _ChoicePickerContentState extends State<ChoicePickerContent> {
   }
 
   Widget buildChoice(choice) {
-    // var context = Constants.globalAppKey.currentContext!;
-    // if (choicePicker != null) return choicePicker(choice, value);
-
-    var choiceLabel = choice;
-    var choiceValue = choice;
-    var choiceIcon;
-
-    if (choice is Map) {
-      choiceIcon = choice['icon'] == null ? null : Icon(choice['icon']);
-      choiceLabel = choice["label"];
-      choiceValue = choice["value"] ?? choice["label"];
+    if (widget.mode == ChoicePickerMode.dialog) {
+      return RadioListTile(
+        visualDensity: VisualDensity.compact,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 0,
+          horizontal: 12,
+        ),
+        title: Text(
+          choice["label"],
+          style: const TextStyle(
+            fontSize: 14,
+          ),
+        ),
+        value: choice["value"],
+        groupValue: value,
+        onChanged: (v) {
+          setState(() {
+            value = choice["value"];
+          });
+        },
+      );
     }
 
     return ChoiceItem(
-      choiceLabel,
-      leading: choiceIcon,
-      // padding: const EdgeInsets.symmetric(
-      //   vertical: 12,
-      //   horizontal: 20,
-      // ),
-      selected: !widget.confirm
-          ? null
+      choice["label"],
+      leading: choice["icon"],
+      selected: value == null
+          ? widget.confirm
+              ? false
+              : null
           : value.toString().toLowerCase() ==
-              choiceValue.toString().toLowerCase(),
+              choice["value"].toString().toLowerCase(),
       onClick: () {
         if (widget.confirm) {
           setState(() {
-            value = choiceValue;
+            value = choice["value"];
           });
         } else {
-          widget.onSelect(choiceValue);
+          widget.onSelect(choice["value"]);
         }
       },
     );
   }
 
   Widget buildChoices(List<dynamic> choices) {
-    // var choiceWidth = grid
-    //     ? (MediaQuery.of(context).size.shortestSide / 2) - 20
-    //     : double.infinity;
-
     List<Widget> choiceItems = choices.map((choice) {
       return Container(
-        // width: choiceWidth,
-        // margin: EdgeInsets.all(grid ? 4 : 0),
         child: buildChoice(choice),
       );
     }).toList();
-
-    // if (grid) return Wrap(children: choiceItems);
 
     return Column(children: choiceItems);
   }
@@ -413,29 +436,145 @@ class _ChoicePickerContentState extends State<ChoicePickerContent> {
   }
 }
 
+enum ChoicePickerMode { regular, dialog, alert, menu }
+
 Future<dynamic> showChoicePicker({
   String? title,
   required List<dynamic> choices,
   dynamic value,
   bool grid = false,
   bool? confirm,
-  bool useAlert = false,
+  Offset? clickPosition,
+  ChoicePickerMode mode = ChoicePickerMode.regular,
   Widget Function(String choice, dynamic selected)? choicePicker,
 }) {
+  var choicePickerContentKey = GlobalKey<ChoicePickerContentState>();
   var context = Constants.globalAppKey.currentContext!;
+  var formattedChoices = choices.map((choice) {
+    var choiceLabel = choice;
+    var choiceValue = choice;
+    dynamic choiceIcon;
+
+    if (choice is Map) {
+      choiceIcon = choice['icon'] == null ? null : Icon(choice['icon']);
+      choiceLabel = choice["label"];
+      choiceValue = choice["value"] ?? choice["label"];
+    }
+
+    return {"icon": choiceIcon, "label": choiceLabel, "value": choiceValue};
+  }).toList();
+
   Widget choicePickerContent = ChoicePickerContent(
-    choices: choices,
+    key: choicePickerContentKey,
+    choices: formattedChoices,
     value: value,
     confirm: confirm ?? false,
+    mode: mode,
     onSelect: (value) {
       Navigator.of(context).pop(value);
     },
   );
 
-  if (useAlert) {
+  var menuPosition = const RelativeRect.fromLTRB(0, 0, 0, 0);
+
+  if (clickPosition != null) {
+    final screenSize = MediaQuery.of(context).size;
+    menuPosition = RelativeRect.fromLTRB(
+      screenSize.width - clickPosition.dx - 20,
+      clickPosition.dy,
+      20,
+      0,
+    );
+  }
+
+  if (mode == ChoicePickerMode.menu) {
+    return showMenu(
+      context: context,
+      position: menuPosition,
+      items: formattedChoices
+          .map((choice) => PopupMenuItem(
+                value: choice["value"],
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        choice["label"],
+                      ),
+                    ),
+                    if (value == choice["value"])
+                      const Opacity(
+                        opacity: 0.8,
+                        child: Icon(Icons.check, size: 16),
+                      ),
+                  ],
+                ),
+              ))
+          .toList(),
+    );
+  }
+
+  if (mode == ChoicePickerMode.alert) {
     return openAlert(
       title: title,
       child: choicePickerContent,
+    );
+  }
+
+  if (mode == ChoicePickerMode.dialog) {
+    void handler([bool cancel = false]) {
+      Navigator.pop(
+        context,
+        cancel ? null : choicePickerContentKey.currentState?.value,
+      );
+    }
+
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: title == null
+            ? null
+            : Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+        titlePadding: const EdgeInsets.only(
+          top: 20,
+          bottom: 14,
+          left: 22,
+          right: 20,
+        ),
+        contentPadding: EdgeInsets.zero,
+        actionsPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+        content: Container(
+          decoration: BoxDecoration(
+            border: Border.symmetric(
+              horizontal: BorderSide(
+                width: 1,
+                color: colorScheme(context).outlineVariant,
+              ),
+            ),
+          ),
+          constraints: const BoxConstraints(
+            maxHeight: 180,
+          ),
+          child: SingleChildScrollView(
+            child: choicePickerContent,
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => handler(true),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => handler(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -488,54 +627,56 @@ Future<dynamic> openBottomSheet({
     isDismissible: dismissible,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return AnimatedPadding(
-        padding: MediaQuery.of(context).viewInsets,
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.decelerate,
-        child: Wrap(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 560),
-                  decoration: BoxDecoration(
-                    color: colorScheme(context).background,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
+      return SafeArea(
+        child: AnimatedPadding(
+          padding: MediaQuery.of(context).viewInsets,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.decelerate,
+          child: Wrap(
+            children: [
+              Container(
+                alignment: Alignment.center,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
-                  padding: actualPadding,
-                  child: Column(children: [
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Spacer(),
-                        Container(
-                          height: 6,
-                          width: 90,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: colorScheme(context)
-                                .onBackground
-                                .withOpacity(0.1),
-                          ),
-                        ),
-                        const Spacer()
-                      ],
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 560),
+                    decoration: BoxDecoration(
+                      color: colorScheme(context).background,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                    child ?? Container(),
-                  ]),
+                    padding: actualPadding,
+                    child: Column(children: [
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Spacer(),
+                          Container(
+                            height: 6,
+                            width: 90,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: colorScheme(context)
+                                  .onBackground
+                                  .withOpacity(0.1),
+                            ),
+                          ),
+                          const Spacer()
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      child ?? Container(),
+                    ]),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     },

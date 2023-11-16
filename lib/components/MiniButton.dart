@@ -10,7 +10,7 @@ class MiniButton extends StatelessWidget {
   final bool flat;
   final Color? color;
   final Color? background;
-  final VoidCallback? onClick;
+  final Function? onClick;
 
   const MiniButton({
     Key? key,
@@ -53,9 +53,7 @@ class MiniButton extends StatelessWidget {
     return ClipRRect(
       borderRadius: const BorderRadius.all(Radius.circular(50)),
       child: ClickableContent(
-        onClick: () {
-          if (onClick != null) onClick!();
-        },
+        onClick: onClick,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(

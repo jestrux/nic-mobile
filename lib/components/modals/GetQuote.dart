@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:nic/components/ChoiceItem.dart';
 import 'package:nic/components/DynamicForm.dart';
-import 'package:nic/components/FormActions.dart';
+import 'package:nic/components/DynamicForm/proccessFields.dart';
 import 'package:nic/components/KeyValueView.dart';
 import 'package:nic/components/Loader.dart';
-import 'package:nic/data/products.dart';
-import 'package:nic/models/policy_model.dart';
-import 'package:nic/services/data_connection.dart';
-import 'package:nic/services/policy_service.dart';
 import 'package:nic/services/product_service.dart';
 import 'package:nic/utils.dart';
 
@@ -214,7 +208,6 @@ class _GetQuoteState extends State<GetQuote> {
 
     try {
       quotationDetails = await getQuotationDetails(productId: widget.productId);
-      devLog("Quotation: $quotationDetails");
     } catch (e) {
       Navigator.of(context).pop();
       openErrorAlert(message: e.toString());
@@ -223,38 +216,6 @@ class _GetQuoteState extends State<GetQuote> {
     setState(() {
       loading = false;
     });
-  }
-
-  Widget _buildContent() {
-    if (loading) return const Loader();
-
-    if (quotationDetails != null) {
-      var quotation = {...quotationDetails!};
-      quotation.removeWhere((key, value) => key == "form");
-
-      devLog("Quotation: $quotationDetails");
-
-      return Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(
-              top: 12,
-              bottom: 4,
-            ),
-            child: Text(
-              "Quote details",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          KeyValueView(data: quotation)
-        ],
-      );
-    }
-
-    return Container();
   }
 
   @override
@@ -291,6 +252,49 @@ class _GetQuoteState extends State<GetQuote> {
               "value": quotationDetails!["totalPremium"]
             },
           })
+        ],
+      );
+    }
+
+    if (quotationDetails?["form"] != null) {
+      var form = processFields(fields: List.from(quotationDetails!["form"]));
+
+      return Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(
+              top: 12,
+              bottom: 4,
+            ),
+            child: Text(
+              "More details",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          if (form != null)
+            DynamicForm(
+              choicePickerMode: ChoicePickerMode.dialog,
+              fields: form,
+              onCancel: () => Navigator.of(context).pop(),
+              // submitLabel: "Check",
+              onSubmit: (payload) async {
+                return await submitQuote(
+                  productId: widget.productId,
+                  quote: quotationDetails!["quote"],
+                  data: payload['data'],
+                );
+              },
+              onSuccess: (data) {
+                if (data != null) {
+                  setState(() {
+                    quotationDetails = data;
+                  });
+                }
+              },
+            ),
         ],
       );
     }

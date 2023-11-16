@@ -9,14 +9,14 @@ class ActionItem {
   final String? resourceUrl;
   final Color? background;
   final dynamic icon;
-  late ActionItemShape? shape;
+  final ActionItemShape? shape;
   final bool? flat;
   final String? description;
   final ActionButton? action;
-  late dynamic trailing;
-  late dynamic leading;
-  String? value;
-  late void Function(dynamic)? onClick;
+  final dynamic trailing;
+  final dynamic leading;
+  final String? value;
+  final Function? onClick;
 
   ActionItem({
     required this.label,
@@ -33,4 +33,27 @@ class ActionItem {
     this.value,
     this.onClick,
   });
+
+  cloneWith({
+    ActionItemShape? shape,
+    leading,
+    trailing,
+    String? value,
+    Function? onClick,
+  }) =>
+      ActionItem(
+        label: label,
+        icon: icon,
+        image: image,
+        resourceUrl: resourceUrl,
+        description: description,
+        background: background,
+        flat: flat,
+        action: action,
+        shape: shape ?? this.shape,
+        value: value ?? this.value,
+        leading: leading ?? this.leading,
+        trailing: trailing ?? this.trailing,
+        onClick: onClick ?? this.onClick,
+      );
 }

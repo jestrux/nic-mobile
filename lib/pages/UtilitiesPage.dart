@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/InlineList.dart';
-import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/data/actions.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
@@ -84,75 +84,51 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      // backgroundColor: Constants.primaryColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Utilities".toUpperCase(),
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                    color: Colors.white,
-                    letterSpacing: 1.5,
-                  ),
+    return RoundedHeaderPage(
+      title: "Utilities",
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 4),
+            PageSection(
+              padding: EdgeInsets.zero,
+              content: quickTipsActions(),
+              shape: ActionItemShape.portrait,
+              columns: 3,
+            ),
+            const SizedBox(height: 16),
+            PageSection(
+              padding: EdgeInsets.zero,
+              title: "Quick Actions",
+              content: [
+                claimStatusAction,
+                reportClaimAction,
+                bimaStatusAction,
+                bimaRenewalAction,
+                lifeContributionsAction,
+                changiaBimaAction,
+              ],
+              shape: ActionItemShape.rounded,
+              columns: 2,
+            ),
+            const SizedBox(height: 16),
+            InlineList(
+              title: "Resources",
+              data: resources,
+              leading: Icons.description,
+            ),
+            const SizedBox(height: 20),
+            PageSection(
+              padding: EdgeInsets.zero,
+              title: "Watch and Learn",
+              content: watchAndlearnActions(),
+              shape: ActionItemShape.video,
+              columns: 2,
             ),
           ],
-        ),
-        automaticallyImplyLeading: false,
-      ),
-      body: Container(
-        height: double.infinity,
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: colorScheme(context).background,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 4),
-              PageSection(
-                padding: EdgeInsets.zero,
-                content: quickTipsActions(),
-                shape: ActionItemShape.portrait,
-                columns: 3,
-              ),
-              const SizedBox(height: 16),
-              PageSection(
-                padding: EdgeInsets.zero,
-                title: "Quick Actions",
-                content: utilitiesPageActions,
-                shape: ActionItemShape.rounded,
-                columns: 2,
-              ),
-              const SizedBox(height: 16),
-              InlineList(
-                title: "Resources",
-                data: resources,
-                leading: Icons.description,
-              ),
-              const SizedBox(height: 20),
-              PageSection(
-                padding: EdgeInsets.zero,
-                title: "Watch and Learn",
-                content: watchAndlearnActions(),
-                shape: ActionItemShape.video,
-                columns: 2,
-              ),
-            ],
-          ),
         ),
       ),
     );
