@@ -70,17 +70,18 @@ class DynamicFormField {
   final dynamic min;
   final dynamic max;
   final bool canClear;
+  final Function? show;
 
-  const DynamicFormField({
-    required this.name,
-    this.label,
-    this.type = DynamicFormFieldType.text,
-    this.placeholder,
-    this.choices,
-    this.min,
-    this.max,
-    this.canClear = false,
-  });
+  const DynamicFormField(
+      {required this.name,
+      this.label,
+      this.type = DynamicFormFieldType.text,
+      this.placeholder,
+      this.choices,
+      this.min,
+      this.max,
+      this.canClear = false,
+      this.show});
 }
 
 enum DynamicFormPayloadFormat { regular, questionAnswer }
@@ -114,6 +115,13 @@ class DynamicForm extends StatefulWidget {
 class _DynamicFormState extends State<DynamicForm> {
   final _formKey = GlobalKey<FormBuilderState>();
   bool loading = false;
+  List<DynamicFormField> visibleFields = [];
+
+  @override
+  void initState() {
+    super.initState();
+    setVisibleFields(_formKey.currentState?.instantValue);
+  }
 
   Future<dynamic> onSubmit() async {
     var form = _formKey.currentState;
@@ -160,7 +168,75 @@ class _DynamicFormState extends State<DynamicForm> {
     return response;
   }
 
-  Widget _buildFormField(DynamicFormField field) {
+  void setVisibleFields(formValue) {
+    setState(() {
+      visibleFields = widget.fields.where((element) {
+        return element.show == null || element.show!(formValue);
+      }).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: FormBuilder(
+            key: _formKey,
+            onChanged: () =>
+                setVisibleFields(_formKey.currentState?.instantValue),
+            child: Column(
+              children: visibleFields
+                  .map(
+                    (field) => FormField(
+                      field: field,
+                      autoFocus: widget.fields.length == 1,
+                      choicePickerMode: widget.choicePickerMode,
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        ),
+        widget.builder != null
+            ? widget.builder!(onSubmit, loading)
+            : widget.onCancel == null
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: FormButton.filled(
+                      widget.submitLabel ?? "Submit",
+                      loading: loading,
+                      onClick: onSubmit,
+                    ),
+                  )
+                : FormActions(
+                    loading: loading,
+                    onCancel: widget.onCancel,
+                    okayText: widget.submitLabel ?? "Submit",
+                    onOkay: onSubmit,
+                  ),
+      ],
+    );
+  }
+}
+
+class FormField extends StatelessWidget {
+  const FormField({
+    super.key,
+    required this.field,
+    required this.choicePickerMode,
+    this.autoFocus,
+  });
+
+  final ChoicePickerMode choicePickerMode;
+  final bool? autoFocus;
+  final DynamicFormField field;
+
+  @override
+  Widget build(BuildContext context) {
     var isBooleanField = field.type == DynamicFormFieldType.boolean;
 
     return FormBuilderField(
@@ -201,7 +277,7 @@ class _DynamicFormState extends State<DynamicForm> {
               title: field.placeholder ?? "Choose one",
               choices: choices,
               value: fieldState.value,
-              mode: widget.choicePickerMode,
+              mode: choicePickerMode,
             );
 
             if (selectedChioce != null) {
@@ -307,7 +383,7 @@ class _DynamicFormState extends State<DynamicForm> {
           value: selectedValueLabel ?? fieldState.value,
           icon: icon,
           onClick: onClick,
-          autoFocus: widget.fields.length == 1,
+          autoFocus: autoFocus,
           obscureText: field.type == DynamicFormFieldType.password,
           onChange: (value) {
             fieldState.didChange(value);
@@ -354,42 +430,6 @@ class _DynamicFormState extends State<DynamicForm> {
           ),
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: FormBuilder(
-            key: _formKey,
-            child: Column(
-              children: widget.fields.map(_buildFormField).toList(),
-            ),
-          ),
-        ),
-        widget.builder != null
-            ? widget.builder!(onSubmit, loading)
-            : widget.onCancel == null
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ),
-                    child: FormButton.filled(
-                      widget.submitLabel ?? "Submit",
-                      loading: loading,
-                      onClick: onSubmit,
-                    ),
-                  )
-                : FormActions(
-                    loading: loading,
-                    onCancel: widget.onCancel,
-                    okayText: widget.submitLabel ?? "Submit",
-                    onOkay: onSubmit,
-                  ),
-      ],
     );
   }
 }
