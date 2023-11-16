@@ -1,67 +1,86 @@
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/utils.dart';
 
-processChildren(Map<String, dynamic> field) {
-  var valueEntries = List.from(field['choices']).map((choice) {
-    return [
-      choice.value.split("_")[0],
-      (data) => data[field['name']] == choice.value,
-    ];
+formatFieldChoicesAndChilds(Map<String, dynamic> field) {
+  var choices = List.from(field['choices'] ?? []).map((choice) {
+    var choiceLabel = choice;
+    var choiceValue = choice;
+
+    if (choice is Map) {
+      choiceLabel = choice["name"] ?? choice["label"];
+      choiceValue = choice["value"] ?? choiceLabel;
+    }
+
+    return {"label": choiceLabel, "value": choiceValue};
   }).toList();
 
-  var valueMap = Map.fromEntries(valueEntries as Iterable<MapEntry>);
+  var childs = List.from(field['childs'] ?? []);
 
-  return field['childs'].reduce((agg, child) {
-    var childFields = [];
-    if (child.choices?.length && child.childs?.length) {
+  return {
+    ...field,
+    "choices": choices,
+    "childs": childs,
+  };
+}
+
+List<Map<String, dynamic>> processChildren(Map<String, dynamic> field) {
+  Map<String, dynamic> valueMap = {};
+
+  for (var choice in List.from(field['choices'])) {
+    valueMap[choice["value"].split("_")[0]] =
+        (data) => data?[field["name"]] == choice["value"];
+  }
+
+  return List.from(field['childs']).fold<List<Map<String, dynamic>>>([],
+      (agg, child) {
+    List<Map<String, dynamic>> childFields = [];
+
+    child = formatFieldChoicesAndChilds(child);
+
+    var choices = child['choices'];
+    var childs = child['childs'];
+
+    if (choices.isNotEmpty && childs.isNotEmpty) {
       childFields = processChildren(child);
     }
 
-    childFields = childFields.expand((element) => element).toList();
+    // childFields = childFields.expand((element) => element).toList();
+
+    var triggerId = child["trigger"].toString();
+    var trigger = valueMap[triggerId];
 
     return [
       ...agg,
-      {...child, "show": valueMap[child.trigger]},
+      {...child, "show": trigger},
       ...childFields,
     ];
-  }, []);
+  });
 }
 
 List<DynamicFormField>? processFields(
     {fields, data, noGroups, fullWidthFields}) {
   if (fields == null) return null;
 
-  var fieldsWithChildren = List.from(fields)
-      .fold([], (agg, field) {
-        var childFields = [];
-        var choices = List.from(field['choices'] ?? []).map((choice) {
-          var choiceLabel = choice;
-          var choiceValue = choice;
+  var fieldsWithChildren = List<Map<String, dynamic>>.from(fields)
+      .fold<List<Map<String, dynamic>>>([], (agg, Map<String, dynamic> field) {
+        field = formatFieldChoicesAndChilds(field);
+        var childFields = processChildren(field);
+        try {
+          devLog("Children: ${childFields.map((field) => field['trigger'])}");
+        } catch (e) {
+          devLog("Children error: $e");
+        }
 
-          if (choice is Map) {
-            choiceLabel = choice["name"] ?? choice["label"];
-            choiceValue = choice["value"] ?? choiceLabel;
-          }
-
-          return {"label": choiceLabel, "value": choiceValue};
-        }).toList();
-        // var childs = List.from(field['childs'] ?? []);
-
-        // if (choices.isNotEmpty && childs.isNotEmpty) {
-        //   childFields = processChildren(field);
-        // }
-
-        field['choices'] = choices;
-
-        childFields = childFields.expand((element) => element).toList();
+        // childFields = childFields.expand((element) => element).toList();
 
         return [...agg, field, ...childFields];
       })
       .where((element) => element["type"] != "file")
       .toList();
 
-  var processedFields = fieldsWithChildren.fold([], (agg, dynamic _field) {
-    Map<String, dynamic> field = _field;
+  var processedFields = fieldsWithChildren.fold<List<Map<String, dynamic>>>([],
+      (agg, Map<String, dynamic> field) {
+    // Map<String, dynamic> field = field;
     // var field = (Map<String, dynamic>) _field;
 
     var desctructuredProperties = [
@@ -140,6 +159,7 @@ List<DynamicFormField>? processFields(
   return processedFields
       .map(
         (field) => DynamicFormField(
+          show: field["show"],
           name: field["name"],
           label: field["label"],
           choices: field["choices"],

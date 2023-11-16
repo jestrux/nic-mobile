@@ -1,5 +1,130 @@
 List<Map<String, dynamic>> sampleFields = [
   {
+    "id": 100,
+    "trigger": null,
+    "name":
+        "Has_the_vehicle_been_insured_with_other_companies_IMIS_CLAIM_EXPERIENCE_AND_DECLINATURE_OF_COVER_FIELD_100",
+    "tag": null,
+    "min_value": null,
+    "max_value": null,
+    "commence": false,
+    "answered_question": null,
+    "tira": false,
+    "label": "Has the vehicle been insured with other companies?",
+    "description": "",
+    "declaration": false,
+    "type": "radio",
+    "possible_names": [],
+    "group": {
+      "id": "9",
+      "checklist": "11",
+      "name": "CLAIM EXPERIENCE AND DECLINATURE OF COVER:",
+      "type": "CLAIM_EXPERIENCE_AND_DECLINATURE_OF_COVER",
+      "multiple": false
+    },
+    "max_length": 500,
+    "required": true,
+    "choices": [
+      {"name": "No", "value": "100_IMIS_100"},
+      {"name": "Yes", "value": "99_IMIS_100"}
+    ],
+    "childs": [
+      {
+        "id": 102,
+        "trigger": 99,
+        "name": "99__TRIGGER__Policy_number_IMIS__FIELD_102",
+        "tag": "PolicyNumber",
+        "min_value": null,
+        "max_value": null,
+        "commence": false,
+        "answered_question": null,
+        "tira": false,
+        "label": "Policy number",
+        "description": "",
+        "declaration": false,
+        "type": "text",
+        "possible_names": [
+          "99__TRIGGER__Policy_number_IMIS__FIELD_102",
+          "99__TRIGGER__Policy_number_IMIS__FIELD_102"
+        ],
+        "group": {
+          "id": "None",
+          "checklist": "11",
+          "name": "NONE",
+          "type": "None",
+          "multiple": false
+        },
+        "help_text": "Policy number",
+        "max_length": 500,
+        "required": true,
+        "childs": []
+      },
+      {
+        "id": 101,
+        "trigger": 99,
+        "name": "99__TRIGGER__Name_of_the_company_IMIS__FIELD_101",
+        "tag": null,
+        "min_value": null,
+        "max_value": null,
+        "commence": false,
+        "answered_question": null,
+        "tira": false,
+        "label": "Name of the company",
+        "description": "",
+        "declaration": false,
+        "type": "text",
+        "possible_names": [
+          "99__TRIGGER__Name_of_the_company_IMIS__FIELD_101",
+          "99__TRIGGER__Name_of_the_company_IMIS__FIELD_101"
+        ],
+        "group": {
+          "id": "None",
+          "checklist": "11",
+          "name": "NONE",
+          "type": "None",
+          "multiple": false
+        },
+        "help_text": "Name of the company",
+        "max_length": 500,
+        "required": true,
+        "childs": []
+      },
+      {
+        "id": 103,
+        "trigger": 99,
+        "name": "99__TRIGGER__Type_of_cover_IMIS__FIELD_103",
+        "tag": null,
+        "min_value": null,
+        "max_value": null,
+        "commence": false,
+        "answered_question": null,
+        "tira": false,
+        "label": "Type of cover",
+        "description": "",
+        "declaration": false,
+        "type": "text",
+        "possible_names": [
+          "99__TRIGGER__Type_of_cover_IMIS__FIELD_103",
+          "99__TRIGGER__Type_of_cover_IMIS__FIELD_103"
+        ],
+        "group": {
+          "id": "None",
+          "checklist": "11",
+          "name": "NONE",
+          "type": "None",
+          "multiple": false
+        },
+        "help_text": "Type of cover",
+        "max_length": 500,
+        "required": true,
+        "childs": []
+      }
+    ]
+  }
+];
+
+List<Map<String, dynamic>> sampleFields1 = [
+  {
     "id": 9253,
     "trigger": null,
     "name": "Registration_number_IMIS_PARTICULARS_OF_THE_VEHICLE_FIELD_9253",
