@@ -80,14 +80,20 @@ class _BimaPageState extends State<BimaPage> {
             ),
             const SizedBox(height: 16),
             const SectionTitle(title: "All products"),
-            ...products.map((product) {
+            ...buyBimaActions.map((action) {
               return Padding(
                 padding: const EdgeInsets.only(top: 4, bottom: 4),
                 child: ListItem(
-                  image: product["image"],
-                  leading: product["icon"],
-                  title: product["name"],
-                  action: const ActionButton(label: "Purchase"),
+                  image: action.image,
+                  leading: action.icon,
+                  title: action.label,
+                  action: action.id == null
+                      ? null
+                      : ActionButton(
+                          label: "Purchase",
+                          onClick: (d) {
+                            handlePurchaseProduct(action);
+                          }),
                 ),
               );
             }).toList(),

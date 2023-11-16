@@ -5,6 +5,7 @@ enum ActionItemShape { regular, square, portrait, rounded, video }
 
 class ActionItem {
   final String label;
+  final String? id;
   final String? image;
   final String? resourceUrl;
   final Color? background;
@@ -20,6 +21,7 @@ class ActionItem {
 
   ActionItem({
     required this.label,
+    this.id,
     this.icon,
     this.image,
     this.resourceUrl,
@@ -42,6 +44,7 @@ class ActionItem {
     Function? onClick,
   }) =>
       ActionItem(
+        id: id,
         label: label,
         icon: icon,
         image: image,

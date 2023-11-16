@@ -55,13 +55,7 @@ class _HomePageState extends State<HomePage> {
               content: buyBimaActions,
               shape: ActionItemShape.regular,
               onItemClick: (action) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => FormPage(
-                      title: action.label,
-                    ),
-                  ),
-                );
+                handlePurchaseProduct(action);
               },
             ),
             const SizedBox(height: 16),

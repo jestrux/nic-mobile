@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/modals/BimaStatus.dart';
 import 'package:nic/components/modals/GetQuote.dart';
+import 'package:nic/components/modals/InitialProductForm.dart';
 import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
@@ -127,12 +128,14 @@ List<ActionItem> bimaPageActions = [
 
 List<ActionItem> buyBimaActions = [
   ActionItem(
+    id: "UHJvZHVjdE5vZGU6MzAw",
     icon: Icons.volunteer_activism,
     label: "Life & Saving",
     image:
         "https://images.unsplash.com/photo-1560346740-a8678c61a524?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDM2fHxibGFjayUyMGZhbWlseXxlbnwwfHx8fDE2ODQzNTYwNDB8MA&ixlib=rb-4.0.3&q=80&w=900",
   ),
   ActionItem(
+    id: "UHJvZHVjdE5vZGU6MTc1",
     icon: Icons.directions_car,
     label: "Magari",
     image:
@@ -145,6 +148,7 @@ List<ActionItem> buyBimaActions = [
         "https://www.nicinsurance.co.tz/img/uploads/pier_files/Linda-Mjengo_1690709063.png",
   ),
   ActionItem(
+    id: "UHJvZHVjdE5vZGU6MTgx",
     icon: Icons.two_wheeler,
     label: "Pikipiki / Bajaji",
     image:
@@ -163,3 +167,15 @@ List<ActionItem> buyBimaActions = [
         "https://www.nicinsurance.co.tz/img/uploads/pier_files/Motor-Insurance__1690709184.jpg",
   ),
 ];
+
+void handlePurchaseProduct(ActionItem product) {
+  if (product.id == null) return;
+
+  openAlert(
+    title: "Purchase ${product.label}",
+    child: InitialProductForm(
+      productId: product.id!,
+      productName: product.label,
+    ),
+  );
+}
