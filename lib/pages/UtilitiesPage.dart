@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/InlineList.dart';
-import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/data/actions.dart';
@@ -104,7 +103,14 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
             PageSection(
               padding: EdgeInsets.zero,
               title: "Quick Actions",
-              content: utilitiesPageActions,
+              content: [
+                claimStatusAction,
+                reportClaimAction,
+                bimaStatusAction,
+                bimaRenewalAction,
+                lifeContributionsAction,
+                changiaBimaAction,
+              ],
               shape: ActionItemShape.rounded,
               columns: 2,
             ),

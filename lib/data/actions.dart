@@ -1,46 +1,123 @@
 import 'package:flutter/material.dart';
+import 'package:nic/components/modals/BimaStatus.dart';
+import 'package:nic/components/modals/GetQuote.dart';
+import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/utils.dart';
+import 'package:nic/constants.dart';
 
-var claimStatusAction =
-    ActionItem(label: "Claim status", icon: Icons.pending_actions);
-var reportClaimAction = ActionItem(label: "Report Claim", icon: Icons.post_add);
-var bimaStatusAction = ActionItem(label: "Bima Status", icon: Icons.timelapse);
-var bimaRenewalAction =
-    ActionItem(label: "Bima Renewal", icon: Icons.event_repeat);
-var lifeContributionsAction =
-    ActionItem(label: "Life Contributions", icon: Icons.wallet);
-var changiaBimaAction = ActionItem(label: "Changia Bima", icon: Icons.savings);
+var claimStatusAction = ActionItem(
+  label: "Claim status",
+  icon: Icons.pending_actions,
+);
+
+var reportClaimAction = ActionItem(
+  label: "Report Claim",
+  icon: Icons.post_add,
+);
+
+var bimaStatusAction = ActionItem(
+  label: "Bima Status",
+  icon: Icons.timelapse,
+  onClick: () async {
+    openAlert(
+      title: "Bima Status",
+      child: const BimaStatus(),
+    );
+  },
+);
+
+var bimaRenewalAction = ActionItem(
+  label: "Bima Renewal",
+  icon: Icons.event_repeat,
+);
+
+var lifeContributionsAction = ActionItem(
+  label: "Life Contributions",
+  icon: Icons.wallet,
+);
+
+var changiaBimaAction = ActionItem(
+  label: "Changia Bima",
+  icon: Icons.savings,
+);
+
 var getQuickQuoteAction = ActionItem(
   label: "Get a Quick Quote",
   background: Colors.orange.shade300,
   icon: Icons.calculate,
+  onClick: () async {
+    var productId = await showChoicePicker(
+      mode: ChoicePickerMode.alert,
+      confirm: true,
+      title: "Select product to get a quote",
+      choices: products.map((product) {
+        return {"label": product["name"], "value": product["id"]};
+      }).toList(),
+    );
+
+    if (productId != null) {
+      openAlert(
+        child: GetQuote(productId: productId),
+      );
+    }
+  },
 );
+
 var makePaymentAction = ActionItem(
   label: "Make payment",
   background: Colors.green.shade300,
   icon: Icons.paid,
+  onClick: () async {
+    String? selectedChoice = await showChoicePicker(
+      choices: [
+        {
+          "icon": Icons.attach_money,
+          "label": "Pay Now",
+        },
+        {
+          "icon": Icons.question_mark,
+          "label": "Payment Information",
+        },
+      ],
+    );
+
+    if (selectedChoice != null) showToast(selectedChoice);
+  },
 );
+
 var customerSupportAction = ActionItem(
-  label: "Customer Support",
-  background: Colors.blue.shade300,
-  icon: Icons.headset_mic,
-);
+    label: "Customer Support",
+    background: Colors.blue.shade300,
+    icon: Icons.headset_mic,
+    onClick: () async {
+      String? selectedChoice = await showChoicePicker(
+        choices: [
+          {
+            "icon": Icons.phone,
+            "label": "Call Us",
+          },
+          {
+            "icon": Icons.mail,
+            "label": "Send Email",
+          },
+          {
+            "icon": Icons.chat,
+            "label": "Feedback / Complaint",
+          },
+        ],
+      );
 
-List<ActionItem> homePageQuickActions = [
-  reportClaimAction,
-  bimaStatusAction,
-  lifeContributionsAction,
-  changiaBimaAction,
-];
+      if (selectedChoice == null) return;
 
-List<ActionItem> utilitiesPageActions = [
-  claimStatusAction,
-  reportClaimAction,
-  bimaStatusAction,
-  bimaRenewalAction,
-  lifeContributionsAction,
-  changiaBimaAction,
-];
+      var url = {
+        "Call Us": "tel:${Constants.supportPhoneNumber}",
+        "Send Email": "mailto:${Constants.supportEmail}",
+        "Feedback / Complaint": Constants.contactsUrl
+      }[selectedChoice];
+
+      openUrl(url);
+    });
 
 List<ActionItem> bimaPageActions = [
   getQuickQuoteAction,

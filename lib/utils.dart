@@ -312,8 +312,10 @@ ColorScheme colorScheme(BuildContext context) {
 Future<void> openUrl(String? url) async {
   if (url == null) return;
 
-  if (!await launchUrl(Uri.parse(url))) {
-    throw Exception('Could not launch $url');
+  try {
+    !await launchUrl(Uri.parse(url));
+  } catch (e) {
+    showToast("Invalid url");
   }
 }
 
