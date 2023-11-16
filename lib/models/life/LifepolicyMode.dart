@@ -2,15 +2,13 @@ class LifePolicyModel {
   String? _id;
   String? _policyNumber;
   String? _checkNumber;
-  // String? _premium;
-  // String? _sumInsured;
+  String? _productName;
 
   LifePolicyModel.fromMap(Map<String, dynamic> map) {
     _id = map['id'];
     _policyNumber = map['policyNumber'];
     _checkNumber = map['checkNumber'];
-    // _premium = map['premium'];
-    // _sumInsured = map['sumInsured'];
+    _productName = map['productName'];
   }
 
   Map<String, dynamic> toMap() {
@@ -18,31 +16,24 @@ class LifePolicyModel {
     map['id'] = _id;
     map['policyNumber'] = _policyNumber;
     map['checkNumber'] = _checkNumber;
-    // map['premium'] = _premium;
-    // map['sumInsured'] = _sumInsured;
+    map['productName'] = _productName;
 
     return map;
   }
 
-  LifePolicyModel({id, policyNumber, checkNumber}) {
+  LifePolicyModel({id, policyNumber, checkNumber, productName}) {
     _id = id;
     _policyNumber = policyNumber;
     _checkNumber = checkNumber;
-    // _premium = premium;
-    // _sumInsured = sumInsured;
+    _productName = productName;
   }
 
   LifePolicyModel.fromJson(Map<String, dynamic> jsonData) {
     _id = jsonData['id'];
     _policyNumber = jsonData['policyNumber'];
     _checkNumber = jsonData['checkNumber'];
-    // _premium = jsonData['premium'];
-    // _sumInsured = jsonData['sumInsured'];
+    _productName = "${jsonData['product']['name']}";
   }
-
-  // void setPolicyId(String value) {
-  //   _policyId = value;
-  // }
 
   void setPolicyNumber(String value) {
     _policyNumber = value;
@@ -52,23 +43,11 @@ class LifePolicyModel {
     _checkNumber = value;
   }
 
-  // void setPremium(String value) {
-  //   _premium = value;
-  // }
-
-  // void setSumInsured(String value) {
-  //   _sumInsured = value;
-  // }
-
-  // String? get policyId => _policyId;
-
   String? get id => _id;
 
   String? get policyNumber => _policyNumber;
 
   String? get checkNumber => _checkNumber;
 
-  // String? get premium => _premium;
-
-  // String? get sumInsured => _sumInsured;
+  String? get productName => _productName;
 }

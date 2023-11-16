@@ -42,7 +42,7 @@ class _LifeSearcFormState extends State<LifeSearcForm> {
             DynamicFormField(
               name: "customerKey",
               label: "Customer Number",
-              placeholder: "Enter Nida number or Phone Number",
+              placeholder: "Enter Nida number",
             ),
           ],
           onCancel: () => Navigator.of(context).pop(),
@@ -71,11 +71,11 @@ class _LifeSearcFormState extends State<LifeSearcForm> {
         keyValueViews.add(
           GestureDetector(
             onTap: () {
-              print("Policy Id: ${policy.id}");
+              print("Policy Id: ${policy}");
             },
             child: KeyValueView(
               data: {
-                "Policy Number": policy.policyNumber,
+                "Policy Number": policy.productName,
               },
             ),
           ),

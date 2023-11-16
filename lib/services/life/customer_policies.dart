@@ -10,11 +10,18 @@ Future<List<LifePolicyModel>> getCustomerPolicies({String? customerId}) async {
       lifeCustomerPolicies(customerId: $customerId) {
         id
         policyNumber
-        checkNumber
-        premium
-        sumInsured
+        checkNumber,
+        premium,
+        sumInsured,
         startDate
-        maturityDate
+        maturityDate,
+        customer{
+          customerNumber
+        },
+        product{
+          id,
+          name
+        }
       }
     }
   """;
@@ -27,7 +34,7 @@ Future<List<LifePolicyModel>> getCustomerPolicies({String? customerId}) async {
 
   if (result.data != null) {
     var policyList = result.data!['lifeCustomerPolicies'];
-
+    print("__________policyList: ${policyList}");
     if (policyList != null) {
       policies = List<LifePolicyModel>.from(policyList.map(
         (policyMap) => LifePolicyModel.fromMap(policyMap),
