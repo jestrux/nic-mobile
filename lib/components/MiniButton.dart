@@ -64,7 +64,7 @@ class MiniButton extends StatelessWidget {
                 ? null
                 : Border.all(
                     width: 0.6,
-                    color: colorScheme.outlineVariant,
+                    color: color ?? colorScheme.outlineVariant,
                   ),
           ),
           padding: EdgeInsets.only(

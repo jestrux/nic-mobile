@@ -9,6 +9,7 @@ class FormButton extends StatelessWidget {
   final String label;
   final bool loading;
   final bool small;
+  final bool disabled;
   final FormButtonVariant variant;
   final VoidCallback onClick;
 
@@ -18,6 +19,7 @@ class FormButton extends StatelessWidget {
     this.loading = false,
     this.variant = FormButtonVariant.filled,
     this.small = false,
+    this.disabled = false,
     required this.onClick,
   }) : super(key: key);
 
@@ -26,6 +28,7 @@ class FormButton extends StatelessWidget {
     super.key,
     this.loading = false,
     this.small = false,
+    this.disabled = false,
     required this.onClick,
   }) : variant = FormButtonVariant.filled;
 
@@ -34,6 +37,7 @@ class FormButton extends StatelessWidget {
     super.key,
     this.loading = false,
     this.small = false,
+    this.disabled = false,
     required this.onClick,
   }) : variant = FormButtonVariant.outlined;
 
@@ -42,6 +46,7 @@ class FormButton extends StatelessWidget {
     super.key,
     this.loading = false,
     this.small = false,
+    this.disabled = false,
     required this.onClick,
   }) : variant = FormButtonVariant.flat;
 
@@ -59,9 +64,13 @@ class FormButton extends StatelessWidget {
 
               return null;
             }),
-      foregroundColor: filled
-          ? MaterialStateProperty.all(Colors.white)
-          : MaterialStateProperty.all(colorScheme(context).onBackground),
+      foregroundColor: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.disabled)) {
+          return null;
+        }
+
+        return filled ? Colors.white : colorScheme(context).onBackground;
+      }),
       overlayColor: filled
           ? null
           : MaterialStateProperty.all(
@@ -76,7 +85,7 @@ class FormButton extends StatelessWidget {
       ),
     );
 
-    var onPressed = loading ? null : onClick;
+    var onPressed = loading || disabled ? null : onClick;
 
     var child = Row(
       mainAxisAlignment: MainAxisAlignment.center,

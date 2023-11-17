@@ -251,7 +251,7 @@ void openErrorAlert({
 }
 
 void openSuccessAlert({
-  String? title = "Success",
+  String? title = "Success!",
   required String message,
 }) {
   openAlert(

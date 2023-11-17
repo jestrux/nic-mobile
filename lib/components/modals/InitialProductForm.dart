@@ -28,11 +28,8 @@ class _InitialProductFormState extends State<InitialProductForm> {
       var res = await getInitialProductForm(productId: widget.productId);
       if (res == null) throw ("Failed to fetch form. Please try again later.");
 
-      var productIsNonMotor = ["UHJvZHVjdE5vZGU6MzAw", "UHJvZHVjdE5vZGU6MzEx"]
-          .contains(widget.productId);
-
       var fixedInitialFields = [
-        if (productIsNonMotor)
+        if (productIsNonMotor(productId: widget.productId))
           {
             "type": "text",
             "name": "owner_full_name",

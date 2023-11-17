@@ -4,6 +4,9 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:nic/services/data_connection.dart';
 import 'package:nic/utils.dart';
 
+bool productIsNonMotor({required String productId}) =>
+    ["UHJvZHVjdE5vZGU6MzAw", "UHJvZHVjdE5vZGU6MzEx"].contains(productId);
+
 Future<List<dynamic>?> getInitialProductForm({
   required String productId,
 }) async {
@@ -214,4 +217,144 @@ Future<Map<String, dynamic>?> submitProposalForm({
   }
 
   return proposalResponse;
+}
+
+Future<Map<String, dynamic>?> fetchPaymentSummary({
+  required String productId,
+  required int proposal,
+  bool recurse = false,
+  int retries = 1,
+}) async {
+  String queryString =
+      r"""query ($proposal: Int!, $product: String!, $underwriteChannel: Int!) {
+    premiumSummary(policy: $proposal, product: $product, underwriteChannel: $underwriteChannel)
+  }""";
+
+  final QueryOptions options = QueryOptions(
+    document: gql(queryString),
+    variables: <String, dynamic>{
+      "product": productId,
+      "proposal": proposal,
+      "underwriteChannel": 2,
+    },
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data == null) {
+    devLog("Payment summary: No data found");
+    throw ("Failed to fetch payment details. Please try again later.");
+  }
+
+  var summaryResponse = result.data!['premiumSummary'];
+
+  if (summaryResponse == null) {
+    throw ("Failed to fetch payment details. Please try again later.");
+  }
+
+  if (summaryResponse["control_number"] == null && recurse && retries < 5) {
+    await Future.delayed(const Duration(seconds: 2));
+    return fetchPaymentSummary(
+      productId: productId,
+      proposal: proposal,
+      recurse: true,
+      retries: retries + 1,
+    );
+  }
+
+  return summaryResponse;
+}
+
+Future<Map<String, dynamic>?> requestControlNumber({
+  required int proposal,
+  required String productId,
+}) async {
+  String queryString =
+      r"""mutation ($proposal: Int!,$isLife: Boolean, $underwriteChannel: Int!) {
+        controlNumber(proposal: $proposal, isLife:$isLife, underwriteChannel: $underwriteChannel) {
+            success
+            message
+            data
+            premium
+            premiumVat
+            totalPremium
+            propertyName
+            startDate
+            endDate
+            controlNumber
+            isPaid
+        }
+    }""";
+
+  final QueryOptions options = QueryOptions(
+    document: gql(queryString),
+    variables: <String, dynamic>{
+      "proposal": proposal,
+      "isLife": productIsNonMotor(productId: productId),
+      "underwriteChannel": 2,
+    },
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data == null) {
+    devLog("Request control number: No data found");
+    throw ("Failed to fetch payment. Please try again later.");
+  }
+
+  var controlNumberResponse = result.data!['controlNumber'];
+
+  if (!(controlNumberResponse?['success'] ?? false)) {
+    throw ("Failed to fetch payment. Please try again later.");
+  }
+
+  return fetchPaymentSummary(
+    productId: productId,
+    proposal: proposal,
+    recurse: true,
+  );
+}
+
+requestPaymentPush({
+  required String amount,
+  required String controlNumber,
+  required String phoneNumber,
+}) async {
+  String queryString =
+      // r"""mutation ($amount: String!, $controlNumber: String!, $phone: String!, $underwriteChannel: Int!) {
+      //   makePushPayment(amount: $amount, controlNumber: $controlNumber, phone: $phone, underwriteChannel: $underwriteChannel) {
+      r"""mutation ($amount: String!, $controlNumber: String!, $phone: String!) {
+        makePushPayment(amount: $amount, controlNumber: $controlNumber, phone: $phone) {
+            success
+            message
+        }
+    }""";
+
+  final QueryOptions options = QueryOptions(
+    document: gql(queryString),
+    variables: <String, dynamic>{
+      "amount": amount,
+      "controlNumber": controlNumber,
+      "phone": phoneNumber,
+      // "underwriteChannel": 2,
+    },
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data == null) {
+    devLog("Payment push: No data found");
+    throw ("Failed to make payment. Please try again later.");
+  }
+
+  var makePushPaymentResponse = result.data!['makePushPayment'];
+
+  if (!(makePushPaymentResponse?["success"] ?? false)) {
+    throw ("Failed to make payment. Please try again later.");
+  }
+
+  return true;
 }
