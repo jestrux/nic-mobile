@@ -16,6 +16,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:nic/services/authentication_service.dart';
 import 'package:nic/services/branch_service.dart';
+import 'package:nic/utils.dart';
 
 
 class RegisterPage extends StatefulWidget {
@@ -32,16 +33,21 @@ class _RegisterPageState extends State<RegisterPage> {
   List<Map<String, dynamic>> branchList = [];
 
   Future<Map<String, dynamic>?> registerCustomer(Map<String, dynamic> values) async {
-    return  await AuthenticationService().registerCustomer(
+    var responce =  await AuthenticationService().registerCustomer(
         fullName:values['fullName'],
         phoneNumber:values['phoneNumber'],
         nida:values['nidaId'],
         password:values['password'],
-        salesPerson:values[''],
+        salesPerson:false,
         selectedGender:values['gender'],
         dob:values['birthDate'],
         branch:values['branch']
     );
+    print("responce----: $responce");
+    if(responce!['status']){
+      showToast("Successfull Registered");
+    }
+    return responce;
   }
 
   Future<dynamic> getBranches() async {
@@ -213,101 +219,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     // onSuccess: showResponse,
                   ),
                   const SizedBox(height: 20),
-                  // SizedBox(
-                  //   width: MediaQuery.of(context).size.width - 20,
-                  //   height: 45,
-                  //   child: RaisedButton(
-                  //     padding: const EdgeInsets.all(0.0),
-                  //     onPressed: () {
-                  //       if (loading == false) {
-                  //         if (checkedValue && selectedGender != 2) {
-                  //           if (formKey.currentState!.validate()) {
-                  //             BlocProvider.of<AuthenticationBloc>(
-                  //                 context)
-                  //                 .add(
-                  //               RegisterEvent(
-                  //                 fullName: fullName.text,
-                  //                 nida: nidaId.text,
-                  //                 phoneNumber: phoneNumber.text,
-                  //                 password: password.text,
-                  //                 salesPerson: salesPerson,
-                  //                 selectedGender: selectedGender,
-                  //                 dob:dob,
-                  //                 branch: branch,
-                  //               ),
-                  //             );
-                  //             setState(() {
-                  //               loading = true;
-                  //             });
-                  //           }
-                  //         } else if(selectedGender == 2){
-                  //           showSystemSnack(
-                  //             context,
-                  //             message:
-                  //             "Please select gender",
-                  //             color: Colors.red,
-                  //             globalKey: scaffoldKey,
-                  //           );
-                  //         }else if(dob == null){
-                  //           showSystemSnack(
-                  //             context,
-                  //             message:
-                  //             "Please select Birth Date",
-                  //             color: Colors.red,
-                  //             globalKey: scaffoldKey,
-                  //           );
-                  //         }
-                  //         else {
-                  //           showSystemSnack(
-                  //             context,
-                  //             message:
-                  //             "Terms and Conditions need to be accepted",
-                  //             color: Colors.red,
-                  //             globalKey: scaffoldKey,
-                  //           );
-                  //         }
-                  //       }
-                  //     },
-                  //     child: Container(
-                  //       width: MediaQuery.of(context).size.width - 20,
-                  //       alignment: Alignment.center,
-                  //       decoration: BoxDecoration(
-                  //           borderRadius:
-                  //           BorderRadius.all(Radius.circular(5)),
-                  //           gradient: LinearGradient(
-                  //               begin: Alignment.centerLeft,
-                  //               end: Alignment.centerRight,
-                  //               colors: [
-                  //                 Color(0xff43a047),
-                  //                 Color(0xff1b5e20)
-                  //               ])),
-                  //       child: Row(
-                  //         mainAxisAlignment: MainAxisAlignment.center,
-                  //         children: [
-                  //           loading
-                  //               ? SpinKitThreeBounce(
-                  //             color: Colors.white,
-                  //             size: 30.0,
-                  //           )
-                  //               : Text(
-                  //             'Register',
-                  //             style: TextStyle(
-                  //               fontSize: 18,
-                  //               fontWeight: FontWeight.w400,
-                  //               color: Colors.white,
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //     color: Colors.transparent,
-                  //   ),
-                  // ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   _divider(),
                   Container(
-                    margin: EdgeInsets.symmetric(vertical: 0),
-                    padding: EdgeInsets.all(5),
+                    margin: const EdgeInsets.symmetric(vertical: 0),
+                    padding: const EdgeInsets.all(5),
                     alignment: Alignment.bottomCenter,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -319,13 +235,10 @@ class _RegisterPageState extends State<RegisterPage> {
                               fontWeight: FontWeight.w600,
                               color: Colors.grey[800]),
                         ),
-                        SizedBox(
-                          width: 10,
-                        ),
+                        const SizedBox(width: 10),
                         TextButton(
                           onPressed: () {
-                            // _authenticationBloc.add(LoginStartedEvent());
-                            Navigator.pushNamed(context, '/login');
+                            Navigator.of(context).pop();
                           },
                           child: Text(
                             'Login',
@@ -345,6 +258,6 @@ class _RegisterPageState extends State<RegisterPage> {
           Positioned(top: 40, left: 0, child: _backButton()),
         ],
       ),
-    );;
+    );
   }
 }

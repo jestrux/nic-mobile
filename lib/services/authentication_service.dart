@@ -82,8 +82,8 @@ class AuthenticationService {
     String? branch
   }) async {
     String register = r"""
-   mutation ($nida: String!, $phone: String!, $fullName: String!, $password: String!, $salesPerson: Boolean!, $selectedGender:Int!, $dob:String!, $branch:String!) {
-        registerMobile(input: {nida: $nida, phone: $phone, fullName: $fullName, password: $password, salesPerson: $salesPerson, selectedGender: $selectedGender, dob:$dob, branch:$branch}) {
+   mutation ($nida: String!, $phone: String!, $fullName: String!, $password: String!, $salesPerson: Boolean!, $selectedGender:Int!, $dob:String!, $branch:String!, $underwriteChannel:Int!) {
+        registerMobile(input: {nida: $nida, phone: $phone, fullName: $fullName, password: $password, salesPerson: $salesPerson, selectedGender: $selectedGender, dob:$dob, branch:$branch,underwriteChannel:$underwriteChannel}) {
           success
           token
           user{
@@ -129,7 +129,8 @@ class AuthenticationService {
         "salesPerson": salesPerson,
         "selectedGender":selectedGender,
         "dob":dob,
-        "branch":branch
+        "branch":branch,
+        "underwriteChannel":2
       },
     );
 
@@ -137,6 +138,7 @@ class AuthenticationService {
     // print("branch----: ${branch}");
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.mutate(options);
+    // print(result.data);
     if (result.data != null) {
       if (result.data!['registerMobile']['success'] == true) {
         UserModel userModel = UserModel.fromRegisterJson(

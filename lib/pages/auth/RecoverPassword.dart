@@ -179,64 +179,6 @@ class _RecoverPasswordState extends State<RecoverPassword> {
           ),
         ),
         const SizedBox(height: 20),
-        // SizedBox(
-        //     width: MediaQuery.of(context).size.width - 20,
-        //     height: 45,
-        //     child: Selector<UserRecoveryNotifier, bool>(
-        //         selector: (BuildContext, ur) => ur.initLoading,
-        //         builder: (context, data, child) {
-        //           if (data) {
-        //             return const Loader(
-        //               message: "",
-        //               loaderSize: 14,
-        //               loaderStrokeWidth: 2,
-        //               small: true,
-        //             );
-        //           }
-        //           return FilledButton(
-        //             style: ButtonStyle(
-        //               visualDensity: VisualDensity.compact,
-        //               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        //               padding: MaterialStateProperty.all(
-        //                 const EdgeInsets.symmetric(
-        //                   horizontal: 12,
-        //                 ),
-        //               ),
-        //             ),
-        //             onPressed: () async {
-        //               if (loading == false) {
-        //                 if (formKey.currentState!.validate()) {
-        //                   var temp_username;
-        //                   temp_username = username.text.trim();
-        //
-        //                   if (int.tryParse(username.text.trim()) != null){
-        //                     if (temp_username[0] == "0"){
-        //                       temp_username = temp_username.replaceFirst("0", "255");
-        //                     }
-        //                     print(temp_username);
-        //                   }
-        //
-        //                 }
-        //               }
-        //             },
-        //             child: Row(
-        //               mainAxisAlignment: MainAxisAlignment.center,
-        //               children: [
-        //                 if (loading)
-        //                   const Padding(
-        //                     padding: EdgeInsets.only(right: 6),
-        //                     child: Loader(
-        //                       message: "",
-        //                       loaderSize: 14,
-        //                       loaderStrokeWidth: 2,
-        //                       small: true,
-        //                     ),
-        //                   ),
-        //                 const Text("Login"),
-        //               ],
-        //             ),
-        //           );
-        //         })),
       ],
     );
   }
