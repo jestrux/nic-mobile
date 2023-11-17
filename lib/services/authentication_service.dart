@@ -71,7 +71,7 @@ class AuthenticationService {
     return userModel;
   }
 
-  Future<Map<String, dynamic>?> register(
+  Future<Map<String, dynamic>?> registerCustomer({
     String? fullName,
     String? phoneNumber,
     String? nida,
@@ -79,8 +79,8 @@ class AuthenticationService {
     bool? salesPerson,
     int? selectedGender,
     String? dob,
-    String? branch,
-  ) async {
+    String? branch
+  }) async {
     String register = r"""
    mutation ($nida: String!, $phone: String!, $fullName: String!, $password: String!, $salesPerson: Boolean!, $selectedGender:Int!, $dob:String!, $branch:String!) {
         registerMobile(input: {nida: $nida, phone: $phone, fullName: $fullName, password: $password, salesPerson: $salesPerson, selectedGender: $selectedGender, dob:$dob, branch:$branch}) {
@@ -157,10 +157,10 @@ class AuthenticationService {
         // userProfileBox.put("total_life_policies", userModel.totalLifePolicies);
         // userProfileBox.put("total_claims", userModel.totalClaims);
         // if (Repository().getToken() != null) {
-        //   return {
-        //     "status": true,
-        //     "data": userModel,
-        //   };
+          return {
+            "status": true,
+            "data": userModel,
+          };
         // }
       } else {
         return {

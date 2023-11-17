@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
+import 'package:nic/models/branch_model.dart';
 import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/control/bContainer.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 // import 'package:imis_client_app/services/branch_service.dart';
 import 'package:intl/intl.dart';
 import 'package:nic/services/authentication_service.dart';
+import 'package:nic/services/branch_service.dart';
 
 
 class RegisterPage extends StatefulWidget {
@@ -25,19 +27,36 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  var formKey = GlobalKey<FormState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  Future<UserModel?> tokenAuth(Map<String, dynamic> values) async {
-    return await AuthenticationService().loginUser(username:  values["username"], password : values["password"]);
-  }
-  TextEditingController birthDateField = TextEditingController();
   DateTime? initialValue;
+  List<Map<String, dynamic>> branchList = [];
 
+  Future<Map<String, dynamic>?> registerCustomer(Map<String, dynamic> values) async {
+    return  await AuthenticationService().registerCustomer(
+        fullName:values['fullName'],
+        phoneNumber:values['phoneNumber'],
+        nida:values['nidaId'],
+        password:values['password'],
+        salesPerson:values[''],
+        selectedGender:values['gender'],
+        dob:values['birthDate'],
+        branch:values['branch']
+    );
+  }
 
+  Future<dynamic> getBranches() async {
+    var tempBranchList =  await BranchService().getBranches();
+    setState(() {
+      for (var i in tempBranchList){
+        branchList.add({"label":i['node']['name'],"value":i['node']['id']});
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    getBranches();
     initialValue = DateTime(DateTime.now().year-10, DateTime.now().month, DateTime.now().day);
   }
 
@@ -156,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const DynamicFormField(
                           label: "Select Gender",
-                          name: "selectedGender",
+                          name: "gender",
                           choices: [
                             {"value":1,"label":"Male"},
                             {"value":2,"label":"Female"}
@@ -167,16 +186,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       DynamicFormField(
                         label: "Birth Date",
-                          name: "birth_date",
+                          name: "birthDate",
                           type: DynamicFormFieldType.date,
                           max: initialValue,
-                          canClear: true
                       ),
-                      const DynamicFormField(
+                       DynamicFormField(
                         label: "Preferred branch",
                         name: "branch",
                         type: DynamicFormFieldType.choice,
-                        choices: [],
+                        choices: branchList,
                         canClear: true
                       ),
                       const DynamicFormField(
@@ -191,7 +209,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ],
                     submitLabel: "Register",
-                    onSubmit: tokenAuth,
+                    onSubmit: registerCustomer,
                     // onSuccess: showResponse,
                   ),
                   const SizedBox(height: 20),
