@@ -33,7 +33,7 @@ class AlertContent extends StatelessWidget {
   final Widget? child;
   final AlertType? type;
   final String okayText;
-  final Function onOkay;
+  final Function? onOkay;
   final String cancelText;
   final Function? onCancel;
 
@@ -44,7 +44,7 @@ class AlertContent extends StatelessWidget {
     this.child,
     this.type = AlertType.custom,
     this.okayText = "Okay",
-    this.onOkay = Constants.randoFunction,
+    this.onOkay,
     this.cancelText = "Cancel",
     this.onCancel,
   }) : super(key: key);
@@ -143,24 +143,33 @@ class AlertContent extends StatelessWidget {
                                     ),
                                   ),
                                 if (child != null) child!,
-                                if (!isCustom)
-                                  Container(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 100,
-                                    ),
-                                    alignment: Alignment.center,
-                                    padding: const EdgeInsets.only(top: 12),
-                                    child: SizedBox(
-                                      width: double.infinity,
-                                      child: FormButton.filled(
-                                        okayText,
-                                        small: true,
-                                        onClick: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ),
-                                  ),
+                                onOkay != null
+                                    ? FormActions(
+                                        okayText: okayText,
+                                        cancelText: cancelText,
+                                        onOkay: onOkay!,
+                                        onCancel: onCancel,
+                                      )
+                                    : isCustom
+                                        ? Container()
+                                        : Container(
+                                            constraints: const BoxConstraints(
+                                              maxWidth: 100,
+                                            ),
+                                            alignment: Alignment.center,
+                                            padding:
+                                                const EdgeInsets.only(top: 12),
+                                            child: SizedBox(
+                                              width: double.infinity,
+                                              child: FormButton.filled(
+                                                okayText,
+                                                small: true,
+                                                onClick: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ),
+                                          ),
                               ],
                             ),
                           ),
@@ -199,7 +208,7 @@ Future<dynamic> openAlert({
   Widget? child,
   AlertType? type = AlertType.custom,
   String okayText = "Okay",
-  onOkay = Constants.randoFunction,
+  Function? onOkay,
   String cancelText = "Cancel",
   onCancel,
 }) {

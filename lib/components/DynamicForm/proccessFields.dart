@@ -58,14 +58,14 @@ List<DynamicFormField>? processFields(
 
   var fieldsWithChildren = List<Map<String, dynamic>>.from(fields)
       .fold<List<Map<String, dynamic>>>([], (agg, Map<String, dynamic> field) {
-        field = formatFieldChoicesAndChilds(field);
-        var childFields = processChildren(field);
+    field = formatFieldChoicesAndChilds(field);
+    var childFields = processChildren(field);
 
-        field['children'] = childFields.map((child) => child['name']).toList();
+    field['children'] = childFields.map((child) => child['name']).toList();
 
-        return [...agg, field, ...childFields];
-      })
-      .where((element) => element["type"] != "file")
+    return [...agg, field, ...childFields];
+  })
+      // .where((element) => element["type"] != "file")
       .toList();
 
   var processedFields = fieldsWithChildren.fold<List<Map<String, dynamic>>>([],
@@ -153,7 +153,7 @@ List<DynamicFormField>? processFields(
           show: field["show"],
           name: field["name"],
           label: field["label"],
-          required: field["required"],
+          required: field["required"] ?? true,
           choices: field["choices"],
           max: field["max_value"],
           min: field["min_value"],

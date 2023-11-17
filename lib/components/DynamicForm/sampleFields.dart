@@ -143,7 +143,63 @@ List<Map<String, dynamic>> sampleFields = [
         ]
       }
     ]
-  }
+  },
+  {
+    "id": 6686,
+    "trigger": null,
+    "name":
+        "Attach_one1_left_front_corner_photograph_IMIS_PHOTOGRAPHS_OF_THE_MOTOR_VEHICLE_FIELD_6686",
+    "tag": "MOTOR",
+    "min_value": null,
+    "max_value": null,
+    "commence": false,
+    "answered_question": null,
+    "tira": false,
+    "label": " (Less Than 1 Mb) - Attach one(1) left front corner photograph",
+    "description": "",
+    "declaration": false,
+    "type": "file",
+    "possible_names": [],
+    "group": {
+      "id": "244",
+      "checklist": "11",
+      "name": "PHOTOGRAPHS OF THE MOTOR VEHICLE",
+      "type": "PHOTOGRAPHS_OF_THE_MOTOR_VEHICLE",
+      "multiple": false
+    },
+    "help_text": "Attach one(1) left front corner photograph",
+    "max_length": 500,
+    "required": false,
+    "childs": []
+  },
+  {
+    "id": 6687,
+    "trigger": null,
+    "name":
+        "Attach_one1_right_front_corner_photograph_IMIS_PHOTOGRAPHS_OF_THE_MOTOR_VEHICLE_FIELD_6687",
+    "tag": "MOTOR",
+    "min_value": null,
+    "max_value": null,
+    "commence": false,
+    "answered_question": null,
+    "tira": false,
+    "label": " (Less Than 1 Mb) - Attach one(1) right front corner photograph",
+    "description": "",
+    "declaration": false,
+    "type": "file",
+    "possible_names": [],
+    "group": {
+      "id": "244",
+      "checklist": "11",
+      "name": "PHOTOGRAPHS OF THE MOTOR VEHICLE",
+      "type": "PHOTOGRAPHS_OF_THE_MOTOR_VEHICLE",
+      "multiple": false
+    },
+    "help_text": "Attach one(1) right front corner photograph",
+    "max_length": 500,
+    "required": false,
+    "childs": []
+  },
 ];
 
 List<Map<String, dynamic>> sampleFields1 = [

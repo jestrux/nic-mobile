@@ -41,14 +41,12 @@ Future<List<dynamic>?> getInitialProductForm({
 
   initialForm = List.from(fullinitialForm);
 
-  devLog("Initial form: $fullinitialForm");
-
   return initialForm;
 }
 
 Future<Map<String, dynamic>?> fetchProposalForm({
   required String productId,
-  required String proposal,
+  required int proposal,
   required String phoneNumber,
 }) async {
   String queryString =
@@ -85,8 +83,6 @@ Future<Map<String, dynamic>?> fetchProposalForm({
   allForm = List.from(jsonDecode(
     jsonDecode(allFormResponse),
   )).map((e) => List.from(e["fields"] ?? [])).expand((field) => field).toList();
-
-  devLog("Proposal form: $allForm");
 
   return {
     "productId": productId,
@@ -162,4 +158,60 @@ Future<Map<String, dynamic>?> initiateProposal({
     proposal: initiateProposalResponse["proposal"],
     phoneNumber: phoneNumber,
   );
+}
+
+Future<Map<String, dynamic>?> submitProposalForm({
+  required String productId,
+  required int proposal,
+  required String phoneNumber,
+  required List<dynamic> data,
+}) async {
+  String queryString =
+      r"""mutation ($product: ID!, $data: JSONString!, $proposal: Int!, $renewal: Boolean!, $underwriteChannel: Int!) {
+      proposal(product: $product, data: $data, proposal: $proposal, renewal: $renewal, underwriteChannel: $underwriteChannel) {
+          success
+          message
+          data
+          premium
+          premiumVat
+          totalPremium,
+          propertyName,
+          startDate,
+          endDate,
+          controlNumber,
+          isPaid
+      }
+  }""";
+
+  final QueryOptions options = QueryOptions(
+    document: gql(queryString),
+    variables: <String, dynamic>{
+      "product": productId,
+      "proposal": proposal,
+      "renewal": false,
+      "verify": false,
+      "data": jsonEncode(data),
+      "underwriteChannel": 2,
+    },
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data?['proposal'] == null) {
+    devLog("Proposal: No data found");
+    throw ("Failed to submit proposal. Please try again later.");
+  }
+
+  var proposalResponse = result.data!['proposal'];
+
+  if (!(proposalResponse?['success'] ?? false)) {
+    var message = proposalResponse?['message'] ??
+        "Failed to submit proposal. Please try again later.";
+
+    devLog("Proposal: backend error, $message");
+    throw (message);
+  }
+
+  return proposalResponse;
 }

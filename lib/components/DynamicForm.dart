@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/FormButton.dart';
 import 'package:nic/components/FormInput.dart';
@@ -15,7 +18,8 @@ enum DynamicFormFieldType {
   boolean,
   checkbox,
   radio,
-  password
+  password,
+  file
 }
 
 var keyboardTypeMap = {
@@ -24,6 +28,7 @@ var keyboardTypeMap = {
 };
 
 var dynamicFormFieldTypeMap = {
+  "file": DynamicFormFieldType.file,
   "text": DynamicFormFieldType.text,
   "password": DynamicFormFieldType.password,
 
@@ -162,7 +167,7 @@ class _DynamicFormState extends State<DynamicForm> {
         questionAnswerPayload = {"data": answers};
       }
 
-      devLog("Payload: $response");
+      // devLog("Payload: $response");
       response = await widget.onSubmit(questionAnswerPayload ?? payload);
     } catch (e) {
       devLog("Failed to fetch dynamic form: $e");
@@ -234,20 +239,22 @@ class _DynamicFormState extends State<DynamicForm> {
         Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: FormBuilder(
-            autovalidateMode:
-                !submitAttempted ? null : AutovalidateMode.onUserInteraction,
             key: _formKey,
             onChanged: () => updateFields(_formKey.currentState),
             child: Column(
-              children: fields
-                  .map(
-                    (field) => FormField(
-                      field: field,
-                      autoFocus: widget.fields.length == 1,
-                      choicePickerMode: widget.choicePickerMode,
-                    ),
-                  )
-                  .toList(),
+              children: fields.map(
+                (field) {
+                  var form = _formKey.currentState;
+
+                  return FormField(
+                    field: field,
+                    autoFocus: widget.fields.length == 1,
+                    choicePickerMode: widget.choicePickerMode,
+                    autoValidate: submitAttempted &&
+                        (form?.fields[field.name]?.isDirty ?? false),
+                  );
+                },
+              ).toList(),
             ),
           ),
         ),
@@ -281,10 +288,12 @@ class FormField extends StatelessWidget {
     required this.field,
     required this.choicePickerMode,
     this.autoFocus,
+    this.autoValidate,
   });
 
   final ChoicePickerMode choicePickerMode;
   final bool? autoFocus;
+  final bool? autoValidate;
   final DynamicFormField field;
 
   @override
@@ -293,7 +302,8 @@ class FormField extends StatelessWidget {
 
     return FormBuilderField(
       name: field.name,
-      // autovalidateMode: !submitAttempted ? null : AutovalidateMode.onUserInteraction,
+      autovalidateMode:
+          !(autoValidate ?? false) ? null : AutovalidateMode.onUserInteraction,
       validator: FormBuilderValidators.compose([
         if (field.required)
           FormBuilderValidators.required(
@@ -311,6 +321,7 @@ class FormField extends StatelessWidget {
         Function? onClick;
         String? hint = field.placeholder;
         String? selectedValueLabel;
+        Widget? leading;
 
         if ([DynamicFormFieldType.choice, DynamicFormFieldType.radio]
             .contains(field.type)) {
@@ -335,6 +346,25 @@ class FormField extends StatelessWidget {
 
             if (selectedChioce != null) {
               fieldState.didChange(selectedChioce);
+            }
+          };
+        }
+
+        if (field.type == DynamicFormFieldType.file) {
+          hint = hint ?? "Click to take picture";
+          icon = Icons.camera_alt;
+
+          if (fieldState.value != null) {
+            selectedValueLabel = "Click to change picture";
+          }
+
+          onClick = () async {
+            final imagePicker = ImagePicker();
+            final pickedFile = await imagePicker.pickImage(
+              source: ImageSource.camera,
+            );
+            if (pickedFile != null) {
+              fieldState.didChange(File(pickedFile.path));
             }
           };
         }
@@ -369,6 +399,60 @@ class FormField extends StatelessWidget {
             // letterSpacing: 0.5,
           ),
         );
+
+        if (field.type == DynamicFormFieldType.file &&
+            fieldState.value != null) {
+          var image = FileImage(fieldState.value);
+
+          leading = GestureDetector(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image(image: image, fit: BoxFit.cover),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme(context).surface.withOpacity(0.95),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(2),
+                      ),
+                    ),
+                    padding: const EdgeInsets.only(
+                      left: 1,
+                      right: 1,
+                      bottom: 1,
+                    ),
+                    height: 14,
+                    width: 14,
+                    child: const Icon(
+                      Icons.open_in_full,
+                      size: 10,
+                    ),
+                  ),
+                )
+              ],
+            ),
+            onTap: () {
+              openBottomSheet(
+                child: Container(
+                  width: double.infinity,
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.6,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image(
+                      image: image,
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        }
 
         if (field.type == DynamicFormFieldType.boolean) {
           fieldWidget = InkWell(
@@ -435,6 +519,7 @@ class FormField extends StatelessWidget {
           type: keyboardTypeMap[field.type] ?? TextInputType.text,
           // money: field.type == DynamicFormFieldType.number,
           hint: hint ?? "",
+          leading: leading,
           value: selectedValueLabel ?? fieldState.value,
           icon: icon,
           onClick: onClick,

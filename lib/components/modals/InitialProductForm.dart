@@ -83,6 +83,10 @@ class _InitialProductFormState extends State<InitialProductForm> {
                   MaterialPageRoute(
                     builder: (context) => FormPage(
                       title: widget.productName,
+                      proposalDetails: {
+                        ...data,
+                        "productId": widget.productId,
+                      },
                     ),
                   ),
                 );

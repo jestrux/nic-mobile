@@ -56,6 +56,13 @@ class _HomePageState extends State<HomePage> {
               shape: ActionItemShape.regular,
               onItemClick: (action) {
                 handlePurchaseProduct(action);
+                // Navigator.of(context).push(
+                //   MaterialPageRoute(
+                //     builder: (context) => FormPage(
+                //       title: action.label,
+                //     ),
+                //   ),
+                // );
               },
             ),
             const SizedBox(height: 16),

@@ -33,6 +33,7 @@ class FormInput extends StatefulWidget {
   final bool obscureText;
   final bool money;
   final bool? autoFocus;
+  final Widget? leading;
   final FocusNode? focusNode;
   final Function? onClear;
   final Function? onChange;
@@ -44,6 +45,7 @@ class FormInput extends StatefulWidget {
     this.label,
     this.error,
     this.value,
+    this.leading,
     this.icon,
     this.hint = "",
     this.minLines = 1,
@@ -219,46 +221,87 @@ class _FormInputState extends State<FormInput> {
     );
 
     if (widget.onClick != null) {
-      return GestureDetector(
-        child: Container(
-          height: 40,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(
-              width: widget.borderWidth,
-              color: borderColor,
+      double leadingWidth = 46;
+      double leadingHeight = 40;
+
+      return Stack(
+        children: [
+          GestureDetector(
+            child: Container(
+              height: 40,
+              padding: EdgeInsets.only(
+                left: widget.leading != null ? 0 : 16,
+                right: 16,
+              ),
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(50),
+                border: Border.all(
+                  width: widget.borderWidth,
+                  color: borderColor,
+                ),
+              ),
+              child: Row(
+                children: <Widget>[
+                  if (widget.leading != null)
+                    Container(
+                      width: leadingWidth,
+                      margin: const EdgeInsets.only(right: 6),
+                    ),
+                  Expanded(
+                    child: Opacity(
+                      opacity: widget.value != null ? 1 : 0.7,
+                      child: Text(
+                        widget.value != null ? widget.value! : widget.hint,
+                        style: TextStyle(
+                          fontSize: widget.fontSize,
+                          color: widget.value != null
+                              ? colorScheme(context).onSurface
+                              : hintColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (widget.icon != null)
+                    Icon(
+                      widget.icon,
+                      size: widget.iconSize,
+                      color: hintColor,
+                    ),
+                ],
+              ),
             ),
+            onTap: () {
+              widget.onClick!();
+            },
           ),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Opacity(
-                  opacity: widget.value != null ? 1 : 0.7,
-                  child: Text(
-                    widget.value != null ? widget.value! : widget.hint,
-                    style: TextStyle(
-                      fontSize: widget.fontSize,
-                      color: widget.value != null
-                          ? colorScheme(context).onSurface
-                          : hintColor,
+          if (widget.leading != null)
+            Positioned(
+              top: 0,
+              left: 0,
+              width: leadingWidth,
+              height: leadingHeight,
+              child: Container(
+                width: leadingWidth,
+                height: leadingHeight,
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(
+                      width: 0.3,
+                      color: borderColor,
                     ),
                   ),
                 ),
-              ),
-              if (widget.icon != null)
-                Icon(
-                  widget.icon,
-                  size: widget.iconSize,
-                  color: hintColor,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(50),
+                    bottomLeft: Radius.circular(50),
+                  ),
+                  child: widget.leading!,
                 ),
-            ],
-          ),
-        ),
-        onTap: () {
-          widget.onClick!();
-        },
+              ),
+            ),
+        ],
       );
     }
 
