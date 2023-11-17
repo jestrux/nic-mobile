@@ -71,7 +71,7 @@ class _LifeSearcFormState extends State<LifeSearcForm> {
         keyValueViews.add(
           GestureDetector(
             onTap: () {
-              print("Policy Id: ${policy}");
+              print("Policy Id: ${policy.policyNumber}");
             },
             child: KeyValueView(
               data: {
