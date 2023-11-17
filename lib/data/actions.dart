@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nic/components/life/searchForm.dart';
 import 'package:nic/components/modals/BimaStatus.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/components/modals/InitialProductForm.dart';
@@ -36,6 +37,12 @@ var bimaRenewalAction = ActionItem(
 var lifeContributionsAction = ActionItem(
   label: "Life Contributions",
   icon: Icons.wallet,
+  onClick: () async {
+    openAlert(
+      title: "Life Contributions",
+      child: const LifeSearcForm(),
+    );
+  },
 );
 
 var changiaBimaAction = ActionItem(
