@@ -1,5 +1,5 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:nic/models/life/LifepolicyMode.dart';
+import 'package:nic/models/life/LifepolicyModel.dart';
 import 'package:nic/services/data_connection.dart';
 
 Future<List<LifePolicyModel>> getCustomerPolicies({String? customerId}) async {
@@ -10,16 +10,18 @@ Future<List<LifePolicyModel>> getCustomerPolicies({String? customerId}) async {
       lifeCustomerPolicies(customerId: $customerId) {
         id
         policyNumber
-        checkNumber,
-        premium,
-        sumInsured,
+        checkNumber
+        premium
+        sumInsured
         startDate
-        maturityDate,
-        customer{
+        maturityDate
+        customer {
           customerNumber
-        },
-        product{
-          id,
+          firstName,
+          lastName
+        }
+        product {
+          id
           name
         }
       }
@@ -34,7 +36,6 @@ Future<List<LifePolicyModel>> getCustomerPolicies({String? customerId}) async {
 
   if (result.data != null) {
     var policyList = result.data!['lifeCustomerPolicies'];
-    print("__________policyList: ${policyList}");
     if (policyList != null) {
       policies = List<LifePolicyModel>.from(policyList.map(
         (policyMap) => LifePolicyModel.fromMap(policyMap),
