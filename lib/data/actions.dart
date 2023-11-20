@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nic/components/life/searchForm.dart';
+import 'package:nic/components/life/lifeSearchForm.dart';
 import 'package:nic/components/modals/BimaStatus.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/components/modals/InitialProductForm.dart';
