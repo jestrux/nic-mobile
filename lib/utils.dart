@@ -81,99 +81,109 @@ class AlertContent extends StatelessWidget {
                   ),
                   child: Stack(
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: isCustom
-                                ? EdgeInsets.zero
-                                : const EdgeInsets.all(20),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                if (!isCustom)
-                                  Container(
-                                    height: 24,
-                                    width: 24,
-                                    decoration: BoxDecoration(
-                                      color: type == AlertType.success
-                                          ? Colors.green
-                                          : Colors.red.shade900,
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                    margin: EdgeInsets.only(
-                                      bottom: noTitle ? 10 : 8,
-                                    ),
-                                    child: Icon(
-                                      type == AlertType.success
-                                          ? Icons.check
-                                          : Icons.priority_high,
-                                      color: Colors.white,
-                                      size: 16,
-                                    ),
-                                  ),
-                                noTitle
-                                    ? const SizedBox(height: 10)
-                                    : Padding(
-                                        padding: EdgeInsets.only(
-                                          top: isCustom ? 24 : 0,
-                                          bottom: 8,
+                      Container(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height - 50,
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                padding: isCustom
+                                    ? EdgeInsets.zero
+                                    : const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    if (!isCustom)
+                                      Container(
+                                        height: 24,
+                                        width: 24,
+                                        decoration: BoxDecoration(
+                                          color: type == AlertType.success
+                                              ? Colors.green
+                                              : Colors.red.shade900,
+                                          borderRadius:
+                                              BorderRadius.circular(50),
                                         ),
-                                        child: Text(
-                                          title!,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                        margin: EdgeInsets.only(
+                                          bottom: noTitle ? 10 : 8,
+                                        ),
+                                        child: Icon(
+                                          type == AlertType.success
+                                              ? Icons.check
+                                              : Icons.priority_high,
+                                          color: Colors.white,
+                                          size: 16,
                                         ),
                                       ),
-                                if (message != null)
-                                  Opacity(
-                                    opacity: noTitle ? 1 : 0.85,
-                                    child: Text(
-                                      message!,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: noTitle ? 16 : 14,
-                                        height: 1.5,
-                                      ),
-                                    ),
-                                  ),
-                                if (child != null) child!,
-                                onOkay != null
-                                    ? FormActions(
-                                        okayText: okayText,
-                                        cancelText: cancelText,
-                                        onOkay: onOkay!,
-                                        onCancel: onCancel,
-                                      )
-                                    : isCustom
-                                        ? Container()
-                                        : Container(
-                                            constraints: const BoxConstraints(
-                                              maxWidth: 100,
+                                    noTitle
+                                        ? const SizedBox(height: 10)
+                                        : Padding(
+                                            padding: EdgeInsets.only(
+                                              top: isCustom ? 24 : 0,
+                                              bottom: 8,
                                             ),
-                                            alignment: Alignment.center,
-                                            padding:
-                                                const EdgeInsets.only(top: 12),
-                                            child: SizedBox(
-                                              width: double.infinity,
-                                              child: FormButton.filled(
-                                                okayText,
-                                                small: true,
-                                                onClick: () {
-                                                  Navigator.of(context).pop();
-                                                },
+                                            child: Text(
+                                              title!,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
                                               ),
                                             ),
                                           ),
-                              ],
-                            ),
+                                    if (message != null)
+                                      Opacity(
+                                        opacity: noTitle ? 1 : 0.85,
+                                        child: Text(
+                                          message!,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: noTitle ? 16 : 14,
+                                            height: 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                    if (child != null) child!,
+                                    onOkay != null
+                                        ? FormActions(
+                                            okayText: okayText,
+                                            cancelText: cancelText,
+                                            onOkay: onOkay!,
+                                            onCancel: onCancel,
+                                          )
+                                        : isCustom
+                                            ? Container()
+                                            : Container(
+                                                constraints:
+                                                    const BoxConstraints(
+                                                  maxWidth: 100,
+                                                ),
+                                                alignment: Alignment.center,
+                                                padding: const EdgeInsets.only(
+                                                    top: 12),
+                                                child: SizedBox(
+                                                  width: double.infinity,
+                                                  child: FormButton.filled(
+                                                    okayText,
+                                                    small: true,
+                                                    onClick: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                       Positioned(
                         top: 0,
@@ -241,7 +251,7 @@ void openErrorAlert({
 }
 
 void openSuccessAlert({
-  String? title = "Success",
+  String? title = "Success!",
   required String message,
 }) {
   openAlert(
@@ -433,7 +443,14 @@ class ChoicePickerContentState extends State<ChoicePickerContent> {
       width: double.infinity,
       child: Column(
         children: [
-          buildChoices(widget.choices),
+          Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.7,
+            ),
+            child: SingleChildScrollView(
+              child: buildChoices(widget.choices),
+            ),
+          ),
           if (actionButtons != null)
             Padding(
               padding: const EdgeInsets.only(top: 4),

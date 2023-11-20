@@ -25,15 +25,14 @@ class Loader extends StatelessWidget {
 
   const Loader.small({
     super.key,
-    this.loaderSize = 30,
-    this.loaderStrokeWidth = 3,
     this.message,
     this.loaderColor,
     this.textColor,
-    this.textSize = 14,
-    this.letterSpacing = 0,
-    this.small = true,
-  });
+  })  : loaderSize = 14,
+        textSize = 14,
+        letterSpacing = 0,
+        loaderStrokeWidth = 2,
+        small = true;
 
   @override
   Widget build(BuildContext context) {

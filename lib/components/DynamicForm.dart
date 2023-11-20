@@ -98,6 +98,7 @@ enum DynamicFormPayloadFormat { regular, questionAnswer }
 
 class DynamicForm extends StatefulWidget {
   final List<DynamicFormField> fields;
+  final Map<String, dynamic>? initialValues;
   final String? submitLabel;
   final Future Function(Map<String, dynamic>) onSubmit;
   final Function(dynamic response)? onSuccess;
@@ -106,17 +107,18 @@ class DynamicForm extends StatefulWidget {
   final Function? onCancel;
   final Widget Function(Function onSubmit, bool loading)? builder;
 
-  const DynamicForm(
-      {Key? key,
-      required this.fields,
-      required this.onSubmit,
-      this.submitLabel,
-      this.onSuccess,
-      this.onCancel,
-      this.builder,
-      this.payloadFormat = DynamicFormPayloadFormat.questionAnswer,
-      this.choicePickerMode = ChoicePickerMode.regular})
-      : super(key: key);
+  const DynamicForm({
+    Key? key,
+    required this.fields,
+    required this.onSubmit,
+    this.submitLabel,
+    this.onSuccess,
+    this.onCancel,
+    this.builder,
+    this.payloadFormat = DynamicFormPayloadFormat.questionAnswer,
+    this.choicePickerMode = ChoicePickerMode.regular,
+    this.initialValues,
+  }) : super(key: key);
 
   @override
   State<DynamicForm> createState() => _DynamicFormState();
@@ -242,6 +244,7 @@ class _DynamicFormState extends State<DynamicForm> {
           padding: const EdgeInsets.only(bottom: 16),
           child: FormBuilder(
             key: _formKey,
+            initialValue: widget.initialValues ?? {},
             onChanged: () => updateFields(_formKey.currentState),
             child: Column(
               children: fields.map(
