@@ -10,9 +10,9 @@ Future<List<LifePolicyModel>> getCustomerPolicies({String? customerId}) async {
       lifeCustomerPolicies(customerId: $customerId) {
         id
         policyNumber
-        checkNumber,
-        premium,
-        sumInsured,
+        checkNumber
+        premium
+        sumInsured
         startDate
         maturityDate
         customer {
