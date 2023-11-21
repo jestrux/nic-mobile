@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nic/constants.dart';
 import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/main.dart';
+import 'package:nic/models/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,17 +15,20 @@ Future setupPreferences(BuildContext context) async {
 
     Map<String, dynamic>? authUser = user == null ? null : jsonDecode(user);
 
-    persistAuthUser(authUser);
+    if (authUser != null) {
+      persistAuthUser(UserModel.fromJson(authUser));
+    }
+
     persistAppTheme(theme);
   });
 }
 
-Future persistAuthUser(Map<String, dynamic>? user) async {
+Future persistAuthUser(UserModel? user) async {
   return await SharedPreferences.getInstance().then((prefs) async {
     if (user == null) {
       prefs.remove("authUser");
     } else {
-      prefs.setString("authUser", jsonEncode(user));
+      prefs.setString("authUser", jsonEncode(user.toMap()));
     }
 
     Provider.of<AppProvider>(

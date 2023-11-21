@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:nic/models/user_model.dart';
 
 class AppProvider with ChangeNotifier, DiagnosticableTreeMixin {
-  Map<String, dynamic>? _user = {};
+  UserModel? _user;
 
-  Map<String, dynamic>? get authUser => _user;
+  UserModel? get authUser => _user;
 
-  void setAuthUser(Map<String, dynamic>? user) {
+  void setAuthUser(UserModel? user) {
     _user = user;
     notifyListeners();
   }
