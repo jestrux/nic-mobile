@@ -43,11 +43,23 @@ class _RegisterPageState extends State<RegisterPage> {
         dob:values['birthDate'],
         branch:values['branch']
     );
-    print("responce----: $responce");
-    if(responce!['status']){
-      showToast("Successfull Registered");
-    }
     return responce;
+  }
+  showResponse(dynamic responce){
+    if(responce!['status']){
+      showToast("Successfully Registered");
+      openAlert(
+          title: "Authenticating",
+          message: "Successfully Registered",
+          type: AlertType.success
+      );
+    }else{
+      openAlert(
+          title: "Authenticating",
+          message: "Failed to Register",
+          type: AlertType.success
+      );
+    }
   }
 
   Future<dynamic> getBranches() async {
@@ -170,7 +182,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       const DynamicFormField(
                         label: "ID No.",
                         name: "nidaId",
-                        placeholder:"Enter ID Number..",
+                        placeholder:"Enter NIDA/ ZANID/ TIN/ Driving License Number..",
                         canClear: true
                       ),
                       const DynamicFormField(
@@ -216,7 +228,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                     submitLabel: "Register",
                     onSubmit: registerCustomer,
-                    // onSuccess: showResponse,
+                    onSuccess: showResponse,
                   ),
                   const SizedBox(height: 20),
                   const SizedBox(height: 20),

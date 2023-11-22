@@ -16,7 +16,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  var formKey = GlobalKey<FormState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   Future<UserModel?> tokenAuth(Map<String, dynamic> values) async {
     return await AuthenticationService().loginUser(username:  values["username"], password : values["password"]);
@@ -25,6 +24,11 @@ class _LoginPageState extends State<LoginPage> {
   showResponse(dynamic user) {
     String? res = "Hey:  ${user.firstName} ${user.middleName}  has just logged-in";
     showToast(res);
+    openAlert(
+      title: "Authenticating",
+      message: res,
+      type: AlertType.success
+    );
   }
 
 

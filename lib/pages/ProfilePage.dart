@@ -5,7 +5,9 @@ import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/pages/auth/ChangeUserId.dart';
 import 'package:nic/pages/auth/LoginPage.dart';
+import 'package:nic/pages/auth/changePassword.dart';
 import 'package:nic/utils.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -89,6 +91,26 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
                   },
                 ),
+                ActionItem(
+                  label: "Change Password",
+                  icon: Icons.password,
+                    onClick: () async {
+                      openAlert(
+                        title: "Change My Password",
+                        child: const ChangePassword(),
+                      );
+                    }
+                ),
+                ActionItem(
+                    label: "Update ID Number",
+                    icon: Icons.update,
+                    onClick: () async {
+                      openAlert(
+                        title: "Change My Password",
+                        child: const ChangeUserId(),
+                      );
+                    }
+                )
               ],
               shape: ActionItemShape.rounded,
             ),

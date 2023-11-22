@@ -279,9 +279,11 @@ class AuthenticationService {
     return response;
   }
 
-  Future<dynamic> resetPassword(String? currentPassword,
-      String? newPassword, String? repeatPassword) async {
-    String resetPassword = r""" 
+  Future<dynamic> changePassword(
+      {String? currentPassword,
+      String? newPassword,
+      String? repeatPassword}) async {
+    String changePasswordQuery = r""" 
           mutation($currentPassword: String!,$newPassword: String!, $repeatPassword: String!){
         changePassword(currentPassword:$currentPassword,newPassword:$newPassword,repeatPassword:$repeatPassword){
           success
@@ -291,7 +293,7 @@ class AuthenticationService {
     """;
 
     final MutationOptions options = MutationOptions(
-      document: gql(resetPassword),
+      document: gql(changePasswordQuery),
       variables: <String, dynamic>{
         'currentPassword': currentPassword,
         'newPassword': newPassword,
@@ -305,10 +307,9 @@ class AuthenticationService {
       var temp = result.data!;
       // print(result.data!);
       dynamic info = {
-        "status":"${temp['changePassword']['success']}",
+        "status":temp['changePassword']['success'],
         "message":"${temp['changePassword']['message']}"
       };
-      print(info);
       return info;
 
     } else {
@@ -319,8 +320,8 @@ class AuthenticationService {
     }
   }
 
-  Future<dynamic> updateUserId(String? userId) async {
-    String resetPassword = r""" 
+  Future<dynamic> changeUserId({String? userId}) async {
+    String updateUserIdQuery = r""" 
           mutation($userId: String!){
         updateUserId(userId:$userId){
           success
@@ -330,7 +331,7 @@ class AuthenticationService {
     """;
 
     final MutationOptions options = MutationOptions(
-      document: gql(resetPassword),
+      document: gql(updateUserIdQuery),
       variables: <String, dynamic>{
         'userId': userId,
       },
@@ -342,10 +343,9 @@ class AuthenticationService {
       var temp = result.data!;
       // print(result.data!);
       dynamic info = {
-        "status":"${temp['updateUserId']['success']}",
+        "status":temp['updateUserId']['success'],
         "message":"${temp['updateUserId']['message']}"
       };
-      print(info);
       return info;
 
     } else {
