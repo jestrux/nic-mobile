@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/life/lifeSearchForm.dart';
+import 'package:nic/components/life/searchPolicies.dart';
 import 'package:nic/components/modals/BimaStatus.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/components/modals/InitialProductForm.dart';
@@ -39,16 +40,18 @@ var lifeContributionsAction = ActionItem(
   icon: Icons.wallet,
   onClick: () async {
     openAlert(
-      title: "Life Contributions",
+      title: "Life Contributions(Michango)",
       child: const LifeSearcForm(),
     );
   },
 );
 
 var changiaBimaAction = ActionItem(
-  label: "Changia Bima",
-  icon: Icons.savings,
-);
+    label: "Changia Bima",
+    icon: Icons.savings,
+    onClick: () async {
+      openAlert(title: "Changia Bima", child: const SearchLifePolicy());
+    });
 
 var getQuickQuoteAction = ActionItem(
   label: "Get a Quick Quote",

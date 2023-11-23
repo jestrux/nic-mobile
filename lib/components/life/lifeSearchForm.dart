@@ -19,12 +19,8 @@ class LifeSearcForm extends StatefulWidget {
 }
 
 class _LifeSearcFormState extends State<LifeSearcForm> {
-  final GlobalKey<_LifeSearcFormState> _formKey =
-      GlobalKey<_LifeSearcFormState>();
   final _key = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  // final Map<String, dynamic> _postData = {};
-  FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -32,32 +28,29 @@ class _LifeSearcFormState extends State<LifeSearcForm> {
     _focusNode.requestFocus();
   }
 
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _focusNode.dispose();
-  // }
+  @override
+  void dispose() {
+    super.dispose();
+    _focusNode.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-      child: Form(
-        key: _key,
-        child: DynamicForm(
-          payloadFormat: DynamicFormPayloadFormat.regular,
-          fields: const [
-            DynamicFormField(
-              name: "customerKey",
-              label: "Nida Number",
-              placeholder: "Enter Nida Number",
-            ),
-          ],
-          onCancel: () => Navigator.of(context).pop(),
-          submitLabel: "Check",
-          onSubmit: searchPolicies,
-          onSuccess: customerPolicies,
-        ),
+    return Form(
+      key: _key,
+      child: DynamicForm(
+        payloadFormat: DynamicFormPayloadFormat.regular,
+        fields: const [
+          DynamicFormField(
+            name: "customerKey",
+            label: "Nida Number",
+            placeholder: "Enter Nida Number",
+          ),
+        ],
+        onCancel: () => Navigator.of(context).pop(),
+        submitLabel: "Check",
+        onSubmit: searchPolicies,
+        onSuccess: customerPolicies,
       ),
     );
   }
@@ -73,12 +66,10 @@ class _LifeSearcFormState extends State<LifeSearcForm> {
   }
 
   void customerPolicies(dynamic results) async {
-    if (results == null) {
-      return null;
-    }
+    if (results == null) return;
 
-    // Navigator.pop(context);
     if (results is List<LifePolicyModel>) {
+      // Navigator.pop(context);
       List<Widget> keyValueViews = [];
 
       for (var policy in results) {
