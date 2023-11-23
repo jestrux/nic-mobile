@@ -138,27 +138,11 @@ class AuthenticationService {
     // print("branch----: ${branch}");
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.mutate(options);
-    // print(result.data);
     if (result.data != null) {
       if (result.data!['registerMobile']['success'] == true) {
         UserModel userModel = UserModel.fromRegisterJson(
           result.data,
         );
-        // Repository().setToken(userModel);
-        // var tokenBox = Hive.box("token");
-        // tokenBox.put("token", userModel.token);
-        // Repository().setToken(userModel);
-        // var userBox = await Hive.openBox("user");
-        //
-        // userModel.toMap().forEach((key, value) => userBox.put(key, value));
-        // var userProfileBox = await Hive.openBox("userProfile");
-        // userProfileBox.put("total_proposals", userModel.totalProposals);
-        // userProfileBox.put(
-        //     "total_non_life_policies", userModel.totalNonLifePolicies);
-        // userProfileBox.put("total_policies", userModel.totalPolicies);
-        // userProfileBox.put("total_life_policies", userModel.totalLifePolicies);
-        // userProfileBox.put("total_claims", userModel.totalClaims);
-        // if (Repository().getToken() != null) {
           return {
             "status": true,
             "data": userModel,

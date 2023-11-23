@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
+import 'package:nic/data/preferences.dart';
+import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/auth/AuthComponets.dart';
 import 'package:nic/pages/control/bContainer.dart';
 import 'package:nic/services/authentication_service.dart';
@@ -34,18 +36,32 @@ class _RegisterPageState extends State<RegisterPage> {
     return response;
   }
   showResponse(dynamic response){
-    if(response!['status']){
-      showToast("Successfully Registered");
+    if(response != null && response!['status']){
+      UserModel? user = response!['data'];
+      persistAuthUser(user);
+      String? res = "Welcome ${user!.firstName} ${user!.lastName}";
+      showToast(res);
+      Navigator.of(context).popUntil(ModalRoute.withName("/"));
+    }else if(response != null ) {
+      String? errors = "Failed to Register";
+      if(response!['errors'] != null){
+        for(var i in response!['errors']){
+          String field = i['field'];
+          String messages = i['messages'][0];
+          errors = "$errors \n $field :  $messages";
+        }
+        print("errors---: $errors");
+      }
       openAlert(
           title: "Authenticating",
-          message: "Successfully Registered",
-          type: AlertType.success
+          message: "$errors",
+          type: AlertType.error
       );
     }else{
       openAlert(
           title: "Authenticating",
-          message: "Failed to Register",
-          type: AlertType.success
+          message: "Connection failure, Please try again!",
+          type: AlertType.error
       );
     }
   }
@@ -170,7 +186,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         label: "Password",
                         name: "password",
                         type: DynamicFormFieldType.password,
-                          placeholder: "Password.."
+                          placeholder: "Enter password, (Must be 8 characters or more).."
                       ),
                       const DynamicFormField(
                         label: "Accept terms and Condition",
