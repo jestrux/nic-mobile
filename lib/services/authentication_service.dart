@@ -5,7 +5,8 @@ import 'package:nic/services/data_connection.dart';
 import 'package:nic/models/user_model.dart';
 
 class AuthenticationService {
-  Future<UserModel?> login(String? username, String? password) async {
+  Future<UserModel?> loginUser({String? username, String? password}) async {
+    UserModel? userModel;
     String login = r"""
        mutation($username: String!, $password: String!){
         tokenAuth(username: $username, password: $password){
@@ -48,9 +49,7 @@ class AuthenticationService {
     final QueryResult result = await client.mutate(options);
     if (result.data != null && result.hasException == false) {
       // print(result.data);
-      UserModel userModel = UserModel.fromJson(
-        result.data,
-      );
+      userModel = UserModel.fromJson(result.data);
       // var tokenBox = Hive.box("token");
       // tokenBox.put("token", userModel.token);
       // Repository().setToken(userModel);
@@ -69,10 +68,10 @@ class AuthenticationService {
       //   return userModel;
       // }
     }
-    return null;
+    return userModel;
   }
 
-  Future<Map<String, dynamic>?> register(
+  Future<Map<String, dynamic>?> registerCustomer({
     String? fullName,
     String? phoneNumber,
     String? nida,
@@ -80,11 +79,11 @@ class AuthenticationService {
     bool? salesPerson,
     int? selectedGender,
     String? dob,
-    String? branch,
-  ) async {
+    String? branch
+  }) async {
     String register = r"""
-   mutation ($nida: String!, $phone: String!, $fullName: String!, $password: String!, $salesPerson: Boolean!, $selectedGender:Int!, $dob:String!, $branch:String!) {
-        registerMobile(input: {nida: $nida, phone: $phone, fullName: $fullName, password: $password, salesPerson: $salesPerson, selectedGender: $selectedGender, dob:$dob, branch:$branch}) {
+   mutation ($nida: String!, $phone: String!, $fullName: String!, $password: String!, $salesPerson: Boolean!, $selectedGender:Int!, $dob:String!, $branch:String!, $underwriteChannel:Int!) {
+        registerMobile(input: {nida: $nida, phone: $phone, fullName: $fullName, password: $password, salesPerson: $salesPerson, selectedGender: $selectedGender, dob:$dob, branch:$branch,underwriteChannel:$underwriteChannel}) {
           success
           token
           user{
@@ -130,7 +129,8 @@ class AuthenticationService {
         "salesPerson": salesPerson,
         "selectedGender":selectedGender,
         "dob":dob,
-        "branch":branch
+        "branch":branch,
+        "underwriteChannel":2
       },
     );
 
@@ -138,6 +138,7 @@ class AuthenticationService {
     // print("branch----: ${branch}");
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.mutate(options);
+    // print(result.data);
     if (result.data != null) {
       if (result.data!['registerMobile']['success'] == true) {
         UserModel userModel = UserModel.fromRegisterJson(
@@ -158,10 +159,10 @@ class AuthenticationService {
         // userProfileBox.put("total_life_policies", userModel.totalLifePolicies);
         // userProfileBox.put("total_claims", userModel.totalClaims);
         // if (Repository().getToken() != null) {
-        //   return {
-        //     "status": true,
-        //     "data": userModel,
-        //   };
+          return {
+            "status": true,
+            "data": userModel,
+          };
         // }
       } else {
         return {
@@ -234,12 +235,13 @@ class AuthenticationService {
     if (result.data != null) {
       if (result.data!['searchUser']['edges'].length > 0) {
         var user = result.data!['searchUser']['edges'][0]['node'];
-        userObj = RecoverUserModel(
-            firstName: user['user']['firstName'],
-            lastName: user['user']['lastName'],
-            email: user['user']['email'],
-            phone: user['phone'],
-            id: user['user']['id']);
+        userObj = RecoverUserModel.fromJson(user);
+        // userObj = RecoverUserModel(
+        //     firstName: user['user']['firstName'],
+        //     lastName: user['user']['lastName'],
+        //     email: user['user']['email'],
+        //     phone: user['phone'],
+        //     id: user['user']['id']);
       }
     }
     return userObj;
@@ -277,9 +279,11 @@ class AuthenticationService {
     return response;
   }
 
-  Future<dynamic> resetPassword(String? currentPassword,
-      String? newPassword, String? repeatPassword) async {
-    String resetPassword = r""" 
+  Future<dynamic> changePassword(
+      {String? currentPassword,
+      String? newPassword,
+      String? repeatPassword}) async {
+    String changePasswordQuery = r""" 
           mutation($currentPassword: String!,$newPassword: String!, $repeatPassword: String!){
         changePassword(currentPassword:$currentPassword,newPassword:$newPassword,repeatPassword:$repeatPassword){
           success
@@ -289,7 +293,7 @@ class AuthenticationService {
     """;
 
     final MutationOptions options = MutationOptions(
-      document: gql(resetPassword),
+      document: gql(changePasswordQuery),
       variables: <String, dynamic>{
         'currentPassword': currentPassword,
         'newPassword': newPassword,
@@ -303,10 +307,9 @@ class AuthenticationService {
       var temp = result.data!;
       // print(result.data!);
       dynamic info = {
-        "status":"${temp['changePassword']['success']}",
+        "status":temp['changePassword']['success'],
         "message":"${temp['changePassword']['message']}"
       };
-      print(info);
       return info;
 
     } else {
@@ -317,8 +320,8 @@ class AuthenticationService {
     }
   }
 
-  Future<dynamic> updateUserId(String? userId) async {
-    String resetPassword = r""" 
+  Future<dynamic> changeUserId({String? userId}) async {
+    String updateUserIdQuery = r""" 
           mutation($userId: String!){
         updateUserId(userId:$userId){
           success
@@ -328,7 +331,7 @@ class AuthenticationService {
     """;
 
     final MutationOptions options = MutationOptions(
-      document: gql(resetPassword),
+      document: gql(updateUserIdQuery),
       variables: <String, dynamic>{
         'userId': userId,
       },
@@ -340,10 +343,9 @@ class AuthenticationService {
       var temp = result.data!;
       // print(result.data!);
       dynamic info = {
-        "status":"${temp['updateUserId']['success']}",
+        "status":temp['updateUserId']['success'],
         "message":"${temp['updateUserId']['message']}"
       };
-      print(info);
       return info;
 
     } else {

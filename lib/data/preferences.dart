@@ -37,6 +37,16 @@ Future persistAuthUser(UserModel? user) async {
     ).setAuthUser(user);
   });
 }
+Future<String?> getUserToken() async {
+  return await SharedPreferences.getInstance().then((prefs) async {
+    var user = prefs.getString("authUser");
+    Map<String, dynamic>? authUser = user == null ? null : jsonDecode(user);
+    if (authUser != null) {
+      return authUser['token'];
+    }
+    return null;
+  });
+}
 
 Future persistAppTheme(String theme) async {
   return await SharedPreferences.getInstance().then((prefs) async {
