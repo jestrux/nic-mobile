@@ -1,12 +1,12 @@
-import 'dart:convert';
-import 'package:hive/hive.dart';
+import 'package:nic/data/preferences.dart';
+import 'package:nic/models/user_model.dart';
 
-enum AuthenticationStatus { unknown, authenticated, unauthenticated }
+// enum AuthenticationStatus { unknown, authenticated, unauthenticated }
 
 class Repository {
   Future<String?> getToken() async {
-    return "";
-    // var userInfo = Hive.box("userInfo");
-    // return userInfo.get("token");
+    var token = await getUserToken();
+    // print(user!.token);
+    return token ?? "";
   }
 }
