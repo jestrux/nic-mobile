@@ -152,3 +152,53 @@ Future<Map<String, dynamic>?> submitQuote({
 
   return quoteResponse;
 }
+
+Future<List<Map<String, dynamic>>?> getProducts({
+  String tag = "",
+}) async {
+  devLog("Fetch products");
+
+  String queryString = r"""query ($tag: String!) {
+    allProduct(tag_Icontains: $tag) {
+      edges {
+        node {
+          id
+          name
+          description
+          mobileName
+          code
+          tag
+          productClass {
+            id
+            name
+            description
+            code
+          }
+        }
+      }
+    }
+  }""";
+
+  final QueryOptions options = QueryOptions(
+    document: gql(queryString),
+    variables: <String, dynamic>{
+      "tag": tag,
+      // "underwriteChannel": 2,
+    },
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data == null || result.data!['allProduct']['edges'].length < 1) {
+    devLog("All product: No data found");
+    throw ("Failed to fetch products. Please try again later.");
+  }
+
+  List<Map<String, dynamic>> allProductResponse =
+      List.from(result.data!['allProduct']['edges'])
+          .map<Map<String, dynamic>>((element) => element["node"])
+          .toList();
+
+  return allProductResponse;
+}
