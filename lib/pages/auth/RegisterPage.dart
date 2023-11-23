@@ -1,26 +1,14 @@
-// import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
-import 'package:nic/models/branch_model.dart';
-import 'package:nic/models/user_model.dart';
+import 'package:nic/pages/auth/AuthComponets.dart';
 import 'package:nic/pages/control/bContainer.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-// import 'package:flutter_spinkit/flutter_spinkit.dart';
-// import 'package:hive/hive.dart';
-// import 'package:imis_client_app/authentication_bloc/authentication_bloc.dart';
-// import 'package:imis_client_app/models/branch_model.dart';
-// import 'package:imis_client_app/screens/pages/bima/tools/form_initilizer.dart';
-// import 'package:imis_client_app/screens/pages/doc_viewer.dart';
-// import 'package:imis_client_app/services/branch_service.dart';
-import 'package:intl/intl.dart';
 import 'package:nic/services/authentication_service.dart';
 import 'package:nic/services/branch_service.dart';
 import 'package:nic/utils.dart';
 
 
 class RegisterPage extends StatefulWidget {
-  // RegisterPage({Key key, this.title}) : super(key: key);
+  const RegisterPage({super.key});
 
   // final String title;
   @override
@@ -33,7 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   List<Map<String, dynamic>> branchList = [];
 
   Future<Map<String, dynamic>?> registerCustomer(Map<String, dynamic> values) async {
-    var responce =  await AuthenticationService().registerCustomer(
+    var response =  await AuthenticationService().registerCustomer(
         fullName:values['fullName'],
         phoneNumber:values['phoneNumber'],
         nida:values['nidaId'],
@@ -43,10 +31,10 @@ class _RegisterPageState extends State<RegisterPage> {
         dob:values['birthDate'],
         branch:values['branch']
     );
-    return responce;
+    return response;
   }
-  showResponse(dynamic responce){
-    if(responce!['status']){
+  showResponse(dynamic response){
+    if(response!['status']){
       showToast("Successfully Registered");
       openAlert(
           title: "Authenticating",
@@ -106,50 +94,11 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _divider() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: <Widget>[
-          const SizedBox(
-            width: 20,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Divider(thickness: 1, color: Colors.grey[300]),
-            ),
-          ),
-          Text(
-            'or',
-            style: TextStyle(color: Colors.grey[800]),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Divider(thickness: 1, color: Colors.grey[300]),
-            ),
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _title() {
-    return Align(
-      alignment: Alignment.center,
-      child: Image.asset('assets/img/nic_4.png', width: 130.0),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme(context).surface,
       key: scaffoldKey,
       body: Stack(
         children: <Widget>[
@@ -168,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 physics: const ScrollPhysics(),
                 children: <Widget>[
                   SizedBox(height: height * .1),
-                  _title(),
+                  title(context),
                   const SizedBox(height: 30),
                   DynamicForm(
                     payloadFormat: DynamicFormPayloadFormat.regular,
@@ -198,7 +147,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             {"value":1,"label":"Male"},
                             {"value":2,"label":"Female"}
                           ],
-                          placeholder: "Select your gender",
+                          placeholder: "Select your gender..",
                           type: DynamicFormFieldType.radio,
 
                       ),
@@ -207,18 +156,21 @@ class _RegisterPageState extends State<RegisterPage> {
                           name: "birthDate",
                           type: DynamicFormFieldType.date,
                           max: initialValue,
+                          placeholder: "Pick a birthdate.."
                       ),
                        DynamicFormField(
                         label: "Preferred branch",
                         name: "branch",
                         type: DynamicFormFieldType.choice,
                         choices: branchList,
-                        canClear: true
+                        canClear: true,
+                           placeholder: "Select preferred branch.."
                       ),
                       const DynamicFormField(
                         label: "Password",
                         name: "password",
                         type: DynamicFormFieldType.password,
+                          placeholder: "Password.."
                       ),
                       const DynamicFormField(
                         label: "Accept terms and Condition",
@@ -232,7 +184,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 20),
                   const SizedBox(height: 20),
-                  _divider(),
+                  divider(),
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 0),
                     padding: const EdgeInsets.all(5),
@@ -245,7 +197,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: Colors.grey[800]),
+                              color: colorScheme(context).onSurface),
                         ),
                         const SizedBox(width: 10),
                         TextButton(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/models/recover_user_model.dart';
+import 'package:nic/pages/auth/AuthComponets.dart';
 import 'package:nic/services/authentication_service.dart';
 import 'package:nic/utils.dart';
 import '../control/bContainer.dart';
@@ -76,75 +77,13 @@ class _RecoverPasswordState extends State<RecoverPassword> {
     );
   }
 
-  Widget _divider() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: <Widget>[
-          const SizedBox(
-            width: 20,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Divider(
-                thickness: 1,
-                color: Colors.grey[300],
-              ),
-            ),
-          ),
-          Text(
-            'or',
-            style: TextStyle(color: Colors.grey[800]),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Divider(thickness: 1, color: Colors.grey[300]),
-            ),
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _title() {
-    return Align(
-      alignment: Alignment.center,
-      child: Image.asset('assets/img/nic_4.png', width: 130.0),
-    );
-  }
-
-  Widget _restoreIcon() {
-    return Align(
-        alignment: Alignment.center,
-        child: ImageIcon(
-          AssetImage('assets/img/renewable.png'),
-          color: Colors.green.shade900,
-          size: 100,
-        ));
-  }
-
-  Widget _restoreFailIcon() {
-    return Align(
-        alignment: Alignment.center,
-        child: ImageIcon(
-          AssetImage('assets/img/pend.png'),
-          color: Colors.red.shade600,
-          size: 100,
-        ));
-  }
-
   Widget _recovery(height) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         SizedBox(height: height * .2),
-        _title(),
+        title(context),
         const SizedBox(height: 30),
         DynamicForm(
           payloadFormat: DynamicFormPayloadFormat.regular,
@@ -195,7 +134,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                _restoreIcon(),
+                restoreIcon(),
                 const SizedBox(height: 30),
                 agreed == false
                     ? Column(
@@ -337,7 +276,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                _restoreFailIcon(),
+                restoreFailIcon(),
                 const SizedBox(height: 30),
                 Text("Sorry we couldn't find any associated account with $searchKey \nPlease call free \n080 011 0041 ",
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
@@ -381,7 +320,7 @@ class _RecoverPasswordState extends State<RecoverPassword> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: colorScheme(context).surface,
         body: Container(
           height: height,
           child: Stack(

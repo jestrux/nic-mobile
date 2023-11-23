@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
+import 'package:nic/data/preferences.dart';
+import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/auth/ChangeUserId.dart';
 import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:nic/pages/auth/changePassword.dart';
 import 'package:nic/utils.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -63,6 +67,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    // UserModel? user = context.read<AppProvider>().authUser;
+    UserModel? user = Provider.of<AppProvider>(context).authUser;
+    // if (user!.firstName != null){
+    //   print(user.firstName!);
+    // }
     return RoundedHeaderPage(
       title: "Your Profile",
       child: SingleChildScrollView(
@@ -79,9 +89,17 @@ class _ProfilePageState extends State<ProfilePage> {
                   label: "Account details",
                   icon: Icons.account_circle,
                 ),
-                ActionItem(
+                user != null ? ActionItem(
                   label: "Logout",
                   icon: Icons.logout,
+                  onClick: () {
+                    String? res = "Welcome ${user!.firstName} ${user!.lastName}, welcome again next time!";
+                    showToast(res);
+                    persistAuthUser(user=null);
+                  },
+                ):ActionItem(
+                  label: "Login",
+                  icon: Icons.login,
                   onClick: () {
                     Navigator.push(
                       context,

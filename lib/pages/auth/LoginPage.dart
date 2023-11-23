@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
+import 'package:nic/data/preferences.dart';
+import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/user_model.dart';
+import 'package:nic/pages/auth/AuthComponets.dart';
 import 'package:nic/pages/auth/RecoverPassword.dart';
 import 'package:nic/pages/auth/RegisterPage.dart';
 import 'package:nic/pages/control/bContainer.dart';
 import 'package:nic/utils.dart';
 import 'package:nic/services/authentication_service.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,23 +26,20 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   showResponse(dynamic user) {
-    String? res = "Hey:  ${user.firstName} ${user.middleName}  has just logged-in";
-    showToast(res);
-    openAlert(
-      title: "Authenticating",
-      message: res,
-      type: AlertType.success
-    );
+    if (user != null) {
+      persistAuthUser(user);
+      String? res = "Welcome ${user.firstName} ${user.lastName}";
+      showToast(res);
+      Navigator.of(context).pop();
+    }else{
+      openAlert(
+          title: "Authenticating",
+          message: "Failed to login,Please try again..",
+          type: AlertType.error
+      );
+    }
   }
 
-
-
-  // Toggles the password show status
-  void _toggle() {
-    setState(() {
-
-    });
-  }
 
   Widget _backButton(context) {
     return InkWell(
@@ -69,41 +70,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 
-  Widget _divider() {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: <Widget>[
-          const SizedBox(
-            width: 20,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Divider(
-                thickness: 1,
-                color: Colors.grey[300],
-              ),
-            ),
-          ),
-          Text(
-            'or',
-            style: TextStyle(color: Colors.grey[800]),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Divider(thickness: 1, color: Colors.grey[300]),
-            ),
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _createAccountLabel() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 20),
@@ -117,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
             style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[800]),
+                color: colorScheme(context).onSurface),
           ),
           const SizedBox(
             width: 0,
@@ -132,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             onPressed: () {
               Navigator.of(context).push(CupertinoPageRoute(
-                  builder: (context) => RegisterPage()));
+                  builder: (context) => const RegisterPage()));
             },
           ),
         ],
@@ -140,19 +106,13 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _title() {
-    return Align(
-      alignment: Alignment.center,
-      child: Image.asset('assets/img/nic_4.png', width: 130.0),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme(context).surface,
       body: Container(
         height: height,
         child: Stack(
@@ -171,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(height: height * .2),
-                    _title(),
+                    title(context),
                     const SizedBox(height: 30),
                     DynamicForm(
                       payloadFormat: DynamicFormPayloadFormat.regular,
@@ -179,12 +139,13 @@ class _LoginPageState extends State<LoginPage> {
                         DynamicFormField(
                           label: "Username",
                           name: "username",
-                          placeholder: 'Email  and Phone Number',
+                          placeholder: 'Enter email or phone number..',
                         ),
                         DynamicFormField(
                           label: "Password",
                           name: "password",
                           type: DynamicFormFieldType.password,
+                          placeholder: "Password.."
                         ),
                       ],
                       submitLabel: "Login",
@@ -199,14 +160,14 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.grey[800])),
+                                color: colorScheme(context).onSurface)),
                       ),
                       onTap: () {
                         Navigator.of(context).push(CupertinoPageRoute(
                             builder: (context) => RecoverPassword()));
                       },
                     ),
-                    _divider(),
+                    divider(),
                     _createAccountLabel(),
                     // _facebookButton(),
                     // SizedBox(height: height * .055),
