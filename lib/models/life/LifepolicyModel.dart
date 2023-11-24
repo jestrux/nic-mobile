@@ -1,3 +1,4 @@
+// import 'package:nic/models/life/LifeProposalModel.dart';
 import 'package:nic/models/life/lifeCustomerModel.dart';
 import 'package:nic/models/life/LifeproductModel.dart';
 
@@ -9,6 +10,7 @@ class LifePolicyModel {
   double? _sumInsured;
   LifeProductModel? _product;
   LifeCustomerModel? _customer;
+  // LifeProposalModel? _proposal;
 
   LifePolicyModel.fromMap(Map<String, dynamic> map) {
     _id = map['id'];
@@ -18,6 +20,7 @@ class LifePolicyModel {
     _sumInsured = map['sumInsured'];
     _product = LifeProductModel.fromMap(map['product']);
     _customer = LifeCustomerModel.fromMap(map['customer']);
+    // _proposal = LifeProposalModel.fromMap(map['proposal']);
   }
 
   Map<String, dynamic> toMap() {
@@ -29,12 +32,20 @@ class LifePolicyModel {
     map['sumInsured'] = _sumInsured;
     map['product'] = _product;
     map['customer'] = _customer;
+    // map['proposal'] = _proposal;
 
     return map;
   }
 
   LifePolicyModel(
-      {id, policyNumber, checkNumber, premium, sumInsured, product, customer}) {
+      {id,
+      policyNumber,
+      checkNumber,
+      premium,
+      sumInsured,
+      product,
+      customer,
+      proposal}) {
     _id = id;
     _policyNumber = policyNumber;
     _checkNumber = checkNumber;
@@ -42,6 +53,7 @@ class LifePolicyModel {
     _premium = premium;
     _product = product;
     _customer = customer;
+    // _proposal = proposal;
   }
 
   LifePolicyModel.fromJson(Map<String, dynamic> jsonData) {
@@ -52,6 +64,7 @@ class LifePolicyModel {
     _sumInsured = jsonData['sumInsured'];
     _product = jsonData['product'];
     _customer = jsonData['customer'];
+    // _proposal = jsonData['proposal'];
   }
 
   String? get id => _id;
@@ -61,4 +74,5 @@ class LifePolicyModel {
   double? get premium => _premium;
   LifeCustomerModel? get customer => _customer;
   LifeProductModel? get product => _product;
+  // LifeProposalModel? get proposal => _proposal;
 }
