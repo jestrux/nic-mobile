@@ -16,6 +16,7 @@ Future<List<LifePolicyModel>> getCustomerPolicies({String? customerId}) async {
         startDate
         maturityDate
         customer {
+          id,
           customerNumber
           firstName,
           lastName
@@ -35,13 +36,16 @@ Future<List<LifePolicyModel>> getCustomerPolicies({String? customerId}) async {
   final QueryResult result = await client.query(options);
 
   if (result.data != null) {
+    print("=============my results ${result.data}");
     var policyList = result.data!['lifeCustomerPolicies'];
     if (policyList != null) {
       policies = List<LifePolicyModel>.from(policyList.map(
         (policyMap) => LifePolicyModel.fromMap(policyMap),
       ));
     }
-  } else {}
+  } else {
+    print("===========__________no results data");
+  }
 
   return policies;
 }

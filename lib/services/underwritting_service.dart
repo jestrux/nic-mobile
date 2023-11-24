@@ -348,6 +348,9 @@ requestPaymentPush({
   if (result.data == null) {
     devLog("Payment push: No data found");
     throw ("Failed to make payment. Please try again later.");
+  } else {
+    print("====================hello data==========");
+    print("${result.data}");
   }
 
   var makePushPaymentResponse = result.data!['makePushPayment'];
