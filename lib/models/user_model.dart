@@ -16,6 +16,7 @@ class UserModel {
   int? _totalProposals = 0;
   int? _totalNonLifePolicies = 0;
   int? _totalClaims = 0;
+  bool? _needPasswordChange = false;
   BranchModel? _branch;
 
   UserModel(
@@ -34,7 +35,8 @@ class UserModel {
       totalLifePolicies,
       totalProposals,
       totalNonLifePolicies,
-      totalClaims}) {
+      totalClaims,
+        needPasswordChange}) {
     _token = token;
     _id = id;
     _firstName = firstName;
@@ -51,6 +53,7 @@ class UserModel {
     _totalProposals = totalProposals;
     _totalNonLifePolicies = totalNonLifePolicies;
     _totalClaims = totalClaims;
+    _needPasswordChange = needPasswordChange;
   }
 
   Map<String, dynamic> toMap() {
@@ -72,6 +75,7 @@ class UserModel {
     map['total_non_life_policies'] = _totalNonLifePolicies;
     map['total_proposals'] = _totalProposals;
     map['total_claims'] = _totalClaims;
+    map['needPasswordChange'] = _needPasswordChange;
     return map;
   }
 
@@ -99,8 +103,8 @@ class UserModel {
                 ['totalNonLifePolicies'];
             _totalProposals =
                 jsonData['tokenAuth']['user']['profile']['totalProposals'];
-            _totalClaims =
-                jsonData['tokenAuth']['user']['profile']['totalClaims'];
+            _totalClaims = jsonData['tokenAuth']['user']['profile']['totalClaims'];
+            _needPasswordChange = jsonData['tokenAuth']['user']['profile']['needPasswordChange'];
             if (jsonData['tokenAuth']['user']['profile']['branch'] != null) {
               _branch = BranchModel(
                   id: jsonData['tokenAuth']['user']['profile']['branch']['id'],
@@ -215,8 +219,8 @@ class UserModel {
             ['totalNonLifePolicies'];
             _totalProposals =
             jsonData['registerMobile']['user']['profile']['totalProposals'];
-            _totalClaims =
-            jsonData['registerMobile']['user']['profile']['totalClaims'];
+            _totalClaims = jsonData['registerMobile']['user']['profile']['totalClaims'];
+            _needPasswordChange = jsonData['registerMobile']['user']['profile']['needPasswordChange'];
             if (jsonData['registerMobile']['user']['profile']['branch'] != null) {
               _branch = BranchModel(
                   id: jsonData['registerMobile']['user']['profile']['branch']['id'],
@@ -292,6 +296,14 @@ class UserModel {
 
   set branch(BranchModel? branch) {
     this._branch = branch;
+  }
+
+  // ignore: unnecessary_getters_setters
+  bool? get needPasswordChange => _needPasswordChange;
+
+  // ignore: unnecessary_getters_setters
+  set needPasswordChange(bool? value) {
+    _needPasswordChange = value;
   }
 
   String? get pic => this._pic;
