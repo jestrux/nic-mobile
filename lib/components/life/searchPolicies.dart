@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/models/life/organizationBillModel.dart';
-import 'package:nic/pages/FormPage.dart';
 import 'package:nic/services/life/customer_policies.dart';
+import 'package:nic/services/life/premium_cards.dart';
 import 'package:nic/services/underwritting_service.dart';
 import 'package:nic/utils.dart';
 
@@ -63,36 +64,39 @@ class _SearchLifePolicyState extends State<SearchLifePolicy> {
           var selectedPolicy =
               policies.firstWhere((policy) => policy?.id == customerKey);
           if (selectedPolicy != null) {
-            print("=======chekc for satisfy");
+            var policyID = selectedPolicy?.id;
             var customerPolicyId = selectedPolicy?.customer?.id;
+            var premium = selectedPolicy?.premium;
+            var premiumPaymentMethod = selectedPolicy?.premiumPaymentMethod;
             var bill = await getCustomerBill(customerKey: customerPolicyId);
+            var premiumSummary =
+                await getTotalCollectedPremium(policyId: policyID);
+            var totalCollectedPremium =
+                premiumSummary['totalCollectedPremium'] ?? 0;
+            var totalEstimatedPremium =
+                premiumSummary['totalEstimatedPremium'] ?? 0;
+
+            var remaimedPremiumAmount =
+                totalEstimatedPremium - totalCollectedPremium;
 
             if (bill != null) {
               if (bill is OrganizationBillModel) {
-                print("Bill ID: ${bill.id}");
-                print("Control number: ${bill.controlNumber}");
-                print("Phone Number: ${bill.customer?.phoneNumber}");
-                print("Amount: ${bill.amount}");
-
                 return openPaymentAlert(
-                  bill.customer?.phoneNumber ?? "",
-                  bill.amount ?? 0.0,
-                  bill.controlNumber ?? "",
-                );
+                    bill.customer?.phoneNumber ?? "",
+                    bill.amount ?? 0.0,
+                    bill.controlNumber ?? "",
+                    premium,
+                    premiumPaymentMethod,
+                    totalCollectedPremium,
+                    remaimedPremiumAmount);
               } else {
-                print("Unexpected format for bills");
                 return null;
               }
             } else {
-              print("++++++no bills found");
               return null;
             }
-          } else {
-            print("__________null selected policy");
-          }
-        } else {
-          print("_______i have a policy here ");
-        }
+          } else {}
+        } else {}
       } else {
         openErrorAlert(message: "No Policy(ies) for this Customer");
       }
@@ -100,43 +104,118 @@ class _SearchLifePolicyState extends State<SearchLifePolicy> {
   }
 
   void openPaymentAlert(
-      String mobileNumber, double amount, String controlNumber) {
+      String mobileNumber,
+      double amount,
+      String controlNumber,
+      double premium,
+      int premiumPaymentMethod,
+      double totalPremiumAmount,
+      double remaimedPremiumAmount) {
     var phoneNumber;
     openAlert(
       title: "Make Payment",
-      child: DynamicForm(
-        payloadFormat: DynamicFormPayloadFormat.regular,
-        initialValues: {"phoneNumber": mobileNumber},
-        fields: const [
-          DynamicFormField(
-            label: "Phone Number to be used for payment",
-            name: "phoneNumber",
+      child: Column(
+        children: [
+          Container(
+            alignment: Alignment.topLeft,
+            padding:
+                const EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 20),
+            child: Column(
+              children: [
+                Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: const Text(
+                      "Summary",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    )),
+                SizedBox(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Premium"),
+                          Text(
+                              NumberFormat.currency(locale: 'en_us', symbol: '')
+                                  .format(premium))
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Payment Method"),
+                          Text(premiumPaymentMethod == 1
+                              ? "Annualy"
+                              : premiumPaymentMethod == 2
+                                  ? "Semmi Annually"
+                                  : premiumPaymentMethod == 3
+                                      ? "Quartely"
+                                      : premiumPaymentMethod == 4
+                                          ? "Monthly"
+                                          : "Single Premium")
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Collected Premium"),
+                          Text(
+                            NumberFormat.currency(
+                                    locale: 'en_US', symbol: '\TZS ')
+                                .format(totalPremiumAmount),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text("Remained Collection Amount"),
+                          Text(
+                            NumberFormat.currency(
+                                    locale: 'en_US', symbol: '\TZS ')
+                                .format(remaimedPremiumAmount),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          DynamicForm(
+            payloadFormat: DynamicFormPayloadFormat.regular,
+            initialValues: {"phoneNumber": mobileNumber},
+            fields: const [
+              DynamicFormField(
+                label: "Phone Number to be used for payment",
+                name: "phoneNumber",
+              ),
+            ],
+            onCancel: () {
+              Navigator.pop(context);
+            },
+            onSubmit: (payload) async {
+              phoneNumber = payload["phoneNumber"];
+
+              return requestPaymentPush(
+                amount: remaimedPremiumAmount.toString(),
+                controlNumber: controlNumber,
+                phoneNumber: phoneNumber,
+              );
+            },
+            onSuccess: (response) {
+              if (response == null) return;
+
+              Navigator.of(context).popUntil(ModalRoute.withName("/"));
+              openSuccessAlert(
+                message: "Check your phone($phoneNumber) to make payment.",
+              );
+            },
           ),
         ],
-        onCancel: () {
-          Navigator.pop(context);
-        },
-        onSubmit: (payload) async {
-          print("===============print my phone number, ${mobileNumber}");
-          print(payload["phoneNumber"]);
-          print("=========end print phone Numner");
-          phoneNumber = payload["phoneNumber"];
-
-          print("========payload phone number to send ${phoneNumber}");
-          return requestPaymentPush(
-            amount: amount.toString(),
-            controlNumber: controlNumber,
-            phoneNumber: phoneNumber,
-          );
-        },
-        onSuccess: (response) {
-          if (response == null) return;
-
-          Navigator.of(context).popUntil(ModalRoute.withName("/"));
-          openSuccessAlert(
-            message: "Check your phone($phoneNumber) to make payment.",
-          );
-        },
       ),
     );
   }
