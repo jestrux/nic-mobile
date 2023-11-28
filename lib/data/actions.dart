@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:nic/components/life/lifeSearchForm.dart';
 import 'package:nic/components/life/searchPolicies.dart';
 import 'package:nic/components/modals/BimaStatus.dart';
+import 'package:nic/components/modals/ClaimStatus.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/components/modals/InitialProductForm.dart';
+import 'package:nic/components/modals/ReportClaim.dart';
 import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/utils.dart';
@@ -12,11 +14,23 @@ import 'package:nic/constants.dart';
 var claimStatusAction = ActionItem(
   label: "Claim status",
   icon: Icons.pending_actions,
+  onClick: () async {
+    openAlert(
+      title: "Claim Status",
+      child: const ClaimStatus(),
+    );
+  },
 );
 
 var reportClaimAction = ActionItem(
   label: "Report Claim",
   icon: Icons.post_add,
+    onClick: () async {
+      openAlert(
+        title: "Report Claim",
+        child: const ReportClaim(),
+      );
+    }
 );
 
 var bimaStatusAction = ActionItem(
