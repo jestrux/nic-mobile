@@ -6,6 +6,7 @@ class LifePolicyModel {
   String? _id;
   String? _policyNumber;
   String? _checkNumber;
+  int? _premiumPaymentMethod;
   double? _premium;
   double? _sumInsured;
   LifeProductModel? _product;
@@ -18,6 +19,7 @@ class LifePolicyModel {
     _checkNumber = map['checkNumber'];
     _premium = map['premium'];
     _sumInsured = map['sumInsured'];
+    _premiumPaymentMethod = map['premiumPaymentMethod'];
     _product = LifeProductModel.fromMap(map['product']);
     _customer = LifeCustomerModel.fromMap(map['customer']);
     // _proposal = LifeProposalModel.fromMap(map['proposal']);
@@ -32,6 +34,7 @@ class LifePolicyModel {
     map['sumInsured'] = _sumInsured;
     map['product'] = _product;
     map['customer'] = _customer;
+    map['premiumPaymentMethod'] = _premiumPaymentMethod;
     // map['proposal'] = _proposal;
 
     return map;
@@ -45,7 +48,8 @@ class LifePolicyModel {
       sumInsured,
       product,
       customer,
-      proposal}) {
+      proposal,
+      premiumPaymentMethod}) {
     _id = id;
     _policyNumber = policyNumber;
     _checkNumber = checkNumber;
@@ -53,6 +57,7 @@ class LifePolicyModel {
     _premium = premium;
     _product = product;
     _customer = customer;
+    _premiumPaymentMethod = premiumPaymentMethod;
     // _proposal = proposal;
   }
 
@@ -64,12 +69,14 @@ class LifePolicyModel {
     _sumInsured = jsonData['sumInsured'];
     _product = jsonData['product'];
     _customer = jsonData['customer'];
+    _premiumPaymentMethod = jsonData['premiumPaymentMethod'];
     // _proposal = jsonData['proposal'];
   }
 
   String? get id => _id;
   String? get policyNumber => _policyNumber;
   String? get checkNumber => _checkNumber;
+  int? get premiumPaymentMethod => _premiumPaymentMethod;
   double? get sumInsured => _sumInsured;
   double? get premium => _premium;
   LifeCustomerModel? get customer => _customer;

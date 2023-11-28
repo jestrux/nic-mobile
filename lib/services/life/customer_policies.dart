@@ -15,6 +15,7 @@ Future<List<LifePolicyModel>> getCustomerPolicies({String? customerId}) async {
         sumInsured
         startDate
         maturityDate
+        premiumPaymentMethod
         customer {
           id,
           customerNumber
