@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/ListItem.dart';
+import 'package:nic/components/Loader.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/data/actions.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/services/product_service.dart';
 
 class BimaPage extends StatefulWidget {
   const BimaPage({Key? key}) : super(key: key);
@@ -58,6 +60,14 @@ class _BimaPageState extends State<BimaPage> {
     },
   ];
 
+  var iconMap = {
+    "fire": Icons.house,
+    "life": Icons.volunteer_activism,
+    "vehicle": Icons.directions_car,
+    "motorcycle": Icons.two_wheeler,
+    "travel": Icons.flight,
+  };
+
   @override
   Widget build(BuildContext context) {
     return RoundedHeaderPage(
@@ -80,23 +90,45 @@ class _BimaPageState extends State<BimaPage> {
             ),
             const SizedBox(height: 16),
             const SectionTitle(title: "All products"),
-            ...buyBimaActions.map((action) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 4, bottom: 4),
-                child: ListItem(
-                  image: action.image,
-                  leading: action.icon,
-                  title: action.label,
-                  action: action.id == null
-                      ? null
-                      : ActionButton(
-                          label: "Purchase",
-                          onClick: (d) {
-                            handlePurchaseProduct(action);
-                          }),
-                ),
-              );
-            }).toList(),
+            FutureBuilder(
+                future: getProducts(),
+                builder: (ctx, snapshot) {
+                  if (!snapshot.hasData) return const Loader();
+
+                  if (snapshot.data == null) return Container();
+
+                  return Column(
+                    children: snapshot.data!.map((product) {
+                      var action = ActionItem(
+                        id: product["id"],
+                        label: product["mobileName"],
+                        // description: product["id"],
+                        icon: iconMap[product["tag"]
+                            .toString()
+                            .split(", ")
+                            .last
+                            .toLowerCase()],
+                      );
+
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 4, bottom: 4),
+                        child: ListItem(
+                          image: action.image,
+                          leading: action.icon,
+                          title: action.label,
+                          description: action.description,
+                          action: action.id == null
+                              ? null
+                              : ActionButton(
+                                  label: "Purchase",
+                                  onClick: (d) {
+                                    handlePurchaseProduct(action);
+                                  }),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                })
           ],
         ),
       ),

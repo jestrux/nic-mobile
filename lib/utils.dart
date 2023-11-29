@@ -25,7 +25,7 @@ String randomId([int? len]) {
       List.generate(len ?? 6, (index) => r.nextInt(33) + 89));
 }
 
-enum AlertType { success, error, custom }
+enum AlertType { success, error, info, custom }
 
 class AlertContent extends StatelessWidget {
   final String? title;
@@ -106,7 +106,9 @@ class AlertContent extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           color: type == AlertType.success
                                               ? Colors.green
-                                              : Colors.red.shade900,
+                                              : type == AlertType.info
+                                                  ? colorScheme(context).primary
+                                                  : Colors.red.shade900,
                                           borderRadius:
                                               BorderRadius.circular(50),
                                         ),
@@ -116,8 +118,12 @@ class AlertContent extends StatelessWidget {
                                         child: Icon(
                                           type == AlertType.success
                                               ? Icons.check
-                                              : Icons.priority_high,
-                                          color: Colors.white,
+                                              : type == AlertType.info
+                                                  ? Icons.lightbulb
+                                                  : Icons.priority_high,
+                                          color: type == AlertType.info
+                                              ? colorScheme(context).onPrimary
+                                              : Colors.white,
                                           size: 16,
                                         ),
                                       ),
@@ -236,6 +242,17 @@ Future<dynamic> openAlert({
         child: child,
       );
     },
+  );
+}
+
+void openInfoAlert({
+  String? title,
+  required String message,
+}) {
+  openAlert(
+    type: AlertType.info,
+    title: title,
+    message: message,
   );
 }
 

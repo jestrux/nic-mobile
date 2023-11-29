@@ -6,7 +6,6 @@ import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/data/actions.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
-import 'package:nic/pages/FormPage.dart';
 
 class HomePage extends StatefulWidget {
   final void Function(int) goToMainPage;
@@ -55,14 +54,7 @@ class _HomePageState extends State<HomePage> {
               content: buyBimaActions,
               shape: ActionItemShape.regular,
               onItemClick: (action) {
-                handlePurchaseProduct(action);
-                // Navigator.of(context).push(
-                //   MaterialPageRoute(
-                //     builder: (context) => FormPage(
-                //       title: action.label,
-                //     ),
-                //   ),
-                // );
+                handlePurchaseProduct(action, matchTag: true);
               },
             ),
             const SizedBox(height: 16),
