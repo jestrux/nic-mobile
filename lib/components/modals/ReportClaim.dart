@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/KeyValueView.dart';
 import 'package:nic/models/policy_model.dart';
+import 'package:nic/pages/ReportClaimFormPage.dart';
 import 'package:nic/services/claim_service.dart';
 import 'package:nic/utils.dart';
 
@@ -14,37 +16,30 @@ class ReportClaim extends StatefulWidget {
 
 class _ReportClaimState extends State<ReportClaim> {
     Future<dynamic> reportClaim(Map<String, dynamic> values) async {
-      return await ClaimService().reportClaim(registrationNumber: values["registrationNumber"]);
+      return await ClaimService().initiateReportClaim(registrationNumber: values["registrationNumber"]);
     }
 
     reportClaimResponse(dynamic claim) {
-      print(claim);
-    // if (policy == null) return;
-    //
-    // var thePolicy = policy as PolicyModel;
-    //
-    // Navigator.of(context).pop();
-    //
-    // var expired = thePolicy.isExpired!;
-    //
-    // openAlert(
-    //   title: "Policy Details",
-    //   child: KeyValueView(
-    //     data: {
-    //       "Policy Number": thePolicy.policyNumber,
-    //       "Assured / Insured": thePolicy.policyPropertyName,
-    //       "Policy Start Date": {"type": "date", "value": thePolicy.startDate},
-    //       "Policy End Date": {"type": "date", "value": thePolicy.endDate},
-    //       "Status": {
-    //         "type": "status",
-    //         "value": expired ? "Expired" : "Active",
-    //         "variant": expired
-    //             ? KeyValueStatusVariant.danger
-    //             : KeyValueStatusVariant.success,
-    //       },
-    //     },
-    //   ),
-    // );
+      // print(claim);
+      Navigator.of(context).pop();
+      if (claim == null){
+        return openAlert(
+            title: "Report Claim",
+            message: "Failed find your claim",
+            type: AlertType.error
+        );
+      }else if(claim['success'] == true){
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (context) => ReportClaimForm(
+              claimForm: claim['form'],
+              formId: claim['proposal'],
+              viewMode: 1,
+            ),
+          ),
+        );
+      }
   }
 
   @override

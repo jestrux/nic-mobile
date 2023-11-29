@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/KeyValueView.dart';
 import 'package:nic/models/claim_model.dart';
@@ -33,7 +34,7 @@ class _ClaimStatusState extends State<ClaimStatus> {
         data: {
           "Claimant Number": claimant.claimantNumber,
           "Claimant Name": claimant.fullClaimantName,
-          "Intimation Date": {"type": "date", "value": claimant.intimationDate},
+          "Intimation Date": {"type": "date", "value": DateFormat('dd/MM/yyyy').parse(claimant.intimationDate)},
           "Claimed Amount": {"type": "money", "value": claimAmount},
           "NIC Net-payable": claimant.netPayable > 0 ? {"type": "money", "value": claimant.netPayable} :'Not Yet Calculated',
           "Status": {

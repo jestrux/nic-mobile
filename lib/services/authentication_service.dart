@@ -29,6 +29,9 @@ class AuthenticationService {
               totalNonLifePolicies
               totalProposals
               totalClaims
+              needPasswordChange
+              customerType
+              intermediaryName
               branch{
                 id
                 name
@@ -104,6 +107,9 @@ class AuthenticationService {
               totalNonLifePolicies
               totalProposals
               totalClaims
+              needPasswordChange
+              customerType
+              intermediaryName
               branch{
                 id
                 name
