@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:nic/components/ListItem.dart';
+import 'package:nic/components/CardWrapper.dart';
 import 'package:nic/components/Loader.dart';
+import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
+import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/data/actions.dart';
-import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/services/product_service.dart';
+import 'package:nic/utils.dart';
 
 class BimaPage extends StatefulWidget {
   const BimaPage({Key? key}) : super(key: key);
@@ -110,20 +112,69 @@ class _BimaPageState extends State<BimaPage> {
                             .toLowerCase()],
                       );
 
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 4, bottom: 4),
-                        child: ListItem(
-                          image: action.image,
-                          leading: action.icon,
-                          title: action.label,
-                          description: action.description,
-                          action: action.id == null
-                              ? null
-                              : ActionButton(
-                                  label: "Purchase",
-                                  onClick: (d) {
-                                    handlePurchaseProduct(action);
-                                  }),
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 6),
+                        child: Stack(
+                          children: [
+                            CardWrapper(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 16,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    action.label,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    children: [
+                                      if (action.id != null)
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            right: 8,
+                                          ),
+                                          child: MiniButton(
+                                            label: "Get a quote",
+                                            onClick: () {
+                                              openAlert(
+                                                child: GetQuote(
+                                                  productId: action.id!,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      MiniButton(
+                                        label: " Purchase ",
+                                        filled: true,
+                                        onClick: () {
+                                          handlePurchaseProduct(action);
+                                        },
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              bottom: 6,
+                              right: 24,
+                              child: Icon(
+                                action.icon,
+                                size: 24,
+                                color: colorScheme(context)
+                                    .onSurfaceVariant
+                                    .withOpacity(0.2),
+                              ),
+                            )
+                          ],
                         ),
                       );
                     }).toList(),

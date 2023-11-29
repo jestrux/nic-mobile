@@ -27,7 +27,10 @@ class CardWrapper extends StatelessWidget {
             background ?? colorScheme(context).surfaceVariant.withOpacity(0.3),
         borderRadius: const BorderRadius.all(Radius.circular(8)),
       ),
-      child: child,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+        child: child,
+      ),
     );
   }
 }
