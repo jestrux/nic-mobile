@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nic/components/DynamicForm.dart';
+import 'package:nic/components/InlineList.dart';
+import 'package:nic/models/ActionItem.dart';
 import 'package:nic/models/life/organizationBillModel.dart';
 import 'package:nic/services/life/customer_policies.dart';
 import 'package:nic/services/life/premium_cards.dart';
@@ -78,6 +80,9 @@ class _SearchLifePolicyState extends State<SearchLifePolicy> {
 
             var remaimedPremiumAmount =
                 totalEstimatedPremium - totalCollectedPremium;
+            var productName = selectedPolicy?.product?.name;
+
+            print("=====================product Id ${productName}");
 
             if (bill != null) {
               if (bill is OrganizationBillModel) {
@@ -88,7 +93,9 @@ class _SearchLifePolicyState extends State<SearchLifePolicy> {
                     premium,
                     premiumPaymentMethod,
                     totalCollectedPremium,
-                    remaimedPremiumAmount);
+                    totalEstimatedPremium,
+                    remaimedPremiumAmount,
+                    productName);
               } else {
                 return null;
               }
@@ -110,87 +117,99 @@ class _SearchLifePolicyState extends State<SearchLifePolicy> {
       double premium,
       int premiumPaymentMethod,
       double totalPremiumAmount,
-      double remaimedPremiumAmount) {
+      double totalEstimatedPremium,
+      double remaimedPremiumAmount,
+      String productName) {
     var phoneNumber;
     openAlert(
       title: "Make Payment",
       child: Column(
         children: [
-          Container(
-            alignment: Alignment.topLeft,
-            padding:
-                const EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 20),
-            child: Column(
-              children: [
-                Container(
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: const Text(
-                      "Summary",
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    )),
-                SizedBox(
+          productName == "BeamLife"
+              ? Container(
+                  alignment: Alignment.topLeft,
+                  padding: const EdgeInsets.only(
+                      top: 10, bottom: 10, left: 20, right: 20),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Premium"),
-                          Text(
-                              NumberFormat.currency(locale: 'en_us', symbol: '')
-                                  .format(premium))
-                        ],
+                      Container(
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: const Text(
+                            "Summary",
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          )),
+                      SizedBox(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text("Premium"),
+                                Text(NumberFormat.currency(
+                                        locale: 'en_us', symbol: '')
+                                    .format(premium))
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text("Payment Method"),
+                                Text(premiumPaymentMethod == 1
+                                    ? "Annualy"
+                                    : premiumPaymentMethod == 2
+                                        ? "Semmi Annually"
+                                        : premiumPaymentMethod == 3
+                                            ? "Quartely"
+                                            : premiumPaymentMethod == 4
+                                                ? "Monthly"
+                                                : "Single Premium")
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text("Expected Collection Amount"),
+                                Text(
+                                  NumberFormat.currency(
+                                          locale: 'en_US', symbol: '\TZS ')
+                                      .format(totalEstimatedPremium),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text("Collected Premium Amount"),
+                                Text(
+                                  NumberFormat.currency(
+                                          locale: 'en_US', symbol: '\TZS ')
+                                      .format(totalPremiumAmount),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Payment Method"),
-                          Text(premiumPaymentMethod == 1
-                              ? "Annualy"
-                              : premiumPaymentMethod == 2
-                                  ? "Semmi Annually"
-                                  : premiumPaymentMethod == 3
-                                      ? "Quartely"
-                                      : premiumPaymentMethod == 4
-                                          ? "Monthly"
-                                          : "Single Premium")
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Collected Premium"),
-                          Text(
-                            NumberFormat.currency(
-                                    locale: 'en_US', symbol: '\TZS ')
-                                .format(totalPremiumAmount),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Remained Collection Amount"),
-                          Text(
-                            NumberFormat.currency(
-                                    locale: 'en_US', symbol: '\TZS ')
-                                .format(remaimedPremiumAmount),
-                          ),
-                        ],
-                      ),
+                      // Container(
+                      //     padding: const EdgeInsets.only(top: 10),
+                      //     width: double.infinity,
+                      //     child: Card(
+                      //       child: Container(
+                      //           padding: const EdgeInsets.all(10),
+                      //           child: Text("oooo")),
+                      //     ))
                     ],
                   ),
                 )
-              ],
-            ),
-          ),
+              : Container(),
           DynamicForm(
             payloadFormat: DynamicFormPayloadFormat.regular,
             initialValues: {"phoneNumber": mobileNumber},
-            fields: const [
+            fields: [
               DynamicFormField(
-                label: "Phone Number to be used for payment",
+                label: "Phone Number to be used for payment $premium",
                 name: "phoneNumber",
               ),
             ],
@@ -201,7 +220,7 @@ class _SearchLifePolicyState extends State<SearchLifePolicy> {
               phoneNumber = payload["phoneNumber"];
 
               return requestPaymentPush(
-                amount: remaimedPremiumAmount.toString(),
+                amount: premium.toString(),
                 controlNumber: controlNumber,
                 phoneNumber: phoneNumber,
               );
