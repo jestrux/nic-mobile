@@ -25,7 +25,7 @@ String randomId([int? len]) {
       List.generate(len ?? 6, (index) => r.nextInt(33) + 89));
 }
 
-enum AlertType { success, error, custom }
+enum AlertType { success, error, info, custom }
 
 class AlertContent extends StatelessWidget {
   final String? title;
@@ -106,7 +106,9 @@ class AlertContent extends StatelessWidget {
                                         decoration: BoxDecoration(
                                           color: type == AlertType.success
                                               ? Colors.green
-                                              : Colors.red.shade900,
+                                              : type == AlertType.info
+                                                  ? colorScheme(context).primary
+                                                  : Colors.red.shade900,
                                           borderRadius:
                                               BorderRadius.circular(50),
                                         ),
@@ -116,8 +118,12 @@ class AlertContent extends StatelessWidget {
                                         child: Icon(
                                           type == AlertType.success
                                               ? Icons.check
-                                              : Icons.priority_high,
-                                          color: Colors.white,
+                                              : type == AlertType.info
+                                                  ? Icons.lightbulb
+                                                  : Icons.priority_high,
+                                          color: type == AlertType.info
+                                              ? colorScheme(context).onPrimary
+                                              : Colors.white,
                                           size: 16,
                                         ),
                                       ),
@@ -236,6 +242,17 @@ Future<dynamic> openAlert({
         child: child,
       );
     },
+  );
+}
+
+void openInfoAlert({
+  String? title,
+  required String message,
+}) {
+  openAlert(
+    type: AlertType.info,
+    title: title,
+    message: message,
   );
 }
 
@@ -636,8 +653,13 @@ Future<dynamic> showChoicePicker({
 
 Future<dynamic> openBottomSheet({
   Widget? child,
-  dismissible = true,
-  padding,
+  String? title,
+  bool dismissible = true,
+  EdgeInsets? padding,
+  String? cancelText,
+  String? okayText,
+  Function? onOkay,
+  Function? onCancel,
 }) {
   var actualPadding = padding ??
       const EdgeInsets.only(
@@ -647,6 +669,7 @@ Future<dynamic> openBottomSheet({
         top: 8,
       );
   return showModalBottomSheet(
+    useRootNavigator: true,
     isScrollControlled: true,
     context: Constants.globalAppKey.currentContext!,
     enableDrag: dismissible,
@@ -696,7 +719,51 @@ Future<dynamic> openBottomSheet({
                         ],
                       ),
                       const SizedBox(height: 20),
+                      if (title != null && title.isNotEmpty)
+                        Container(
+                          margin: const EdgeInsets.only(
+                            bottom: 8,
+                            left: 20,
+                            right: 20,
+                          ),
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                       child ?? Container(),
+                      if (onOkay != null || onCancel != null)
+                        const SizedBox(height: 12),
+                      onOkay != null && onCancel != null
+                          ? FormActions(
+                              cancelText: cancelText ?? "Cancel",
+                              onCancel: () {
+                                Navigator.of(context).pop();
+                                onCancel();
+                              },
+                              okayText: okayText ?? "Okay",
+                              onOkay: () {
+                                Navigator.of(context).pop();
+                                onOkay();
+                              },
+                            )
+                          : onOkay != null
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: FormButton.filled(
+                                    okayText ?? "Okay",
+                                    onClick: () {
+                                      Navigator.of(context).pop();
+                                      onOkay();
+                                    },
+                                  ),
+                                )
+                              : Container(),
                     ]),
                   ),
                 ),

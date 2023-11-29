@@ -5,9 +5,12 @@ import 'package:nic/components/modals/BimaStatus.dart';
 import 'package:nic/components/modals/ClaimStatus.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/components/modals/InitialProductForm.dart';
+import 'package:nic/components/modals/PaymentInformation.dart';
 import 'package:nic/components/modals/ReportClaim.dart';
+import 'package:nic/components/modals/ProductsByTag.dart';
 import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/services/payment_service.dart';
 import 'package:nic/utils.dart';
 import 'package:nic/constants.dart';
 
@@ -23,15 +26,14 @@ var claimStatusAction = ActionItem(
 );
 
 var reportClaimAction = ActionItem(
-  label: "Report Claim",
-  icon: Icons.post_add,
+    label: "Report Claim",
+    icon: Icons.post_add,
     onClick: () async {
       openAlert(
         title: "Report Claim",
         child: const ReportClaim(),
       );
-    }
-);
+    });
 
 var bimaStatusAction = ActionItem(
   label: "Bima Status",
@@ -90,7 +92,7 @@ var getQuickQuoteAction = ActionItem(
 );
 
 var makePaymentAction = ActionItem(
-  label: "Make payment",
+  label: "Make\npayment",
   background: Colors.green.shade300,
   icon: Icons.paid,
   onClick: () async {
@@ -107,7 +109,14 @@ var makePaymentAction = ActionItem(
       ],
     );
 
-    if (selectedChoice != null) showToast(selectedChoice);
+    if (selectedChoice == null) return;
+
+    openAlert(
+      title: "Enter payment control number",
+      child: PaymentInformation(
+        skipPaymentPreview: selectedChoice == "Pay Now",
+      ),
+    );
   },
 );
 
@@ -166,6 +175,7 @@ List<ActionItem> buyBimaActions = [
         "https://bsmedia.business-standard.com/_media/bs/img/article/2019-05/25/full/1558730112-9901.jpg",
   ),
   ActionItem(
+    id: "UHJvZHVjdE5vZGU6MzEx",
     icon: Icons.house,
     label: "Linda Mjengo",
     image:
@@ -185,6 +195,7 @@ List<ActionItem> buyBimaActions = [
         "https://images.unsplash.com/photo-1544016768-982d1554f0b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDI3fHxhaXJwbGFuZXxlbnwwfHx8fDE2OTk0NDk5MDl8MA&ixlib=rb-4.0.3&q=80&w=1080",
   ),
   ActionItem(
+    id: "UHJvZHVjdE5vZGU6MjY=",
     icon: Icons.directions_car,
     label: "Bima Kubwa ya Binafsi",
     image:
@@ -192,8 +203,29 @@ List<ActionItem> buyBimaActions = [
   ),
 ];
 
-void handlePurchaseProduct(ActionItem product) {
-  if (product.id == null) return;
+void handlePurchaseProduct(ActionItem product, {matchTag = false}) async {
+  if (product.id == null) {
+    return openInfoAlert(
+      title: "Product upcoming",
+      message: "Please come and check again soon!",
+    );
+  }
+
+  var tagMap = {
+    "UHJvZHVjdE5vZGU6MzAw": "Life",
+    "UHJvZHVjdE5vZGU6MTc3": "Vehicle",
+    "UHJvZHVjdE5vZGU6MTgx": "Motorcycle",
+  };
+
+  var tag = tagMap[product.id];
+
+  if (matchTag && tag != null) {
+    openAlert(
+      child: ProductsByTag(tag: tag),
+    );
+
+    return;
+  }
 
   openAlert(
     title: "Purchase ${product.label}",

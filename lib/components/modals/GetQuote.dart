@@ -264,10 +264,10 @@ class _GetQuoteState extends State<GetQuote> {
           const Padding(
             padding: EdgeInsets.only(
               top: 12,
-              bottom: 4,
+              bottom: 8,
             ),
             child: Text(
-              "More details",
+              "Quote calculation details",
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

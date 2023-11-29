@@ -6,7 +6,7 @@ import 'package:nic/models/ActionItem.dart';
 import 'package:nic/models/life/organizationBillModel.dart';
 import 'package:nic/services/life/customer_policies.dart';
 import 'package:nic/services/life/premium_cards.dart';
-import 'package:nic/services/underwritting_service.dart';
+import 'package:nic/services/payment_service.dart';
 import 'package:nic/utils.dart';
 
 import '../../services/life/customer_bill.dart';
