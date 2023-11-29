@@ -14,7 +14,7 @@ class FormInput extends StatefulWidget {
   final String? label;
   final String? error;
   final String hint;
-  final String? value;
+  final dynamic value;
   final int minLines;
   final int maxLines;
   final double borderWidth;
@@ -76,6 +76,7 @@ class FormInput extends StatefulWidget {
 }
 
 class _FormInputState extends State<FormInput> {
+  FocusNode focusNode = FocusNode();
   final TextEditingController inputController = TextEditingController();
   bool overrideObscureText = false;
 
@@ -105,7 +106,7 @@ class _FormInputState extends State<FormInput> {
               : _getFormatters().length == 0
                   ? MaxLengthEnforcement.enforced
                   : MaxLengthEnforcement.truncateAfterCompositionEnds,
-          focusNode: widget.focusNode,
+          focusNode: focusNode,
           autofocus: widget.autoFocus ?? false,
           obscureText: overrideObscureText ? false : widget.obscureText,
           textAlign: widget.textAlign,
@@ -209,6 +210,7 @@ class _FormInputState extends State<FormInput> {
                       icon: const Icon(Icons.close, size: 18),
                       padding: EdgeInsets.zero,
                       onPressed: () {
+                        FocusScope.of(context).requestFocus(focusNode);
                         inputController.text = "";
                         widget.onClear!();
                       },
@@ -252,7 +254,7 @@ class _FormInputState extends State<FormInput> {
                     child: Opacity(
                       opacity: widget.value != null ? 1 : 0.7,
                       child: Text(
-                        widget.value != null ? widget.value! : widget.hint,
+                        "${widget.value != null ? widget.value! : widget.hint}",
                         style: TextStyle(
                           fontSize: widget.fontSize,
                           color: widget.value != null
@@ -311,7 +313,16 @@ class _FormInputState extends State<FormInput> {
   @override
   void initState() {
     super.initState();
-    if (widget.value != null) inputController.text = widget.value!;
+
+    if (widget.focusNode != null) focusNode = widget.focusNode!;
+
+    if (widget.value != null) {
+      var value = widget.value!.toString();
+
+      if (widget.money) value = formatMoney(value);
+
+      inputController.text = value;
+    }
   }
 
   @override
@@ -321,7 +332,11 @@ class _FormInputState extends State<FormInput> {
         : colorScheme(context).onSurface;
 
     if (widget.value != null && widget.onChange == null) {
-      inputController.text = widget.value!;
+      var value = widget.value!.toString();
+
+      if (widget.money) value = formatMoney(value);
+
+      inputController.text = value;
     }
 
     return Column(

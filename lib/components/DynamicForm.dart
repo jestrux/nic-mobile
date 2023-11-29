@@ -13,17 +13,21 @@ enum DynamicFormFieldType {
   text,
   date,
   number,
+  money,
   email,
   choice,
   boolean,
   checkbox,
   radio,
   password,
-  file
+  file,
+  phoneNumber
 }
 
 var keyboardTypeMap = {
   DynamicFormFieldType.number: TextInputType.number,
+  DynamicFormFieldType.money: TextInputType.number,
+  DynamicFormFieldType.phoneNumber: TextInputType.phone,
   DynamicFormFieldType.email: TextInputType.emailAddress,
 };
 
@@ -100,11 +104,13 @@ class DynamicForm extends StatefulWidget {
   final List<DynamicFormField> fields;
   final Map<String, dynamic>? initialValues;
   final String? submitLabel;
+  final Function(FormBuilderState? formData)? onChange;
   final Future Function(Map<String, dynamic>) onSubmit;
   final Function(dynamic response)? onSuccess;
   final DynamicFormPayloadFormat payloadFormat;
   final ChoicePickerMode choicePickerMode;
   final Function? onCancel;
+  final Map<String, List<String?>>? errors;
   final Widget Function(Function onSubmit, bool loading)? builder;
 
   const DynamicForm({
@@ -112,12 +118,14 @@ class DynamicForm extends StatefulWidget {
     required this.fields,
     required this.onSubmit,
     this.submitLabel,
+    this.onChange,
     this.onSuccess,
     this.onCancel,
     this.builder,
     this.payloadFormat = DynamicFormPayloadFormat.questionAnswer,
     this.choicePickerMode = ChoicePickerMode.regular,
     this.initialValues,
+    this.errors,
   }) : super(key: key);
 
   @override
@@ -171,7 +179,6 @@ class _DynamicFormState extends State<DynamicForm> {
         print("_____payload, ${questionAnswerPayload}");
       }
 
-      // devLog("Payload: $response");
       response = await widget.onSubmit(questionAnswerPayload ?? payload);
     } catch (e) {
       devLog("Failed to fetch dynamic form: $e");
@@ -245,7 +252,12 @@ class _DynamicFormState extends State<DynamicForm> {
           child: FormBuilder(
             key: _formKey,
             initialValue: widget.initialValues ?? {},
-            onChanged: () => updateFields(_formKey.currentState),
+            onChanged: () {
+              updateFields(_formKey.currentState);
+              if (widget.onChange != null) {
+                widget.onChange!(_formKey.currentState);
+              }
+            },
             child: Column(
               children: fields.map(
                 (field) {
@@ -257,6 +269,10 @@ class _DynamicFormState extends State<DynamicForm> {
                     choicePickerMode: widget.choicePickerMode,
                     autoValidate: submitAttempted &&
                         (form?.fields[field.name]?.isDirty ?? false),
+                    errors: widget.errors?[field.name]
+                        ?.map((element) => element ?? "")
+                        .where((element) => element.isNotEmpty)
+                        .toList(),
                   );
                 },
               ).toList(),
@@ -294,12 +310,14 @@ class FormField extends StatelessWidget {
     required this.choicePickerMode,
     this.autoFocus,
     this.autoValidate,
+    this.errors,
   });
 
   final ChoicePickerMode choicePickerMode;
   final bool? autoFocus;
   final bool? autoValidate;
   final DynamicFormField field;
+  final List<String>? errors;
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +336,12 @@ class FormField extends StatelessWidget {
         if (isBooleanField) FormBuilderValidators.equal(true)
       ]),
       builder: (FormFieldState<dynamic> fieldState) {
-        var textColor = fieldState.errorText != null && !isBooleanField
+        List<String> allErrors = [];
+
+        if (fieldState.errorText != null) allErrors.add(fieldState.errorText!);
+        if (errors != null) allErrors.addAll(errors!);
+
+        var textColor = allErrors.isNotEmpty && !isBooleanField
             ? colorScheme(context).error
             : colorScheme(context).onSurface;
 
@@ -522,7 +545,7 @@ class FormField extends StatelessWidget {
 
         fieldWidget ??= FormInput(
           type: keyboardTypeMap[field.type] ?? TextInputType.text,
-          // money: field.type == DynamicFormFieldType.number,
+          money: field.type == DynamicFormFieldType.money,
           hint: hint ?? "",
           leading: leading,
           value: selectedValueLabel ?? fieldState.value,
@@ -556,21 +579,25 @@ class FormField extends StatelessWidget {
                   child: fieldLabel,
                 ),
               fieldWidget,
-              if (fieldState.errorText != null)
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: isBooleanField ? 20 : 8,
-                    top: isBooleanField ? 8 : 0,
-                  ),
-                  child: Text(
-                    fieldState.errorText!,
-                    style: TextStyle(
-                      color: colorScheme(context).error,
-                      fontSize: 10,
-                      // letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
+              if (allErrors.isNotEmpty)
+                ...allErrors
+                    .map(
+                      (error) => Padding(
+                        padding: EdgeInsets.only(
+                          left: isBooleanField ? 20 : 8,
+                          top: isBooleanField ? 8 : 0,
+                        ),
+                        child: Text(
+                          error,
+                          style: TextStyle(
+                            color: colorScheme(context).error,
+                            fontSize: 10,
+                            // letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList()
             ],
           ),
         );

@@ -5,10 +5,12 @@ import 'package:nic/components/modals/BimaStatus.dart';
 import 'package:nic/components/modals/ClaimStatus.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/components/modals/InitialProductForm.dart';
+import 'package:nic/components/modals/PaymentInformation.dart';
 import 'package:nic/components/modals/ReportClaim.dart';
 import 'package:nic/components/modals/ProductsByTag.dart';
 import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/services/payment_service.dart';
 import 'package:nic/utils.dart';
 import 'package:nic/constants.dart';
 
@@ -90,7 +92,7 @@ var getQuickQuoteAction = ActionItem(
 );
 
 var makePaymentAction = ActionItem(
-  label: "Make payment",
+  label: "Make\npayment",
   background: Colors.green.shade300,
   icon: Icons.paid,
   onClick: () async {
@@ -107,7 +109,14 @@ var makePaymentAction = ActionItem(
       ],
     );
 
-    if (selectedChoice != null) showToast(selectedChoice);
+    if (selectedChoice == null) return;
+
+    openAlert(
+      title: "Enter payment control number",
+      child: PaymentInformation(
+        skipPaymentPreview: selectedChoice == "Pay Now",
+      ),
+    );
   },
 );
 
