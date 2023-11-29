@@ -17,6 +17,8 @@ class UserModel {
   int? _totalNonLifePolicies = 0;
   int? _totalClaims = 0;
   bool? _needPasswordChange = false;
+  int? _customerType = 3;
+  String? _intermediaryName;
   BranchModel? _branch;
 
   UserModel(
@@ -36,7 +38,9 @@ class UserModel {
       totalProposals,
       totalNonLifePolicies,
       totalClaims,
-        needPasswordChange}) {
+        needPasswordChange,
+        customerType,
+        intermediaryName}) {
     _token = token;
     _id = id;
     _firstName = firstName;
@@ -54,6 +58,8 @@ class UserModel {
     _totalNonLifePolicies = totalNonLifePolicies;
     _totalClaims = totalClaims;
     _needPasswordChange = needPasswordChange;
+    _customerType = customerType;
+    _intermediaryName = intermediaryName;
   }
 
   Map<String, dynamic> toMap() {
@@ -76,6 +82,8 @@ class UserModel {
     map['total_proposals'] = _totalProposals;
     map['total_claims'] = _totalClaims;
     map['needPasswordChange'] = _needPasswordChange;
+    map['intermediaryName'] = _intermediaryName;
+    map['customerType'] = _customerType;
     return map;
   }
 
@@ -105,6 +113,8 @@ class UserModel {
                 jsonData['tokenAuth']['user']['profile']['totalProposals'];
             _totalClaims = jsonData['tokenAuth']['user']['profile']['totalClaims'];
             _needPasswordChange = jsonData['tokenAuth']['user']['profile']['needPasswordChange'];
+            _customerType = jsonData['tokenAuth']['user']['profile']['customerType'];
+            _intermediaryName = jsonData['tokenAuth']['user']['profile']['intermediaryName'];
             if (jsonData['tokenAuth']['user']['profile']['branch'] != null) {
               _branch = BranchModel(
                   id: jsonData['tokenAuth']['user']['profile']['branch']['id'],
@@ -118,82 +128,82 @@ class UserModel {
       }
     }
   }
-
-  UserModel.fromPolicyJson(Map<String, dynamic>? jsonData) {
-    if (jsonData != null) {
-      if (jsonData['policyVerification'] != null) {
-        _token = jsonData['policyVerification']['token'];
-        if (jsonData['policyVerification']['user'] != null) {
-          _id = jsonData['policyVerification']['user']['id'];
-          _firstName = jsonData['policyVerification']['user']['firstName'];
-          _lastName = jsonData['policyVerification']['user']['lastName'];
-          _email = jsonData['policyVerification']['user']['email'];
-          if (jsonData['policyVerification']['user']['profile'] != null) {
-            _middleName =
-            jsonData['policyVerification']['user']['profile']['middleName'];
-            _phone = jsonData['policyVerification']['user']['profile']['phone'];
-            _pic = jsonData['policyVerification']['user']['profile']['pic'];
-            _customCustomerNumber = jsonData['policyVerification']['user']['profile']['customCustomerNumber'];
-            _customerNumberType = jsonData['policyVerification']['user']['profile']['customerNumberType'];
-            _totalPolicies =
-            jsonData['policyVerification']['user']['profile']['totalPolicies'];
-            _totalLifePolicies =
-            jsonData['policyVerification']['user']['profile']['totalLifePolicies'];
-            _totalNonLifePolicies = jsonData['policyVerification']['user']['profile']
-            ['totalNonLifePolicies'];
-            _totalProposals =
-            jsonData['policyVerification']['user']['profile']['totalProposals'];
-            _totalClaims =
-            jsonData['policyVerification']['user']['profile']['totalClaims'];
-            if (jsonData['policyVerification']['user']['profile']['branch'] != null) {
-              _branch = BranchModel(
-                  id: jsonData['policyVerification']['user']['profile']['branch']['id'],
-                  name: jsonData['policyVerification']['user']['profile']['branch']
-                  ['name'],
-                  code: jsonData['policyVerification']['user']['profile']['branch']
-                  ['code']);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  UserModel.fromProposalJson(Map<String, dynamic> jsonData) {
-    if (jsonData != null) {
-      if (jsonData['initialForm'] != null) {
-        _token = jsonData['initialForm']['token'];
-        if (jsonData['initialForm']['user'] != null) {
-          _id = jsonData['initialForm']['user']['id'];
-          _firstName = jsonData['initialForm']['user']['firstName'];
-          _lastName = jsonData['initialForm']['user']['lastName'];
-          _email = jsonData['initialForm']['user']['email'];
-          if (jsonData['initialForm']['user']['profile'] != null) {
-            _middleName =
-            jsonData['initialForm']['user']['profile']['middleName'];
-            _phone = jsonData['initialForm']['user']['profile']['phone'];
-            _pic = jsonData['initialForm']['user']['profile']['pic'];
-            _customCustomerNumber = jsonData['initialForm']['user']['profile']['customCustomerNumber'];
-            _customerNumberType = jsonData['initialForm']['user']['profile']['customerNumberType'];
-            _totalPolicies =
-            jsonData['initialForm']['user']['profile']['totalPolicies'];
-            _totalLifePolicies =
-            jsonData['initialForm']['user']['profile']['totalLifePolicies'];
-            _totalNonLifePolicies = jsonData['initialForm']['user']['profile']['totalNonLifePolicies'];
-            _totalProposals =jsonData['initialForm']['user']['profile']['totalProposals'];
-            _totalClaims =jsonData['initialForm']['user']['profile']['totalClaims'];
-            if (jsonData['initialForm']['user']['profile']['branch'] != null) {
-              _branch = BranchModel(
-                  id: jsonData['initialForm']['user']['profile']['branch']['id'],
-                  name: jsonData['initialForm']['user']['profile']['branch']['name'],
-                  code: jsonData['policyVerification']['user']['profile']['branch']['code']);
-            }
-          }
-        }
-      }
-    }
-  }
-
+  //
+  // UserModel.fromPolicyJson(Map<String, dynamic>? jsonData) {
+  //   if (jsonData != null) {
+  //     if (jsonData['policyVerification'] != null) {
+  //       _token = jsonData['policyVerification']['token'];
+  //       if (jsonData['policyVerification']['user'] != null) {
+  //         _id = jsonData['policyVerification']['user']['id'];
+  //         _firstName = jsonData['policyVerification']['user']['firstName'];
+  //         _lastName = jsonData['policyVerification']['user']['lastName'];
+  //         _email = jsonData['policyVerification']['user']['email'];
+  //         if (jsonData['policyVerification']['user']['profile'] != null) {
+  //           _middleName =
+  //           jsonData['policyVerification']['user']['profile']['middleName'];
+  //           _phone = jsonData['policyVerification']['user']['profile']['phone'];
+  //           _pic = jsonData['policyVerification']['user']['profile']['pic'];
+  //           _customCustomerNumber = jsonData['policyVerification']['user']['profile']['customCustomerNumber'];
+  //           _customerNumberType = jsonData['policyVerification']['user']['profile']['customerNumberType'];
+  //           _totalPolicies =
+  //           jsonData['policyVerification']['user']['profile']['totalPolicies'];
+  //           _totalLifePolicies =
+  //           jsonData['policyVerification']['user']['profile']['totalLifePolicies'];
+  //           _totalNonLifePolicies = jsonData['policyVerification']['user']['profile']
+  //           ['totalNonLifePolicies'];
+  //           _totalProposals =
+  //           jsonData['policyVerification']['user']['profile']['totalProposals'];
+  //           _totalClaims =
+  //           jsonData['policyVerification']['user']['profile']['totalClaims'];
+  //           if (jsonData['policyVerification']['user']['profile']['branch'] != null) {
+  //             _branch = BranchModel(
+  //                 id: jsonData['policyVerification']['user']['profile']['branch']['id'],
+  //                 name: jsonData['policyVerification']['user']['profile']['branch']
+  //                 ['name'],
+  //                 code: jsonData['policyVerification']['user']['profile']['branch']
+  //                 ['code']);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  //
+  // UserModel.fromProposalJson(Map<String, dynamic> jsonData) {
+  //   if (jsonData != null) {
+  //     if (jsonData['initialForm'] != null) {
+  //       _token = jsonData['initialForm']['token'];
+  //       if (jsonData['initialForm']['user'] != null) {
+  //         _id = jsonData['initialForm']['user']['id'];
+  //         _firstName = jsonData['initialForm']['user']['firstName'];
+  //         _lastName = jsonData['initialForm']['user']['lastName'];
+  //         _email = jsonData['initialForm']['user']['email'];
+  //         if (jsonData['initialForm']['user']['profile'] != null) {
+  //           _middleName =
+  //           jsonData['initialForm']['user']['profile']['middleName'];
+  //           _phone = jsonData['initialForm']['user']['profile']['phone'];
+  //           _pic = jsonData['initialForm']['user']['profile']['pic'];
+  //           _customCustomerNumber = jsonData['initialForm']['user']['profile']['customCustomerNumber'];
+  //           _customerNumberType = jsonData['initialForm']['user']['profile']['customerNumberType'];
+  //           _totalPolicies =
+  //           jsonData['initialForm']['user']['profile']['totalPolicies'];
+  //           _totalLifePolicies =
+  //           jsonData['initialForm']['user']['profile']['totalLifePolicies'];
+  //           _totalNonLifePolicies = jsonData['initialForm']['user']['profile']['totalNonLifePolicies'];
+  //           _totalProposals =jsonData['initialForm']['user']['profile']['totalProposals'];
+  //           _totalClaims =jsonData['initialForm']['user']['profile']['totalClaims'];
+  //           if (jsonData['initialForm']['user']['profile']['branch'] != null) {
+  //             _branch = BranchModel(
+  //                 id: jsonData['initialForm']['user']['profile']['branch']['id'],
+  //                 name: jsonData['initialForm']['user']['profile']['branch']['name'],
+  //                 code: jsonData['policyVerification']['user']['profile']['branch']['code']);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  //
 
   UserModel.fromRegisterJson(Map<String, dynamic>? jsonData) {
     if (jsonData != null) {
@@ -221,6 +231,8 @@ class UserModel {
             jsonData['registerMobile']['user']['profile']['totalProposals'];
             _totalClaims = jsonData['registerMobile']['user']['profile']['totalClaims'];
             _needPasswordChange = jsonData['registerMobile']['user']['profile']['needPasswordChange'];
+            _customerType = jsonData['registerMobile']['user']['profile']['customerType'];
+            _intermediaryName = jsonData['registerMobile']['user']['profile']['intermediaryName'];
             if (jsonData['registerMobile']['user']['profile']['branch'] != null) {
               _branch = BranchModel(
                   id: jsonData['registerMobile']['user']['profile']['branch']['id'],
@@ -298,12 +310,24 @@ class UserModel {
     this._branch = branch;
   }
 
-  // ignore: unnecessary_getters_setters
   bool? get needPasswordChange => _needPasswordChange;
 
-  // ignore: unnecessary_getters_setters
   set needPasswordChange(bool? value) {
     _needPasswordChange = value;
+  }
+
+
+  int? get customerType => _customerType;
+
+  set customerType(int? value) {
+    _customerType = value;
+  }
+
+
+  String? get intermediaryName => _intermediaryName;
+
+  set intermediaryName(String? value) {
+    _intermediaryName = value;
   }
 
   String? get pic => this._pic;

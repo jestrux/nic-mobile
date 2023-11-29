@@ -153,7 +153,7 @@ Future<Map<String, dynamic>?> initiateProposal({
       return null;
     }
 
-    throw ("Unknown error, plese try again");
+    throw ("Unknown error, please try again");
   }
 
   return fetchProposalForm(

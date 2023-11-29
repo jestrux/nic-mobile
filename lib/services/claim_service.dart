@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:nic/models/claim_model.dart';
 import 'package:nic/services/data_connection.dart';
@@ -76,11 +79,11 @@ class ClaimService {
 
     return claim;
   }
-  Future<Map<String, dynamic>?> reportClaim({String? registrationNumber}) async {
+  Future<Map<String, dynamic>?> initiateReportClaim({String? registrationNumber}) async {
     ClaimModel? claim;
     String dataMap = r"""
       mutation ($registrationNumber: String!,$underwriteChannel: Int!) {
-      initiateReportClaim(registrationNumber: $registration_number,underwriteChannel:$underwriteChannel) {
+      initiateReportClaim(registrationNumber: $registrationNumber,underwriteChannel:$underwriteChannel) {
         success
         message
         proposal
@@ -98,18 +101,116 @@ class ClaimService {
     );
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.query(options);
+    if(result.exception !=  null){
+      print(result.exception);
+    }
+
     if (result.data != null) {
       var payLoad = result.data!['initiateReportClaim'];
+      // return reportClaimForm(product: payLoad['product']);
       return {
-        "status":payLoad['status'],
+        "success":payLoad['success'],
         "message":payLoad['message'],
         "product":payLoad['product'],
-        "proposal":payLoad['proposal']
+        "proposal":payLoad['proposal'],
+        "form": await reportClaimForm(product: payLoad['product'])
       };
     }
 
     return null;
   }
+    Future<dynamic> reportClaimForm({int? product}) async {
+    String dataMap = r"""
+      query ($product: Int!,$underwriteChannel:Int!) {
+      reportClaimForm(product: $product,underwriteChannel:$underwriteChannel)
+    }
+    """;
+
+    final QueryOptions options = QueryOptions(
+      document: gql(dataMap),
+      variables: {
+        "product": product,
+        "underwriteChannel": 2
+      },
+    );
+    GraphQLClient client = await DataConnection().connectionClient();
+    final QueryResult result = await client.query(options);
+
+    if(result.exception !=  null){
+      print(result.exception);
+    }
+
+    List<dynamic>? allForm;
+
+
+  var allFormResponse = result.data!['reportClaimForm'];
+
+  if (allFormResponse == null) {
+    throw ("Failed to fetch claim report form. Please try again later.");
+  }
+
+  allForm = List.from(jsonDecode(jsonDecode(allFormResponse),)).map((e) => List.from(e["fields"] ?? [])).expand((field) => field).toList();
+
+  return allForm;
+  }
+
+  Future<Map<String, dynamic>?> submitClaimForm({
+    required int proposal,
+    required List<dynamic> data,
+  }) async {
+    ClaimModel? claim;
+    String dataMap = r"""
+      mutation ($proposal: Int!, $data: JSONString!,$underwriteChannel:Int!) {
+        reportClaim(proposal: $proposal, data: $data,underwriteChannel:$underwriteChannel){
+        success
+        message
+        notification
+        propertyName
+        startDate
+        endDate
+        notificationDate
+        claimForm
+        acknowledgementDocument
+        }
+      }
+    """;
+
+    final QueryOptions options = QueryOptions(
+      document: gql(dataMap),
+      variables: {
+        "proposal": proposal,
+        "data":jsonEncode(data),
+        "underwriteChannel": 2
+      },
+    );
+    GraphQLClient client = await DataConnection().connectionClient();
+    final QueryResult result = await client.query(options);
+    if(result.exception !=  null){
+      print(result.exception);
+    }
+
+    if (result.data != null) {
+      var payLoad = result.data!['reportClaim'];
+      // return reportClaimForm(product: payLoad['product']);
+      if(payLoad != null){
+        return {
+          "success":payLoad['success'],
+          "message":payLoad['message'],
+          "notification":payLoad['notification'],
+          "propertyName":payLoad['propertyName'],
+          "startDate":payLoad['startDate'],
+          "endDate":payLoad['endDate'],
+          "notificationDate":payLoad['notificationDate'],
+          "claimForm":payLoad['claimForm'],
+          "acknowledgementDocument":payLoad['acknowledgementDocument'],
+        };
+      }
+    }
+
+    return null;
+  }
+
+
 //
 //   Future<bool> getClaimants(
 //       {String? cursor,
