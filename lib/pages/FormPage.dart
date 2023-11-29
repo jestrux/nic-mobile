@@ -12,6 +12,7 @@ import 'package:nic/components/Loader.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/models/ActionButton.dart';
+import 'package:nic/services/payment_service.dart';
 import 'package:nic/services/underwritting_service.dart';
 import 'package:nic/utils.dart';
 
@@ -101,7 +102,10 @@ class _FormPageState extends State<FormPage> {
           );
         },
         onSuccess: (response) {
-          if (response == null) return;
+          if (response == null) {
+            openErrorAlert(message: "Payment failed, please try again later");
+            return;
+          }
 
           Navigator.of(context).popUntil(ModalRoute.withName("/"));
           openSuccessAlert(

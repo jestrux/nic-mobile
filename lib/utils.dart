@@ -653,8 +653,13 @@ Future<dynamic> showChoicePicker({
 
 Future<dynamic> openBottomSheet({
   Widget? child,
-  dismissible = true,
-  padding,
+  String? title,
+  bool dismissible = true,
+  EdgeInsets? padding,
+  String? cancelText,
+  String? okayText,
+  Function? onOkay,
+  Function? onCancel,
 }) {
   var actualPadding = padding ??
       const EdgeInsets.only(
@@ -664,6 +669,7 @@ Future<dynamic> openBottomSheet({
         top: 8,
       );
   return showModalBottomSheet(
+    useRootNavigator: true,
     isScrollControlled: true,
     context: Constants.globalAppKey.currentContext!,
     enableDrag: dismissible,
@@ -713,7 +719,51 @@ Future<dynamic> openBottomSheet({
                         ],
                       ),
                       const SizedBox(height: 20),
+                      if (title != null && title.isNotEmpty)
+                        Container(
+                          margin: const EdgeInsets.only(
+                            bottom: 8,
+                            left: 20,
+                            right: 20,
+                          ),
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                       child ?? Container(),
+                      if (onOkay != null || onCancel != null)
+                        const SizedBox(height: 12),
+                      onOkay != null && onCancel != null
+                          ? FormActions(
+                              cancelText: cancelText ?? "Cancel",
+                              onCancel: () {
+                                Navigator.of(context).pop();
+                                onCancel();
+                              },
+                              okayText: okayText ?? "Okay",
+                              onOkay: () {
+                                Navigator.of(context).pop();
+                                onOkay();
+                              },
+                            )
+                          : onOkay != null
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: FormButton.filled(
+                                    okayText ?? "Okay",
+                                    onClick: () {
+                                      Navigator.of(context).pop();
+                                      onOkay();
+                                    },
+                                  ),
+                                )
+                              : Container(),
                     ]),
                   ),
                 ),

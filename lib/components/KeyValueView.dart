@@ -1,7 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:nic/utils.dart';
 
+enum KeyValueType { text, date, money, status }
+
+const Map<KeyValueType, String> KeyValueTypeMap = {
+  KeyValueType.text: "text",
+  KeyValueType.date: "date",
+  KeyValueType.money: "money",
+  KeyValueType.status: "status",
+};
+
 enum KeyValueStatusVariant { danger, warning, success }
+
+Map<String, dynamic> KeyValueBuilder({
+  required dynamic value,
+  KeyValueType type = KeyValueType.text,
+  KeyValueStatusVariant? statusVariant,
+}) {
+  return {
+    "value": value,
+    "type": KeyValueTypeMap[type] ?? "text",
+    "variant": statusVariant,
+  };
+}
 
 class KeyValueView extends StatelessWidget {
   final String? title;
