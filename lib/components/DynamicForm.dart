@@ -176,7 +176,6 @@ class _DynamicFormState extends State<DynamicForm> {
         }
 
         questionAnswerPayload = {"data": answers};
-        print("_____payload, ${questionAnswerPayload}");
       }
 
       response = await widget.onSubmit(questionAnswerPayload ?? payload);
