@@ -65,6 +65,12 @@ class _PaymentInformationState extends State<PaymentInformation> {
         Navigator.of(context).pop();
 
         if (widget.skipPaymentPreview) {
+          if (response["isPaid"] ?? false) {
+            openInfoAlert(
+              message: "Payment already been made for this control number.",
+            );
+            return;
+          }
           openPaymentForm(response);
           return;
         }
@@ -72,12 +78,14 @@ class _PaymentInformationState extends State<PaymentInformation> {
         openAlert(
           title: "Payment Information",
           cancelText: "Close",
-          onCancel: () => {},
+          onCancel: () => Navigator.of(context).pop(),
           okayText: "Pay now",
-          onOkay: () {
-            Navigator.of(context).pop();
-            openPaymentForm(response);
-          },
+          onOkay: response["isPaid"] ?? false
+              ? null
+              : () {
+                  Navigator.of(context).pop();
+                  openPaymentForm(response);
+                },
           child: Padding(
             padding: const EdgeInsets.only(top: 4),
             child: KeyValueView(
