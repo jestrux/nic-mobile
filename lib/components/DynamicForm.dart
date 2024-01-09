@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/FormButton.dart';
 import 'package:nic/components/FormInput.dart';
+import 'package:nic/components/VideoThumbnailImage.dart';
+import 'package:nic/pages/PlayVideoPage.dart';
 import 'package:nic/utils.dart';
 
 enum DynamicFormFieldType {
@@ -21,6 +24,7 @@ enum DynamicFormFieldType {
   radio,
   password,
   file,
+  video,
   phoneNumber
 }
 
@@ -32,6 +36,7 @@ var keyboardTypeMap = {
 };
 
 var dynamicFormFieldTypeMap = {
+  "video": DynamicFormFieldType.video,
   "file": DynamicFormFieldType.file,
   "text": DynamicFormFieldType.text,
   "password": DynamicFormFieldType.password,
@@ -377,6 +382,26 @@ class FormField extends StatelessWidget {
           };
         }
 
+        if (field.type == DynamicFormFieldType.video) {
+          hint = hint ?? "Click to record a video";
+          icon = Icons.videocam;
+
+          if (fieldState.value != null) {
+            selectedValueLabel = "Click to record new video";
+          }
+
+          onClick = () async {
+            final imagePicker = ImagePicker();
+            final pickedFile = await imagePicker.pickVideo(
+              source: ImageSource.camera,
+              maxDuration: const Duration(seconds: 60),
+            );
+            if (pickedFile != null) {
+              fieldState.didChange(File(pickedFile.path));
+            }
+          };
+        }
+
         if (field.type == DynamicFormFieldType.file) {
           hint = hint ?? "Click to take picture";
           icon = Icons.camera_alt;
@@ -427,58 +452,115 @@ class FormField extends StatelessWidget {
           ),
         );
 
-        if (field.type == DynamicFormFieldType.file &&
-            fieldState.value != null) {
-          var image = FileImage(fieldState.value);
-
-          leading = GestureDetector(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image(image: image, fit: BoxFit.cover),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colorScheme(context).surface.withOpacity(0.95),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(2),
+        if (fieldState.value != null) {
+          if (field.type == DynamicFormFieldType.video) {
+            leading = GestureDetector(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  VideoThumbnailImage(fieldState.value),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: colorScheme(context).surface.withOpacity(0.95),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(2),
+                        ),
+                      ),
+                      padding: const EdgeInsets.only(
+                        left: 1,
+                        right: 1,
+                        bottom: 1,
+                      ),
+                      height: 14,
+                      width: 14,
+                      child: const Icon(
+                        Icons.open_in_full,
+                        size: 10,
                       ),
                     ),
-                    padding: const EdgeInsets.only(
-                      left: 1,
-                      right: 1,
-                      bottom: 1,
-                    ),
-                    height: 14,
-                    width: 14,
-                    child: const Icon(
-                      Icons.open_in_full,
-                      size: 10,
-                    ),
-                  ),
-                )
-              ],
-            ),
-            onTap: () {
-              openBottomSheet(
-                child: Container(
-                  width: double.infinity,
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.6,
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Image(
-                      image: image,
-                      fit: BoxFit.fitWidth,
+                  )
+                ],
+              ),
+              onTap: () {
+                Navigator.push<PlayVideoPage>(
+                  context,
+                  MaterialPageRoute<PlayVideoPage>(
+                    builder: (BuildContext context) => PlayVideoPage(
+                      video: fieldState.value,
                     ),
                   ),
-                ),
-              );
-            },
-          );
+                );
+                openBottomSheet(
+                  child: Container(
+                    width: double.infinity,
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.6,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: VideoThumbnailImage(fieldState.value),
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+
+          if (field.type == DynamicFormFieldType.file) {
+            var image = FileImage(fieldState.value);
+
+            leading = GestureDetector(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image(image: image, fit: BoxFit.cover),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: colorScheme(context).surface.withOpacity(0.95),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(2),
+                        ),
+                      ),
+                      padding: const EdgeInsets.only(
+                        left: 1,
+                        right: 1,
+                        bottom: 1,
+                      ),
+                      height: 14,
+                      width: 14,
+                      child: const Icon(
+                        Icons.open_in_full,
+                        size: 10,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              onTap: () {
+                openBottomSheet(
+                  child: Container(
+                    width: double.infinity,
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.6,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Image(
+                        image: image,
+                        fit: BoxFit.fitWidth,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }
         }
 
         if (field.type == DynamicFormFieldType.boolean) {
