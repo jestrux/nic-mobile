@@ -255,6 +255,8 @@ class _FormInputState extends State<FormInput> {
                       opacity: widget.value != null ? 1 : 0.7,
                       child: Text(
                         "${widget.value != null ? widget.value! : widget.hint}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: widget.fontSize,
                           color: widget.value != null

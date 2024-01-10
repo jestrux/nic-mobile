@@ -2,6 +2,40 @@ PODS:
   - connectivity_plus (0.0.1):
     - Flutter
     - ReachabilitySwift
+  - DKImagePickerController/Core (4.3.4):
+    - DKImagePickerController/ImageDataManager
+    - DKImagePickerController/Resource
+  - DKImagePickerController/ImageDataManager (4.3.4)
+  - DKImagePickerController/PhotoGallery (4.3.4):
+    - DKImagePickerController/Core
+    - DKPhotoGallery
+  - DKImagePickerController/Resource (4.3.4)
+  - DKPhotoGallery (0.0.17):
+    - DKPhotoGallery/Core (= 0.0.17)
+    - DKPhotoGallery/Model (= 0.0.17)
+    - DKPhotoGallery/Preview (= 0.0.17)
+    - DKPhotoGallery/Resource (= 0.0.17)
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Core (0.0.17):
+    - DKPhotoGallery/Model
+    - DKPhotoGallery/Preview
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Model (0.0.17):
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Preview (0.0.17):
+    - DKPhotoGallery/Model
+    - DKPhotoGallery/Resource
+    - SDWebImage
+    - SwiftyGif
+  - DKPhotoGallery/Resource (0.0.17):
+    - SDWebImage
+    - SwiftyGif
+  - file_picker (0.0.1):
+    - DKImagePickerController/PhotoGallery
+    - Flutter
   - Flutter (1.0.0)
   - fluttertoast (0.0.2):
     - Flutter
@@ -27,12 +61,16 @@ PODS:
     - Flutter
     - FlutterMacOS
   - ReachabilitySwift (5.0.0)
+  - SDWebImage (5.18.9):
+    - SDWebImage/Core (= 5.18.9)
+  - SDWebImage/Core (5.18.9)
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
   - sqflite (0.0.3):
     - Flutter
     - FMDB (>= 2.7.5)
+  - SwiftyGif (5.4.4)
   - Toast (4.0.0)
   - url_launcher_ios (0.0.1):
     - Flutter
@@ -45,6 +83,7 @@ PODS:
 
 DEPENDENCIES:
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
+  - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -57,14 +96,20 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - DKImagePickerController
+    - DKPhotoGallery
     - FMDB
     - libwebp
     - ReachabilitySwift
+    - SDWebImage
+    - SwiftyGif
     - Toast
 
 EXTERNAL SOURCES:
   connectivity_plus:
     :path: ".symlinks/plugins/connectivity_plus/ios"
+  file_picker:
+    :path: ".symlinks/plugins/file_picker/ios"
   Flutter:
     :path: Flutter
   fluttertoast:
@@ -86,6 +131,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   connectivity_plus: bf0076dd84a130856aa636df1c71ccaff908fa1d
+  DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
+  DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
+  file_picker: 15fd9539e4eb735dc54bae8c0534a7a9511a03de
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   fluttertoast: fafc4fa4d01a6a9e4f772ecd190ffa525e9e2d9c
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
@@ -93,8 +141,10 @@ SPEC CHECKSUMS:
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  SDWebImage: 5e9b5f18ce88146692b1a5c174858948c84ff237
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
+  SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   url_launcher_ios: 68d46cc9766d0c41dbdc884310529557e3cd7a86
   video_player_avfoundation: e9e6f9cae7d7a6d9b43519b0aab382bca60fcfd1

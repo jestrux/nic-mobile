@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/FormButton.dart';
@@ -84,6 +84,7 @@ class DynamicFormField {
   final List<String>? children;
   final dynamic min;
   final dynamic max;
+  final String? tags;
   final bool required;
   final bool canClear;
   final Function? show;
@@ -96,6 +97,7 @@ class DynamicFormField {
     this.choices,
     this.min,
     this.max,
+    this.tags,
     this.canClear = false,
     this.required = true,
     this.show,
@@ -403,22 +405,123 @@ class FormField extends StatelessWidget {
         }
 
         if (field.type == DynamicFormFieldType.file) {
-          hint = hint ?? "Click to take picture";
-          icon = Icons.camera_alt;
+          var allowFilePicker =
+              field.tags != null && field.tags!.contains("Allow File Picker");
 
-          if (fieldState.value != null) {
-            selectedValueLabel = "Click to change picture";
-          }
+          if (allowFilePicker) {
+            hint = hint ?? "Click to pick file";
+            icon = Icons.add_box;
 
-          onClick = () async {
-            final imagePicker = ImagePicker();
-            final pickedFile = await imagePicker.pickImage(
-              source: ImageSource.camera,
-            );
-            if (pickedFile != null) {
-              fieldState.didChange(File(pickedFile.path));
+            if (fieldState.value != null) {
+              icon = Icons.edit_square;
+              selectedValueLabel =
+                  fieldState.value.path.toString().split("/").last;
+              leading = const Opacity(
+                opacity: 0.7,
+                child: Icon(Icons.description),
+              );
             }
-          };
+
+            onClick = () async {
+              var choice = await showChoicePicker(choices: [
+                {"icon": Icons.image, "label": "Camera"},
+                {"icon": Icons.upload_file, "label": "Pick file"},
+              ]);
+
+              if (choice == null) return;
+
+              if (choice == "Camera") {
+                final imagePicker = ImagePicker();
+                final pickedFile = await imagePicker.pickImage(
+                  source: ImageSource.camera,
+                );
+
+                if (pickedFile != null) {
+                  fieldState.didChange(File(pickedFile.path));
+                }
+              }
+
+              if (choice == "Pick file") {
+                FilePickerResult? result =
+                    await FilePicker.platform.pickFiles();
+
+                if (result != null) {
+                  fieldState.didChange(File(result.files.single.path!));
+                }
+              }
+            };
+          } else {
+            hint = hint ?? "Click to take picture";
+            icon = Icons.camera_alt;
+
+            if (fieldState.value != null) {
+              selectedValueLabel = "Click to change picture";
+            }
+
+            onClick = () async {
+              final imagePicker = ImagePicker();
+              final pickedFile = await imagePicker.pickImage(
+                source: ImageSource.camera,
+              );
+
+              if (pickedFile != null) {
+                fieldState.didChange(File(pickedFile.path));
+              }
+            };
+
+            if (fieldState.value != null) {
+              var image = FileImage(fieldState.value);
+
+              leading = GestureDetector(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image(image: image, fit: BoxFit.cover),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: colorScheme(context).surface.withOpacity(0.95),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(2),
+                          ),
+                        ),
+                        padding: const EdgeInsets.only(
+                          left: 1,
+                          right: 1,
+                          bottom: 1,
+                        ),
+                        height: 14,
+                        width: 14,
+                        child: const Icon(
+                          Icons.open_in_full,
+                          size: 10,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  openBottomSheet(
+                    child: Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.6,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: Image(
+                          image: image,
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+          }
         }
 
         if (field.type == DynamicFormFieldType.date) {
@@ -499,59 +602,6 @@ class FormField extends StatelessWidget {
                 //     ),
                 //   ),
                 // );
-              },
-            );
-          }
-
-          if (field.type == DynamicFormFieldType.file) {
-            var image = FileImage(fieldState.value);
-
-            leading = GestureDetector(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image(image: image, fit: BoxFit.cover),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: colorScheme(context).surface.withOpacity(0.95),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(2),
-                        ),
-                      ),
-                      padding: const EdgeInsets.only(
-                        left: 1,
-                        right: 1,
-                        bottom: 1,
-                      ),
-                      height: 14,
-                      width: 14,
-                      child: const Icon(
-                        Icons.open_in_full,
-                        size: 10,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              onTap: () {
-                openBottomSheet(
-                  child: Container(
-                    width: double.infinity,
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.6,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Image(
-                        image: image,
-                        fit: BoxFit.fitWidth,
-                      ),
-                    ),
-                  ),
-                );
               },
             );
           }

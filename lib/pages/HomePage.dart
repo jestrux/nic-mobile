@@ -38,16 +38,21 @@ class _HomePageState extends State<HomePage> {
               payloadFormat: DynamicFormPayloadFormat.regular,
               fields: const [
                 DynamicFormField(
+                  name: "file",
+                  type: DynamicFormFieldType.file,
+                ),
+                DynamicFormField(
+                  name: "file",
+                  tags: "Allow File Picker",
+                  type: DynamicFormFieldType.file,
+                ),
+                DynamicFormField(
                   name: "customerKey",
-                  label: "Nida Number",
-                  // placeholder: "Enter Nida Number",
                   type: DynamicFormFieldType.video,
                 ),
               ],
               onCancel: () => Navigator.of(context).pop(),
-              submitLabel: "Check",
               onSubmit: (Map<String, dynamic>? formData) async {},
-              onSuccess: (dynamic results) async {},
             ),
             const SizedBox(height: 12),
             InlineList(
