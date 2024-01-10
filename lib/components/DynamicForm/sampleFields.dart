@@ -1,5 +1,24 @@
 List<Map<String, dynamic>> sampleFields = [
   {
+    "id": "127",
+    "name": "image",
+    "label": "Image",
+    "type": "file",
+  },
+  {
+    "id": "128",
+    "name": "file",
+    "label": "File",
+    "type": "file",
+    "tags": "Allow File Picker",
+  },
+  {
+    "id": "129",
+    "name": "video",
+    "label": "Video",
+    "type": "video",
+  },
+  {
     "id": 100,
     "trigger": null,
     "name":

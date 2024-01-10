@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nic/components/MiniButton.dart';
+import 'package:nic/pages/FormPage.dart';
 import 'package:nic/utils.dart';
 
 class AdsBanner extends StatefulWidget {
@@ -134,6 +135,13 @@ class AdsBarOne extends StatelessWidget {
                 MiniButton(
                   label: "Learn more",
                   color: textColor,
+                  onClick: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => FormPage(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

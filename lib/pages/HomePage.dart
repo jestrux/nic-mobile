@@ -34,27 +34,6 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             const AdsBanner(),
             const SizedBox(height: 12),
-            DynamicForm(
-              payloadFormat: DynamicFormPayloadFormat.regular,
-              fields: const [
-                DynamicFormField(
-                  name: "file",
-                  type: DynamicFormFieldType.file,
-                ),
-                DynamicFormField(
-                  name: "file",
-                  tags: "Allow File Picker",
-                  type: DynamicFormFieldType.file,
-                ),
-                DynamicFormField(
-                  name: "customerKey",
-                  type: DynamicFormFieldType.video,
-                ),
-              ],
-              onCancel: () => Navigator.of(context).pop(),
-              onSubmit: (Map<String, dynamic>? formData) async {},
-            ),
-            const SizedBox(height: 12),
             InlineList(
               title: "Your Commissions",
               titleAction: ActionButton.all("Open dashboard"),

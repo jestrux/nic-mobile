@@ -234,7 +234,7 @@ class _FormPageState extends State<FormPage> {
   Widget buildContent() {
     Widget content = Container();
 
-    if (proposalDetails!["premium"] != null) {
+    if (proposalDetails?["premium"] != null) {
       var details = proposalDetails!;
       var controlNumber = details["controlNumber"];
 
