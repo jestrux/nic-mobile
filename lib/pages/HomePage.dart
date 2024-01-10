@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/AdsBar.dart';
+import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
@@ -32,6 +33,27 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             const AdsBanner(),
+            const SizedBox(height: 12),
+            DynamicForm(
+              payloadFormat: DynamicFormPayloadFormat.regular,
+              fields: const [
+                DynamicFormField(
+                  name: "file",
+                  type: DynamicFormFieldType.file,
+                ),
+                DynamicFormField(
+                  name: "file",
+                  tags: "Allow File Picker",
+                  type: DynamicFormFieldType.file,
+                ),
+                DynamicFormField(
+                  name: "customerKey",
+                  type: DynamicFormFieldType.video,
+                ),
+              ],
+              onCancel: () => Navigator.of(context).pop(),
+              onSubmit: (Map<String, dynamic>? formData) async {},
+            ),
             const SizedBox(height: 12),
             InlineList(
               title: "Your Commissions",

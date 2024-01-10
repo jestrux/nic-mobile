@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -7,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/FormButton.dart';
 import 'package:nic/components/FormInput.dart';
+import 'package:nic/components/VideoThumbnailImage.dart';
+import 'package:nic/pages/PlayVideoPage.dart';
 import 'package:nic/utils.dart';
 
 enum DynamicFormFieldType {
@@ -21,6 +24,7 @@ enum DynamicFormFieldType {
   radio,
   password,
   file,
+  video,
   phoneNumber
 }
 
@@ -32,6 +36,7 @@ var keyboardTypeMap = {
 };
 
 var dynamicFormFieldTypeMap = {
+  "video": DynamicFormFieldType.video,
   "file": DynamicFormFieldType.file,
   "text": DynamicFormFieldType.text,
   "password": DynamicFormFieldType.password,
@@ -79,6 +84,7 @@ class DynamicFormField {
   final List<String>? children;
   final dynamic min;
   final dynamic max;
+  final String? tags;
   final bool required;
   final bool canClear;
   final Function? show;
@@ -91,6 +97,7 @@ class DynamicFormField {
     this.choices,
     this.min,
     this.max,
+    this.tags,
     this.canClear = false,
     this.required = true,
     this.show,
@@ -377,23 +384,144 @@ class FormField extends StatelessWidget {
           };
         }
 
-        if (field.type == DynamicFormFieldType.file) {
-          hint = hint ?? "Click to take picture";
-          icon = Icons.camera_alt;
+        if (field.type == DynamicFormFieldType.video) {
+          hint = hint ?? "Click to record a video";
+          icon = Icons.videocam;
 
           if (fieldState.value != null) {
-            selectedValueLabel = "Click to change picture";
+            selectedValueLabel = "Click to record new video";
           }
 
           onClick = () async {
             final imagePicker = ImagePicker();
-            final pickedFile = await imagePicker.pickImage(
+            final pickedFile = await imagePicker.pickVideo(
               source: ImageSource.camera,
+              maxDuration: const Duration(seconds: 60),
             );
             if (pickedFile != null) {
               fieldState.didChange(File(pickedFile.path));
             }
           };
+        }
+
+        if (field.type == DynamicFormFieldType.file) {
+          var allowFilePicker =
+              field.tags != null && field.tags!.contains("Allow File Picker");
+
+          if (allowFilePicker) {
+            hint = hint ?? "Click to pick file";
+            icon = Icons.add_box;
+
+            if (fieldState.value != null) {
+              icon = Icons.edit_square;
+              selectedValueLabel =
+                  fieldState.value.path.toString().split("/").last;
+              leading = const Opacity(
+                opacity: 0.7,
+                child: Icon(Icons.description),
+              );
+            }
+
+            onClick = () async {
+              var choice = await showChoicePicker(choices: [
+                {"icon": Icons.image, "label": "Camera"},
+                {"icon": Icons.upload_file, "label": "Pick file"},
+              ]);
+
+              if (choice == null) return;
+
+              if (choice == "Camera") {
+                final imagePicker = ImagePicker();
+                final pickedFile = await imagePicker.pickImage(
+                  source: ImageSource.camera,
+                );
+
+                if (pickedFile != null) {
+                  fieldState.didChange(File(pickedFile.path));
+                }
+              }
+
+              if (choice == "Pick file") {
+                FilePickerResult? result =
+                    await FilePicker.platform.pickFiles();
+
+                if (result != null) {
+                  fieldState.didChange(File(result.files.single.path!));
+                }
+              }
+            };
+          } else {
+            hint = hint ?? "Click to take picture";
+            icon = Icons.camera_alt;
+
+            if (fieldState.value != null) {
+              selectedValueLabel = "Click to change picture";
+            }
+
+            onClick = () async {
+              final imagePicker = ImagePicker();
+              final pickedFile = await imagePicker.pickImage(
+                source: ImageSource.camera,
+              );
+
+              if (pickedFile != null) {
+                fieldState.didChange(File(pickedFile.path));
+              }
+            };
+
+            if (fieldState.value != null) {
+              var image = FileImage(fieldState.value);
+
+              leading = GestureDetector(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image(image: image, fit: BoxFit.cover),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: colorScheme(context).surface.withOpacity(0.95),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(2),
+                          ),
+                        ),
+                        padding: const EdgeInsets.only(
+                          left: 1,
+                          right: 1,
+                          bottom: 1,
+                        ),
+                        height: 14,
+                        width: 14,
+                        child: const Icon(
+                          Icons.open_in_full,
+                          size: 10,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                onTap: () {
+                  openBottomSheet(
+                    child: Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.6,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: Image(
+                          image: image,
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+          }
         }
 
         if (field.type == DynamicFormFieldType.date) {
@@ -427,58 +555,56 @@ class FormField extends StatelessWidget {
           ),
         );
 
-        if (field.type == DynamicFormFieldType.file &&
-            fieldState.value != null) {
-          var image = FileImage(fieldState.value);
-
-          leading = GestureDetector(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image(image: image, fit: BoxFit.cover),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colorScheme(context).surface.withOpacity(0.95),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(2),
+        if (fieldState.value != null) {
+          if (field.type == DynamicFormFieldType.video) {
+            leading = GestureDetector(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  VideoThumbnailImage(
+                    fieldState.value,
+                    previewOnly: true,
+                  ),
+                  Positioned(
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      color: Colors.black38,
+                      child: const Icon(
+                        Icons.play_arrow,
+                        size: 28,
+                        color: Colors.white,
                       ),
                     ),
-                    padding: const EdgeInsets.only(
-                      left: 1,
-                      right: 1,
-                      bottom: 1,
-                    ),
-                    height: 14,
-                    width: 14,
-                    child: const Icon(
-                      Icons.open_in_full,
-                      size: 10,
+                  )
+                ],
+              ),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PlayVideoPage(
+                      video: fieldState.value,
                     ),
                   ),
-                )
-              ],
-            ),
-            onTap: () {
-              openBottomSheet(
-                child: Container(
-                  width: double.infinity,
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.6,
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Image(
-                      image: image,
-                      fit: BoxFit.fitWidth,
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
+                );
+
+                // openBottomSheet(
+                //   child: Container(
+                //     width: double.infinity,
+                //     constraints: BoxConstraints(
+                //       maxHeight: MediaQuery.of(context).size.height * 0.6,
+                //     ),
+                //     child: ClipRRect(
+                //       borderRadius: BorderRadius.circular(4),
+                //       child: VideoThumbnailImage(fieldState.value),
+                //     ),
+                //   ),
+                // );
+              },
+            );
+          }
         }
 
         if (field.type == DynamicFormFieldType.boolean) {

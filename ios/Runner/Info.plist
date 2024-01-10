@@ -52,5 +52,9 @@
 		<string>mailto</string>
 		<string>https</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera will be used to record videos and take pictures for claims and underwriting</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone will be used when recording videos for claims and underwriting</string>
 </dict>
 </plist>

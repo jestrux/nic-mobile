@@ -30,9 +30,9 @@ class _NICKiganjaniState extends State<NICKiganjani> {
   @override
   Widget build(BuildContext context) {
     ThemeData themeWithFont(ThemeData theme) => theme.copyWith(
-          textTheme: GoogleFonts.notoSansTextTheme(theme.textTheme).copyWith(
-              // bodyMedium: GoogleFonts.oswald(textStyle: textTheme.bodyMedium),
-              ),
+        // textTheme: GoogleFonts.notoSansTextTheme(theme.textTheme).copyWith(
+        //     // bodyMedium: GoogleFonts.oswald(textStyle: textTheme.bodyMedium),
+        //     ),
         );
 
     return MultiProvider(
@@ -45,10 +45,16 @@ class _NICKiganjaniState extends State<NICKiganjani> {
         home: const SplashScreen(),
         themeMode: _themeMode,
         theme: themeWithFont(
-          ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+          ThemeData(
+              useMaterial3: true,
+              fontFamily: 'NotoSans',
+              colorScheme: lightColorScheme),
         ),
         darkTheme: themeWithFont(
-          ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+          ThemeData(
+              useMaterial3: true,
+              fontFamily: 'NotoSans',
+              colorScheme: darkColorScheme),
         ),
       ),
     );
