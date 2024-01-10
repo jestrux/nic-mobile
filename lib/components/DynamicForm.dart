@@ -458,53 +458,47 @@ class FormField extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  VideoThumbnailImage(fieldState.value),
+                  VideoThumbnailImage(
+                    fieldState.value,
+                    previewOnly: true,
+                  ),
                   Positioned(
+                    top: 0,
                     bottom: 0,
+                    left: 0,
                     right: 0,
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: colorScheme(context).surface.withOpacity(0.95),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(2),
-                        ),
-                      ),
-                      padding: const EdgeInsets.only(
-                        left: 1,
-                        right: 1,
-                        bottom: 1,
-                      ),
-                      height: 14,
-                      width: 14,
+                      color: Colors.black38,
                       child: const Icon(
-                        Icons.open_in_full,
-                        size: 10,
+                        Icons.play_arrow,
+                        size: 28,
+                        color: Colors.white,
                       ),
                     ),
                   )
                 ],
               ),
               onTap: () {
-                Navigator.push<PlayVideoPage>(
-                  context,
-                  MaterialPageRoute<PlayVideoPage>(
-                    builder: (BuildContext context) => PlayVideoPage(
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PlayVideoPage(
                       video: fieldState.value,
                     ),
                   ),
                 );
-                openBottomSheet(
-                  child: Container(
-                    width: double.infinity,
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height * 0.6,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: VideoThumbnailImage(fieldState.value),
-                    ),
-                  ),
-                );
+
+                // openBottomSheet(
+                //   child: Container(
+                //     width: double.infinity,
+                //     constraints: BoxConstraints(
+                //       maxHeight: MediaQuery.of(context).size.height * 0.6,
+                //     ),
+                //     child: ClipRRect(
+                //       borderRadius: BorderRadius.circular(4),
+                //       child: VideoThumbnailImage(fieldState.value),
+                //     ),
+                //   ),
+                // );
               },
             );
           }

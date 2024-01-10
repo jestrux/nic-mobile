@@ -5,7 +5,8 @@ import 'package:video_player/video_player.dart';
 
 class VideoThumbnailImage extends StatefulWidget {
   final File file;
-  const VideoThumbnailImage(this.file, {super.key});
+  final bool previewOnly;
+  const VideoThumbnailImage(this.file, {this.previewOnly = false, super.key});
 
   @override
   State<VideoThumbnailImage> createState() => _VideoThumbnailImageState();
@@ -13,75 +14,86 @@ class VideoThumbnailImage extends StatefulWidget {
 
 class _VideoThumbnailImageState extends State<VideoThumbnailImage> {
   late VideoPlayerController _controller;
+  bool playing = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.file(widget.file)
-      ..initialize().then((_) {
-        setState(() {});
+    _controller = VideoPlayerController.file(widget.file);
+    _controller.setLooping(false);
+    _controller.initialize().then((_) {
+      setState(() {});
+      _controller.addListener(() {
+        setState(() {
+          playing = _controller.value.isPlaying;
+        });
       });
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
+    // _controller.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // return Container();
+    if (!_controller.value.isInitialized) {
+      return const Center(
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+          ),
+        ),
+      );
+    }
+
     return Stack(
       fit: StackFit.expand,
       children: [
-        Container(
-          // width: 100,
-          // height: 200,
-          child: _controller.value.isInitialized
-              ? FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    height: _controller.value.size?.height ?? 0,
-                    width: _controller.value.size?.width ?? double.infinity,
-                    child: VideoPlayer(_controller),
-                  ),
-                )
-              : Center(
-                  child: CircularProgressIndicator(),
-                ),
-        ),
-        Positioned(
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          child: Container(
-            color: Colors.black.withOpacity(0.4),
-            alignment: Alignment.center,
-            child: InkWell(
-              child: Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                  size: 32,
-                ),
-              ),
-              onTap: () async {
-                final double volume = 1.0;
-                await _controller.setVolume(volume);
-                await _controller.initialize();
-                await _controller.setLooping(false);
-                await _controller.play();
-              },
-            ),
+        FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            height: _controller.value.size?.height ?? 0,
+            width: _controller.value.size?.width ?? double.infinity,
+            child: VideoPlayer(_controller),
           ),
-        )
+        ),
+        ...(widget.previewOnly
+            ? []
+            : [
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 50),
+                  reverseDuration: const Duration(milliseconds: 200),
+                  child: playing
+                      ? const SizedBox.shrink()
+                      : const ColoredBox(
+                          color: Colors.black26,
+                          child: Center(
+                            child: Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                              size: 100.0,
+                              semanticLabel: 'Play',
+                            ),
+                          ),
+                        ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    _controller.value.isPlaying
+                        ? _controller.pause()
+                        : _controller.play();
+
+                    setState(() {
+                      playing = !playing;
+                    });
+                  },
+                ),
+              ])
       ],
     );
   }

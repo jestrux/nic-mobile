@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:nic/constants.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayVideoPage extends StatefulWidget {
@@ -12,50 +13,101 @@ class PlayVideoPage extends StatefulWidget {
 }
 
 class PlayVideoPageState extends State<PlayVideoPage> {
-  late VideoPlayerController _videoPlayerController;
-  bool startedPlaying = false;
+  late VideoPlayerController _controller;
+  bool playing = false;
 
   @override
   void initState() {
     super.initState();
 
-    _videoPlayerController = VideoPlayerController.file(widget.video);
-    _videoPlayerController.addListener(() {
-      if (startedPlaying && !_videoPlayerController.value.isPlaying) {
-        Navigator.pop(context);
-      }
+    _controller = VideoPlayerController.file(widget.video);
+    _controller.setLooping(false);
+    _controller.initialize().then((_) {
+      _controller.play();
+      setState(() {
+        playing = true;
+      });
+      _controller.addListener(() {
+        setState(() {
+          playing = _controller.value.isPlaying;
+        });
+      });
     });
   }
 
   @override
   void dispose() {
-    _videoPlayerController.dispose();
     super.dispose();
+    // _controller.dispose();
   }
 
-  Future<bool> started() async {
-    await _videoPlayerController.initialize();
-    await _videoPlayerController.play();
-    startedPlaying = true;
-    return true;
+  Widget _buildContent() {
+    if (!_controller.value.isInitialized) {
+      return Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.only(bottom: 40),
+        child: const SizedBox(
+          width: 60,
+          height: 60,
+          child: CircularProgressIndicator(
+            strokeWidth: 3,
+            color: Colors.white,
+          ),
+        ),
+      );
+    }
+
+    return AspectRatio(
+      aspectRatio: _controller.value.aspectRatio,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          VideoPlayer(_controller),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 50),
+            reverseDuration: const Duration(milliseconds: 200),
+            child: playing
+                ? const SizedBox.shrink()
+                : const ColoredBox(
+                    color: Colors.black26,
+                    child: Center(
+                      child: Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 100.0,
+                        semanticLabel: 'Play',
+                      ),
+                    ),
+                  ),
+          ),
+          GestureDetector(
+            onTap: () {
+              _controller.value.isPlaying
+                  ? _controller.pause()
+                  : _controller.play();
+
+              setState(() {
+                playing = !playing;
+              });
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Center(
-        child: FutureBuilder<bool>(
-          future: started(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (snapshot.data ?? false) {
-              return AspectRatio(
-                aspectRatio: _videoPlayerController.value.aspectRatio,
-                child: VideoPlayer(_videoPlayerController),
-              );
-            } else {
-              return const Text('waiting for video to load');
-            }
-          },
+    return Theme(
+      data: Constants.darkAppBarTheme(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Video Preview"),
+          backgroundColor: Colors.transparent,
+        ),
+        backgroundColor: Colors.black,
+        body: Center(
+          child: _buildContent(),
         ),
       ),
     );
