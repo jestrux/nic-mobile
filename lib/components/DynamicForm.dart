@@ -113,6 +113,7 @@ class DynamicForm extends StatefulWidget {
   final String? submitLabel;
   final Function(FormBuilderState? formData)? onChange;
   final Future Function(Map<String, dynamic>) onSubmit;
+  final void Function(dynamic error, Map<String, dynamic> formData)? onError;
   final Function(dynamic response)? onSuccess;
   final DynamicFormPayloadFormat payloadFormat;
   final ChoicePickerMode choicePickerMode;
@@ -124,6 +125,7 @@ class DynamicForm extends StatefulWidget {
     Key? key,
     required this.fields,
     required this.onSubmit,
+    this.onError,
     this.submitLabel,
     this.onChange,
     this.onSuccess,
@@ -151,6 +153,29 @@ class _DynamicFormState extends State<DynamicForm> {
     updateFields(_formKey.currentState);
   }
 
+  Map<String, dynamic> getFormData() {
+    var form = _formKey.currentState!;
+
+    var payload = form.instantValue;
+
+    Map<String, dynamic>? questionAnswerPayload;
+
+    if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
+      var answers = [];
+
+      for (var question in payload.keys) {
+        answers.add({
+          "field_name": question,
+          "answer": payload[question],
+        });
+      }
+
+      questionAnswerPayload = {"data": answers};
+    }
+
+    return questionAnswerPayload ?? payload;
+  }
+
   Future<dynamic> onSubmit() async {
     var form = _formKey.currentState;
     if (form == null) return;
@@ -168,26 +193,14 @@ class _DynamicFormState extends State<DynamicForm> {
     dynamic response;
 
     try {
-      var payload = form.instantValue;
-
-      Map<String, dynamic>? questionAnswerPayload;
-
-      if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
-        var answers = [];
-
-        for (var question in payload.keys) {
-          answers.add({
-            "field_name": question,
-            "answer": payload[question],
-          });
-        }
-
-        questionAnswerPayload = {"data": answers};
-      }
-
-      response = await widget.onSubmit(questionAnswerPayload ?? payload);
+      response = await widget.onSubmit(getFormData());
     } catch (e) {
       devLog("Failed to fetch dynamic form: $e");
+      if (widget.onError != null) {
+        widget.onError!(e, getFormData());
+        return;
+      }
+
       openErrorAlert(message: e.toString());
     } finally {
       setState(() {

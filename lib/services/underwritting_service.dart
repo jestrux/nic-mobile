@@ -148,10 +148,7 @@ Future<Map<String, dynamic>?> initiateProposal({
     var already = message.toLowerCase().indexOf("already") != -1;
     var active = message.toLowerCase().indexOf("active policy") != -1;
 
-    if (already || active) {
-      openErrorAlert(message: message, title: "Policy already exists");
-      return null;
-    }
+    if (already || active) throw ("Policy exists");
 
     throw ("Unknown error, please try again");
   }
@@ -287,6 +284,14 @@ Future<Map<String, dynamic>?> requestControlNumber({
         }
     }""";
 
+  var payload = {
+    "proposal": proposal,
+    "isLife": productIsNonMotor(productId: productId),
+    "underwriteChannel": 2,
+  };
+
+  devLog("Control number payload: $payload");
+
   final QueryOptions options = QueryOptions(
     document: gql(queryString),
     variables: <String, dynamic>{
@@ -309,6 +314,8 @@ Future<Map<String, dynamic>?> requestControlNumber({
   if (!(controlNumberResponse?['success'] ?? false)) {
     throw ("Failed to fetch payment. Please try again later.");
   }
+
+  if (productId.isEmpty) return controlNumberResponse;
 
   return fetchPaymentSummary(
     productId: productId,

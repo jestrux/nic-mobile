@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/DynamicForm/proccessFields.dart';
 import 'package:nic/components/Loader.dart';
+import 'package:nic/components/modals/BimaRenewal.dart';
 import 'package:nic/pages/FormPage.dart';
 import 'package:nic/services/underwritting_service.dart';
 import 'package:nic/utils.dart';
@@ -88,6 +89,35 @@ class _InitialProductFormState extends State<InitialProductForm> {
                   ),
                 );
               }
+            },
+            onError: (error, formData) async {
+              if (error.toString() == "Policy exists") {
+                Navigator.pop(context);
+
+                String? registrationNumber = List.from(formData["data"])
+                    .singleWhere((field) => field["field_name"]
+                        .toString()
+                        .contains("Registration_number"))?["answer"];
+
+                var res = await openPrompt(
+                  title: "Policy already exists",
+                  message: "Would you like to renew this policy?",
+                  action: "Renew policy",
+                );
+
+                if (res == true) {
+                  openGenericPage(
+                    title: "Policy Details",
+                    child: BimaRenewal(
+                      registrationNumber: registrationNumber,
+                    ),
+                  );
+                }
+
+                return;
+              }
+
+              openErrorAlert(message: error.toString());
             },
           );
         }

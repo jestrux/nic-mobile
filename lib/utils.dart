@@ -10,6 +10,7 @@ import 'package:nic/components/ChoiceItem.dart';
 import 'package:nic/components/ClickableContent.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/FormButton.dart';
+import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,7 +26,7 @@ String randomId([int? len]) {
       List.generate(len ?? 6, (index) => r.nextInt(33) + 89));
 }
 
-enum AlertType { success, error, info, custom }
+enum AlertType { success, error, info, prompt, custom }
 
 class AlertContent extends StatelessWidget {
   final String? title;
@@ -94,12 +95,16 @@ class AlertContent extends StatelessWidget {
                                 width: double.infinity,
                                 padding: isCustom
                                     ? EdgeInsets.zero
-                                    : const EdgeInsets.all(20),
+                                    : type == AlertType.prompt
+                                        ? const EdgeInsets.only(
+                                            top: 20,
+                                          )
+                                        : const EdgeInsets.all(20),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    if (!isCustom)
+                                    if (!isCustom && type != AlertType.prompt)
                                       Container(
                                         height: 24,
                                         width: 24,
@@ -155,6 +160,8 @@ class AlertContent extends StatelessWidget {
                                         ),
                                       ),
                                     if (child != null) child!,
+                                    if (type == AlertType.prompt)
+                                      const SizedBox(height: 20),
                                     onOkay != null
                                         ? FormActions(
                                             okayText: okayText,
@@ -267,6 +274,27 @@ void openErrorAlert({
   );
 }
 
+Future<bool?> openPrompt({
+  String? title,
+  required String message,
+  String? action,
+  String? secondaryAction,
+}) async {
+  return await openAlert(
+    type: AlertType.prompt,
+    title: title,
+    message: message,
+    okayText: action ?? "Okay",
+    cancelText: secondaryAction ?? "Cancel",
+    onOkay: () {
+      Navigator.of(Constants.globalAppKey.currentContext!).pop(true);
+    },
+    onCancel: () {
+      Navigator.of(Constants.globalAppKey.currentContext!).pop(false);
+    },
+  );
+}
+
 void openSuccessAlert({
   String? title = "Success!",
   required String message,
@@ -275,6 +303,24 @@ void openSuccessAlert({
     type: AlertType.success,
     title: title,
     message: message,
+  );
+}
+
+void openGenericPage({
+  String? title,
+  EdgeInsets? padding,
+  required Widget child,
+}) {
+  Navigator.of(Constants.globalAppKey.currentContext!).push(
+    MaterialPageRoute(
+      builder: (context) => RoundedHeaderPage(
+        title: title,
+        child: SingleChildScrollView(
+          padding: padding ?? const EdgeInsets.symmetric(vertical: 12),
+          child: child,
+        ),
+      ),
+    ),
   );
 }
 
