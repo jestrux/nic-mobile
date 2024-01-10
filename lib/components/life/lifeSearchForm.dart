@@ -108,7 +108,7 @@ class _LifeSearcFormState extends State<LifeSearcForm> {
           ),
         );
       } else {
-        openErrorAlert(message: "No Policy(ies) for this Data");
+        openErrorAlert(message: "No policy(ies) for this provided ID, Please communicate with nearlest branch.");
       }
     } else {}
   }

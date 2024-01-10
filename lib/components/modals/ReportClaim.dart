@@ -25,7 +25,7 @@ class _ReportClaimState extends State<ReportClaim> {
       if (claim == null){
         return openAlert(
             title: "Report Claim",
-            message: "Failed find your claim",
+            message: "Failed find your insured item, communicate with NIC nearest branch.",
             type: AlertType.error
         );
       }else if(claim['success'] == true){

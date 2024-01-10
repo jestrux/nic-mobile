@@ -7,6 +7,7 @@ class RoundedHeaderPage extends StatelessWidget {
   final Widget? bottomNavigationBar;
   final String? title;
   final bool showLogo;
+  final Widget? floatButton;
 
   const RoundedHeaderPage({
     Key? key,
@@ -14,6 +15,7 @@ class RoundedHeaderPage extends StatelessWidget {
     this.bottomNavigationBar,
     this.showLogo = false,
     this.child,
+    this.floatButton
   }) : super(key: key);
 
   @override
@@ -84,6 +86,7 @@ class RoundedHeaderPage extends StatelessWidget {
                 ),
                 child: child ?? Container(),
               ),
+                floatingActionButton: floatButton,
             ),
           ],
         ),

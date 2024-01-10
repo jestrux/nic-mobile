@@ -105,7 +105,7 @@ class _SearchLifePolicyState extends State<SearchLifePolicy> {
           } else {}
         } else {}
       } else {
-        openErrorAlert(message: "No Policy(ies) for this Customer");
+        openErrorAlert(message: "No policy(ies) for this provided ID, Please communicate with our nearlest branch.");
       }
     }
   }

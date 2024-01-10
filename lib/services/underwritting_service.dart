@@ -66,7 +66,8 @@ Future<Map<String, dynamic>?> fetchProposalForm({
       "underwriteChannel": 2,
     },
   );
-
+  print("productId----: $productId");
+  print("proposal----: $proposal");
   GraphQLClient client = await DataConnection().connectionClient();
   final QueryResult result = await client.query(options);
 
@@ -131,14 +132,14 @@ Future<Map<String, dynamic>?> initiateProposal({
 
   GraphQLClient client = await DataConnection().connectionClient();
   final QueryResult result = await client.query(options);
-
+  // print(result);
   if (result.data == null) {
     devLog("Initiate proposal: No data found");
     throw ("Failed to fetch form. Please try again later.");
   }
 
   var initiateProposalResponse = result.data!['initiateProposal'];
-
+  print(initiateProposalResponse);
   if (initiateProposalResponse == null) {
     throw ("Failed to purchase product. Please try again later.");
   }
