@@ -58,6 +58,7 @@ class _UploadNotificationImagesState extends State<UploadNotificationImages> {
               label: "Front Right",
               placeholder: "Take a front right image...",
               type: DynamicFormFieldType.file,
+              tags: "AllowFilePicker"
             ),
             // DynamicFormField(
             //   name: "frontLeft",

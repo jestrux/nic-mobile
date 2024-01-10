@@ -10,7 +10,7 @@ List<Map<String, dynamic>> sampleFields = [
     "name": "file",
     "label": "File",
     "type": "file",
-    "tags": "Allow File Picker",
+    "tags": "AllowFilePicker",
   },
   {
     "id": "129",

@@ -419,7 +419,7 @@ class FormField extends StatelessWidget {
 
         if (field.type == DynamicFormFieldType.file) {
           var allowFilePicker =
-              field.tags != null && field.tags!.contains("Allow File Picker");
+              field.tags != null && field.tags!.contains("AllowFilePicker");
 
           if (allowFilePicker) {
             hint = hint ?? "Click to pick file";
