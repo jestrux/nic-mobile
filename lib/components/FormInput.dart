@@ -291,7 +291,7 @@ class _FormInputState extends State<FormInput> {
                 decoration: BoxDecoration(
                   border: Border(
                     right: BorderSide(
-                      width: 0.3,
+                      width: 0.5,
                       color: borderColor,
                     ),
                   ),

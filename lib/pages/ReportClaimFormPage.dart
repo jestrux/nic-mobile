@@ -36,30 +36,30 @@ class _ReportClaimFormState extends State<ReportClaimForm> {
 
   Future<dynamic> submitClaimForm(dynamic payload) async {
     if ([payload["data"]].contains(null)) return null;
-    return await ClaimService().submitClaimForm(proposal: widget.formId,data: payload['data']);
+    return await ClaimService()
+        .submitClaimForm(proposal: widget.formId, data: payload['data']);
   }
 
-  handleClaimFormResponse(dynamic response){
+  handleClaimFormResponse(dynamic response) {
     // print(response);
-    if(response == null || response['success'] == false){
+    if (response == null || response['success'] == false) {
       return openAlert(
           title: "Report Claim",
           message: "Failed to submit, please try again!",
-          type: AlertType.error
-      );
-    }else{
+          type: AlertType.error);
+    } else {
       formFields = null;
       setState(() {
         viewMode = 2;
         payLoad = response;
       });
     }
-
   }
+
   @override
   void initState() {
-    if(viewMode == 1){
-      formFields = processFields(fields: widget.claimForm);
+    if (viewMode == 1) {
+      formFields = processFields(widget.claimForm);
     }
     super.initState();
   }
@@ -74,7 +74,7 @@ class _ReportClaimFormState extends State<ReportClaimForm> {
         onSubmit: submitClaimForm,
         onSuccess: handleClaimFormResponse,
       );
-    }else if(viewMode == 2){
+    } else if (viewMode == 2) {
       content = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -84,57 +84,65 @@ class _ReportClaimFormState extends State<ReportClaimForm> {
             data: {
               "Notification No.": payLoad["notification"],
               "Insured/Assured": payLoad["propertyName"],
-              "Notification Date": {"type": "date","value":DateFormat('dd/MM/yyyy').parse(payLoad["notificationDate"])},
+              "Notification Date": {
+                "type": "date",
+                "value":
+                    DateFormat('dd/MM/yyyy').parse(payLoad["notificationDate"])
+              },
             },
           ),
           const Divider(height: 40, thickness: 0.3),
-           Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text("You have accident images? Upload here..",style: TextStyle(
-                fontSize: 12.0
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("You have accident images? Upload here..",
+                      style: TextStyle(fontSize: 12.0)),
+                  MiniButton(
+                    label: "Upload",
+                    onClick: () {
+                      openAlert(
+                        title: "Upload Images",
+                        child: UploadNotificationImages(
+                            notificationNumber: payLoad['notificationId']),
+                      );
+                    },
+                  )
+                ],
               )),
-              MiniButton(
-                label: "Upload",
-                onClick: (){
-                  openAlert(
-                    title: "Upload Images",
-                    child: UploadNotificationImages(notificationNumber:payLoad['notificationId']),
-                  );
-                },
-              )
-            ],
-          )),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0),
-            child:InlineList(
+            child: InlineList(
               title: "Download Document(s)",
               data: [
                 ActionItem(
                   leading: const Icon(Icons.download),
                   label: "Claim Form",
                   description: "Download or share",
-                  action: payLoad['claimForm'] != null ? ActionButton.filled("Download",onClick: (d){
-                    Navigator.of(context).push(CupertinoPageRoute(
-                        builder: (context) => DocViewer(
-                          title: "Claim Form",
-                          path: payLoad['claimForm'],
-                        )));
-                  }) : null,
-                ) ,
+                  action: payLoad['claimForm'] != null
+                      ? ActionButton.filled("Download", onClick: (d) {
+                          Navigator.of(context).push(CupertinoPageRoute(
+                              builder: (context) => DocViewer(
+                                    title: "Claim Form",
+                                    path: payLoad['claimForm'],
+                                  )));
+                        })
+                      : null,
+                ),
                 ActionItem(
                   leading: const Icon(Icons.download),
                   label: "Acknowledgement Document",
                   description: "Download or share",
-                  action: payLoad['acknowledgementDocument'] != null ? ActionButton.filled("Download",onClick: (d){
-                    Navigator.of(context).push(CupertinoPageRoute(
-                        builder: (context) => DocViewer(
-                          title: "Acknowledgement Document",
-                          path: payLoad['acknowledgementDocument'],
-                        )));
-                  }) : null,
+                  action: payLoad['acknowledgementDocument'] != null
+                      ? ActionButton.filled("Download", onClick: (d) {
+                          Navigator.of(context).push(CupertinoPageRoute(
+                              builder: (context) => DocViewer(
+                                    title: "Acknowledgement Document",
+                                    path: payLoad['acknowledgementDocument'],
+                                  )));
+                        })
+                      : null,
                 )
               ],
             ),

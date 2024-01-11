@@ -113,6 +113,7 @@ Future<Map<String, dynamic>?> initiateProposal({
       }
       proposal
       data
+      canRenew
     }
   }""";
 
@@ -145,13 +146,19 @@ Future<Map<String, dynamic>?> initiateProposal({
   }
 
   if (!(initiateProposalResponse?['success'] ?? false)) {
-    var message = (initiateProposalResponse?["message"] ?? "") ?? "";
-    var already = message.toLowerCase().indexOf("already") != -1;
-    var active = message.toLowerCase().indexOf("active policy") != -1;
+    if (initiateProposalResponse["canRenew"]) {
+      throw ("Policy exists - ${initiateProposalResponse?["message"]}");
+    }
 
-    if (already || active) throw ("Policy exists");
+    // var message = (initiateProposalResponse?["message"] ?? "") ?? "";
+    // var already = message.toLowerCase().indexOf("already") != -1;
+    // var active = message.toLowerCase().indexOf("active policy") != -1;
 
-    throw ("Unknown error, please try again");
+    // if (already || active) throw ("Policy exists");
+
+    throw (
+      initiateProposalResponse?["message"] ?? "Unknown error, please try again",
+    );
   }
 
   return fetchProposalForm(

@@ -138,6 +138,8 @@ class AlertContent extends StatelessWidget {
                                             padding: EdgeInsets.only(
                                               top: isCustom ? 24 : 0,
                                               bottom: 8,
+                                              left: 16,
+                                              right: 16,
                                             ),
                                             child: Text(
                                               title!,
@@ -150,12 +152,18 @@ class AlertContent extends StatelessWidget {
                                     if (message != null)
                                       Opacity(
                                         opacity: noTitle ? 1 : 0.85,
-                                        child: Text(
-                                          message!,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: noTitle ? 16 : 14,
-                                            height: 1.5,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 16,
+                                            right: 16,
+                                          ),
+                                          child: Text(
+                                            message!,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: noTitle ? 16 : 14,
+                                              height: 1.5,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -331,6 +339,15 @@ String formatMoney(dynamic number, {String? currency}) {
   if (num.isEmpty) return "${currency}0";
 
   return "$currency${NumberFormat('#,###,###').format(double.parse(num))}";
+}
+
+String camelToSentence(String text) {
+  var result = text.replaceAll(RegExp(r'(?<!^)(?=[A-Z])'), r" ");
+  return result[0].toUpperCase() + result.substring(1);
+}
+
+String capitalize(String text) {
+  return text[0].toUpperCase() + text.substring(1).toLowerCase();
 }
 
 String formatDate(

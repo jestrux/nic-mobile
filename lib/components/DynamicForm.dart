@@ -1,9 +1,10 @@
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/FormButton.dart';
@@ -153,12 +154,37 @@ class _DynamicFormState extends State<DynamicForm> {
     updateFields(_formKey.currentState);
   }
 
-  Map<String, dynamic> getFormData() {
+  Future<Map<String, dynamic>> getFormData() async {
     var form = _formKey.currentState!;
 
     var payload = form.instantValue;
 
     Map<String, dynamic>? questionAnswerPayload;
+
+    var fileFieldsNames = payload.entries
+        .where((element) => element.value is File)
+        .map((e) => e.key);
+
+    if (fileFieldsNames.isNotEmpty) {
+      for (var fieldName in fileFieldsNames) {
+        File? file = payload[fieldName];
+
+        if (file == null) continue;
+
+        var fileName = file.path.split('.').last;
+        var fileBytes = await file.readAsBytes();
+
+        payload.update(
+          fieldName,
+          (value) => http.MultipartFile.fromBytes(
+            'file',
+            fileBytes,
+            filename: fileName,
+            contentType: MediaType('application', 'octet-stream'),
+          ),
+        );
+      }
+    }
 
     if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
       var answers = [];
@@ -193,11 +219,11 @@ class _DynamicFormState extends State<DynamicForm> {
     dynamic response;
 
     try {
-      response = await widget.onSubmit(getFormData());
+      response = await widget.onSubmit(await getFormData());
     } catch (e) {
       devLog("Failed to fetch dynamic form: $e");
       if (widget.onError != null) {
-        widget.onError!(e, getFormData());
+        getFormData().then((value) => widget.onError!(e, value));
         return;
       }
 

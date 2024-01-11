@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nic/components/EmptyState.dart';
+import 'package:nic/components/IconWithButtonBorder.dart';
 import 'package:nic/components/ListItem.dart';
+import 'package:nic/components/Loader.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/models/ActionButton.dart';
@@ -122,6 +125,70 @@ class InlineList extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class InlineListBuilder extends StatelessWidget {
+  final EdgeInsets? padding;
+  final String? emptyStateMessage;
+  final List<Widget>? Function(Map<String, dynamic>)? actionsBuilder;
+  final Future<List<Map<String, dynamic>>?> Function() future;
+
+  const InlineListBuilder({
+    required this.future,
+    this.padding,
+    this.emptyStateMessage,
+    this.actionsBuilder,
+    Key? key,
+  }) : super(key: key);
+
+  Widget? _buildActions(entry) {
+    if (actionsBuilder == null) return null;
+
+    List<Widget>? itemActions = actionsBuilder!(entry);
+
+    if (itemActions == null) return null;
+
+    return Row(
+      children: itemActions
+          .map(
+            (action) => Padding(
+              padding: const EdgeInsets.only(left: 6, right: 4),
+              child: action,
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: future(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const Loader();
+
+        if (snapshot.data == null) {
+          return EmptyState(
+            message: emptyStateMessage,
+          );
+        }
+
+        return Padding(
+          padding: padding ?? EdgeInsets.zero,
+          child: InlineList(
+            data: snapshot.data!.map((entry) {
+              return ActionItem(
+                // leading: Icons.house,
+                label: entry["title"],
+                description: entry["description"],
+                trailing: _buildActions(entry),
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 }

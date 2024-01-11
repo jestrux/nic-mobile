@@ -11,6 +11,7 @@ import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/auth/ChangeUserId.dart';
 import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:nic/pages/auth/changePassword.dart';
+import 'package:nic/services/misc_services.dart';
 import 'package:nic/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -67,7 +68,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-
     // UserModel? user = context.read<AppProvider>().authUser;
     UserModel? user = Provider.of<AppProvider>(context).authUser;
     // if (user!.firstName != null){
@@ -89,36 +89,38 @@ class _ProfilePageState extends State<ProfilePage> {
                   label: "Account details",
                   icon: Icons.account_circle,
                 ),
-                user != null ? ActionItem(
-                  label: "Logout",
-                  icon: Icons.logout,
-                  onClick: () {
-                    String? res = "Welcome ${user!.firstName} ${user!.lastName}, welcome again next time!";
-                    showToast(res);
-                    persistAuthUser(user=null);
-                  },
-                ):ActionItem(
-                  label: "Login",
-                  icon: Icons.login,
-                  onClick: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) => const LoginPage(),
+                user != null
+                    ? ActionItem(
+                        label: "Logout",
+                        icon: Icons.logout,
+                        onClick: () {
+                          String? res =
+                              "Welcome ${user!.firstName} ${user!.lastName}, welcome again next time!";
+                          showToast(res);
+                          persistAuthUser(user = null);
+                        },
+                      )
+                    : ActionItem(
+                        label: "Login",
+                        icon: Icons.login,
+                        onClick: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => const LoginPage(),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
                 ActionItem(
-                  label: "Change Password",
-                  icon: Icons.password,
+                    label: "Change Password",
+                    icon: Icons.password,
                     onClick: () async {
                       openAlert(
                         title: "Change My Password",
                         child: const ChangePassword(),
                       );
-                    }
-                ),
+                    }),
                 ActionItem(
                     label: "Update ID Number",
                     icon: Icons.update,
@@ -127,14 +129,28 @@ class _ProfilePageState extends State<ProfilePage> {
                         title: "Change My Password",
                         child: const ChangeUserId(),
                       );
-                    }
-                )
+                    })
               ],
               shape: ActionItemShape.rounded,
             ),
             const SizedBox(height: 16),
             InlineList(
               title: "Pending bima",
+              bottomLabel: "+1 more",
+              bottomAction: ActionButton.all("View all", onClick: (a) {
+                openGenericPage(
+                  title: "Pending Bima",
+                  child: const InlineListBuilder(
+                    padding: EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      top: 4,
+                      bottom: 20,
+                    ),
+                    future: fetchBranches,
+                  ),
+                );
+              }),
               data: [
                 ActionItem(
                   leading: const Icon(Icons.two_wheeler),

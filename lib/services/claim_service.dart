@@ -9,7 +9,7 @@ import "package:http/http.dart" show MultipartFile;
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:nic/models/claim_model.dart';
 import 'package:nic/services/data_connection.dart';
-
+import 'package:nic/utils.dart';
 
 class ClaimService {
   String? startCursor = "";
@@ -84,7 +84,9 @@ class ClaimService {
 
     return claim;
   }
-  Future<Map<String, dynamic>?> initiateReportClaim({String? registrationNumber}) async {
+
+  Future<Map<String, dynamic>?> initiateReportClaim(
+      {String? registrationNumber}) async {
     ClaimModel? claim;
     String dataMap = r"""
       mutation ($registrationNumber: String!,$underwriteChannel: Int!) {
@@ -106,7 +108,7 @@ class ClaimService {
     );
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.query(options);
-    if(result.exception !=  null){
+    if (result.exception != null) {
       print(result.exception);
     }
 
@@ -114,17 +116,18 @@ class ClaimService {
       var payLoad = result.data!['initiateReportClaim'];
       // return reportClaimForm(product: payLoad['product']);
       return {
-        "success":payLoad['success'],
-        "message":payLoad['message'],
-        "product":payLoad['product'],
-        "proposal":payLoad['proposal'],
+        "success": payLoad['success'],
+        "message": payLoad['message'],
+        "product": payLoad['product'],
+        "proposal": payLoad['proposal'],
         "form": await reportClaimForm(product: payLoad['product'])
       };
     }
 
     return null;
   }
-    Future<dynamic> reportClaimForm({int? product}) async {
+
+  Future<dynamic> reportClaimForm({int? product}) async {
     String dataMap = r"""
       query ($product: Int!,$underwriteChannel:Int!) {
       reportClaimForm(product: $product,underwriteChannel:$underwriteChannel)
@@ -133,30 +136,31 @@ class ClaimService {
 
     final QueryOptions options = QueryOptions(
       document: gql(dataMap),
-      variables: {
-        "product": product,
-        "underwriteChannel": 2
-      },
+      variables: {"product": product, "underwriteChannel": 2},
     );
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.query(options);
 
-    if(result.exception !=  null){
+    if (result.exception != null) {
       print(result.exception);
     }
 
     List<dynamic>? allForm;
 
+    var allFormResponse = result.data!['reportClaimForm'];
 
-  var allFormResponse = result.data!['reportClaimForm'];
+    if (allFormResponse == null) {
+      throw ("Failed to fetch claim report form. Please try again later.");
+    }
 
-  if (allFormResponse == null) {
-    throw ("Failed to fetch claim report form. Please try again later.");
-  }
+    allForm = List.from(jsonDecode(
+      jsonDecode(allFormResponse),
+    ))
+        .map((e) => List.from(e["fields"] ?? []))
+        .expand((field) => field)
+        .toList();
 
-  allForm = List.from(jsonDecode(jsonDecode(allFormResponse),)).map((e) => List.from(e["fields"] ?? [])).expand((field) => field).toList();
-
-  return allForm;
+    return allForm;
   }
 
   Future<Map<String, dynamic>?> submitClaimForm({
@@ -185,31 +189,31 @@ class ClaimService {
       document: gql(dataMap),
       variables: {
         "proposal": proposal,
-        "data":jsonEncode(data),
+        "data": jsonEncode(data),
         "underwriteChannel": 2
       },
     );
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.query(options);
-    if(result.exception !=  null){
+    if (result.exception != null) {
       print(result.exception);
     }
 
     if (result.data != null) {
       var payLoad = result.data!['reportClaim'];
       // return reportClaimForm(product: payLoad['product']);
-      if(payLoad != null){
+      if (payLoad != null) {
         return {
-          "success":payLoad['success'],
-          "message":payLoad['message'],
-          "notification":payLoad['notification'],
-          "notificationId":payLoad['notificationId'],
-          "propertyName":payLoad['propertyName'],
-          "startDate":payLoad['startDate'],
-          "endDate":payLoad['endDate'],
-          "notificationDate":payLoad['notificationDate'],
-          "claimForm":payLoad['claimForm'],
-          "acknowledgementDocument":payLoad['acknowledgementDocument'],
+          "success": payLoad['success'],
+          "message": payLoad['message'],
+          "notification": payLoad['notification'],
+          "notificationId": payLoad['notificationId'],
+          "propertyName": payLoad['propertyName'],
+          "startDate": payLoad['startDate'],
+          "endDate": payLoad['endDate'],
+          "notificationDate": payLoad['notificationDate'],
+          "claimForm": payLoad['claimForm'],
+          "acknowledgementDocument": payLoad['acknowledgementDocument'],
         };
       }
     }
@@ -217,14 +221,9 @@ class ClaimService {
     return null;
   }
 
-
-  Future<Map<String, dynamic>?> uploadImagesService({
+  Future<Map<String, dynamic>?> uploadImagesService(
+    Map<String, dynamic> images, {
     required int notificationNumber,
-    required dynamic frontRight,
-    required dynamic frontLeft,
-    required dynamic backRight,
-    required dynamic backLeft,
-    required dynamic sideImage,
   }) async {
     String dataMap = r"""
        mutation ($fileName: String!, $filePath: Upload!,$notificationId: Int!, $underwriteChannel:Int!) {
@@ -235,60 +234,95 @@ class ClaimService {
       }
     """;
 
-    List<dynamic> imagesTemp = [frontRight, frontLeft, backRight, backLeft,sideImage];
-    List<dynamic> images = imagesTemp.where((item) => item != null).toList();
-    var counter = 0;
-    var totalLength = images.length;
-    for( dynamic image in images){
-      if (image == null){
-        return {
-          "success": false,
-          "message": "Failed to upload"
-        };
-      }
+    Map<String, dynamic> failedFiles = {};
 
-      print(image.path);
-      List<int> fileBytes = await image.readAsBytes();
-      counter ++;
-      String? fileName = "image-$counter.${image.path.split('.').last}";
-      // print(fileName);
-      // final myFile = await MultipartFile.fromPath(
-      //     "file", image.path,
-      //     filename: fileName);
+    for (var file in images.entries) {
+      var options = QueryOptions(document: gql(dataMap), variables: {
+        "fileName": camelToSentence(file.key),
+        "filePath": file.value,
+        "notificationId": notificationNumber,
+        "underwriteChannel": 2,
+      });
 
-      final QueryOptions options = QueryOptions(
-        document: gql(dataMap),
-        variables: {
-          "fileName": fileName,
-          "filePath": http.MultipartFile.fromBytes(
-            'file',
-            fileBytes,
-            filename: fileName,
-            contentType: MediaType('application', 'octet-stream'),
-          ),
-          "notificationId": notificationNumber,
-          "underwriteChannel": 2
-        },
-      );
+      try {
+        GraphQLClient client = await DataConnection().connectionClient();
+        final QueryResult result = await client.query(options);
 
-      GraphQLClient client = await DataConnection().connectionClient();
-      final QueryResult result = await client.query(options);
-      if(result.exception !=  null){
-        print(result.exception);
-      }
-      print(result);
+        var response = result.data?['uploadClaimNotificationDocumentFolder'];
+
+        if (response == null || response["success"] ?? false) {
+          throw ("Failed to renew policy. Please try again later.");
+        }
+
+        var initiateProposalResponse = result.data?['initiateProposal'];
+
+        if (initiateProposalResponse == null ||
+            !(initiateProposalResponse?['success'] ?? false)) {
+          throw ("Failed to purchase product. Please try again later.");
+        }
+
+        // if(uploadClaimNotificationDocumentFolder)
+        // failedFiles
+        if (result.exception != null) {
+          print(result.exception);
+        }
+      } catch (e) {}
     }
-    if (totalLength == counter){
-      return {
-        "success": true,
-        "message": "Successfully uploaded"
-      };
-    }else{
-      return {
-        "success": false,
-        "message": "Failed to upload"
-      };
-    }
+
+    // return {"success": false, "message": "Failed to upload"};
+
+    // List<dynamic> imagesTemp = [
+    //   frontRight,
+    //   frontLeft,
+    //   backRight,
+    //   backLeft,
+    //   sideImage
+    // ];
+    // // List<dynamic> images = imagesTemp.where((item) => item != null).toList();
+    // var counter = 0;
+    // var totalLength = images.length;
+    // for (dynamic image in images) {
+    //   if (image == null) {
+    //     return {"success": false, "message": "Failed to upload"};
+    //   }
+
+    //   print(image);
+    //   List<int> fileBytes = await image.readAsBytes();
+    //   counter++;
+    //   String? fileName = "image-$counter.${image.path.split('.').last}";
+    //   // print(fileName);
+    //   // final myFile = await MultipartFile.fromPath(
+    //   //     "file", image.path,
+    //   //     filename: fileName);
+
+    //   final QueryOptions options = QueryOptions(
+    //     document: gql(dataMap),
+    //     variables: {
+    //       "fileName": fileName,
+    //       // "filePath": File(image.path),
+    //       "filePath": http.MultipartFile.fromBytes(
+    //         'file',
+    //         fileBytes,
+    //         filename: fileName,
+    //         contentType: MediaType('application', 'octet-stream'),
+    //       ),
+    //       "notificationId": notificationNumber,
+    //       "underwriteChannel": 2
+    //     },
+    //   );
+
+    //   GraphQLClient client = await DataConnection().connectionClient();
+    //   final QueryResult result = await client.query(options);
+    //   if (result.exception != null) {
+    //     print(result.exception);
+    //   }
+    //   print(result);
+    // }
+    // if (totalLength == counter) {
+    //   return {"success": true, "message": "Successfully uploaded"};
+    // } else {
+    //   return {"success": false, "message": "Failed to upload"};
+    // }
   }
 
 //

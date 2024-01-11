@@ -46,7 +46,7 @@ class _InitialProductFormState extends State<InitialProductForm> {
         }
       ];
 
-      form = processFields(fields: [...List.from(res), ...fixedInitialFields]);
+      form = processFields([...List.from(res), ...fixedInitialFields]);
     } catch (e) {
       Navigator.pop(context);
       openErrorAlert(message: e.toString());
@@ -91,7 +91,7 @@ class _InitialProductFormState extends State<InitialProductForm> {
               }
             },
             onError: (error, formData) async {
-              if (error.toString() == "Policy exists") {
+              if (error.toString().contains("Policy exists - ")) {
                 Navigator.pop(context);
 
                 String? registrationNumber = List.from(formData["data"])
@@ -100,14 +100,15 @@ class _InitialProductFormState extends State<InitialProductForm> {
                         .contains("Registration_number"))?["answer"];
 
                 var res = await openPrompt(
-                  title: "Policy already exists",
-                  message: "Would you like to renew this policy?",
+                  title: "Policy already exists!",
+                  message:
+                      error.toString().replaceFirst("Policy exists - ", ""),
                   action: "Renew policy",
                 );
 
                 if (res == true) {
                   openGenericPage(
-                    title: "Policy Details",
+                    title: "Renew Policy",
                     child: BimaRenewal(
                       registrationNumber: registrationNumber,
                     ),

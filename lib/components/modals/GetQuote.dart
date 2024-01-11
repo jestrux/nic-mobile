@@ -257,7 +257,7 @@ class _GetQuoteState extends State<GetQuote> {
     }
 
     if (quotationDetails?["form"] != null) {
-      var form = processFields(fields: List.from(quotationDetails!["form"]));
+      var form = processFields(List.from(quotationDetails!["form"]));
 
       return Column(
         children: [

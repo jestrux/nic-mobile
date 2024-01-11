@@ -53,7 +53,11 @@ List<Map<String, dynamic>> processChildren(Map<String, dynamic> field) {
 }
 
 List<DynamicFormField>? processFields(
-    {fields, data, noGroups, fullWidthFields}) {
+  fields, {
+  data,
+  noGroups,
+  fullWidthFields,
+}) {
   if (fields == null) return null;
 
   var fieldsWithChildren = List<Map<String, dynamic>>.from(fields)
@@ -103,7 +107,7 @@ List<DynamicFormField>? processFields(
     var fullField = {
       "__id": "id${randomId()}",
       "name": name,
-      "label": label ?? name,
+      "label": label ?? camelToSentence(name),
       "type": type,
       "choices": choices,
       // "defaultValue": computedDefaultValue,
@@ -158,6 +162,7 @@ List<DynamicFormField>? processFields(
           choices: field["choices"],
           max: field["max_value"],
           min: field["min_value"],
+          placeholder: field["placeholder"],
           type: dynamicFormFieldTypeMap[field["type"]] ??
               DynamicFormFieldType.text,
         ),

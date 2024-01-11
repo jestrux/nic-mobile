@@ -38,9 +38,7 @@ class _FormPageState extends State<FormPage> {
   @override
   void initState() {
     proposalDetails = widget.proposalDetails;
-    formFields = processFields(
-      fields: proposalDetails?["form"] ?? sampleFields,
-    );
+    formFields = processFields(proposalDetails?["form"] ?? sampleFields);
 
     if (proposalDetails?["fetchPaymentDetails"] != null) {
       onFinalScreen = true;

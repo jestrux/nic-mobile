@@ -7,7 +7,8 @@ class Constants {
   static const primaryColor = Color(0xFF2E6B27);
   static const bgLightColor = Color(0XFFebf5f2);
   static const supportPhoneNumber = "080 0110 041";
-  static const supportEmail = "info-nic@nictanzania.co.tz";
+  static const whatsappChatbotNumber = "15550297411";
+  static const supportEmail = "info-nic@nicinsurance.co.tz";
   static const contactsUrl = "https://www.nicinsurance.co.tz/contact-us";
   static const portalUrl = "https://www.nicinsurance.co.tz";
 
