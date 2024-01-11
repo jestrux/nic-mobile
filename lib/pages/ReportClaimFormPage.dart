@@ -1,10 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nic/components/DocumentViewer.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/DynamicForm/proccessFields.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/KeyValueView.dart';
+import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
+import 'package:nic/components/modals/UploadNotificationImages.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/services/claim_service.dart';
@@ -84,6 +88,25 @@ class _ReportClaimFormState extends State<ReportClaimForm> {
             },
           ),
           const Divider(height: 40, thickness: 0.3),
+           Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("You have accident images? Upload here..",style: TextStyle(
+                fontSize: 12.0
+              )),
+              MiniButton(
+                label: "Upload",
+                onClick: (){
+                  openAlert(
+                    title: "Upload Images",
+                    child: UploadNotificationImages(notificationNumber:payLoad['notificationId']),
+                  );
+                },
+              )
+            ],
+          )),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0),
             child:InlineList(
@@ -93,13 +116,25 @@ class _ReportClaimFormState extends State<ReportClaimForm> {
                   leading: const Icon(Icons.download),
                   label: "Claim Form",
                   description: "Download or share",
-                  action: ActionButton.filled("Download"),
-                ),
+                  action: payLoad['claimForm'] != null ? ActionButton.filled("Download",onClick: (d){
+                    Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (context) => DocViewer(
+                          title: "Claim Form",
+                          path: payLoad['claimForm'],
+                        )));
+                  }) : null,
+                ) ,
                 ActionItem(
                   leading: const Icon(Icons.download),
                   label: "Acknowledgement Document",
                   description: "Download or share",
-                  action: ActionButton.filled("Download"),
+                  action: payLoad['acknowledgementDocument'] != null ? ActionButton.filled("Download",onClick: (d){
+                    Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (context) => DocViewer(
+                          title: "Acknowledgement Document",
+                          path: payLoad['acknowledgementDocument'],
+                        )));
+                  }) : null,
                 )
               ],
             ),

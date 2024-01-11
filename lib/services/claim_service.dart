@@ -1,5 +1,10 @@
 import 'dart:convert';
 import 'dart:ffi';
+// import 'dart:html';
+import 'dart:io';
+import 'package:http_parser/http_parser.dart';
+import 'package:http/http.dart' as http;
+import "package:http/http.dart" show MultipartFile;
 
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:nic/models/claim_model.dart';
@@ -165,6 +170,7 @@ class ClaimService {
         success
         message
         notification
+        notificationId
         propertyName
         startDate
         endDate
@@ -197,6 +203,7 @@ class ClaimService {
           "success":payLoad['success'],
           "message":payLoad['message'],
           "notification":payLoad['notification'],
+          "notificationId":payLoad['notificationId'],
           "propertyName":payLoad['propertyName'],
           "startDate":payLoad['startDate'],
           "endDate":payLoad['endDate'],
@@ -210,6 +217,79 @@ class ClaimService {
     return null;
   }
 
+
+  Future<Map<String, dynamic>?> uploadImagesService({
+    required int notificationNumber,
+    required dynamic frontRight,
+    required dynamic frontLeft,
+    required dynamic backRight,
+    required dynamic backLeft,
+    required dynamic sideImage,
+  }) async {
+    String dataMap = r"""
+       mutation ($fileName: String!, $filePath: Upload!,$notificationId: Int!, $underwriteChannel:Int!) {
+        uploadClaimNotificationDocumentFolder(fileName: $fileName, filePath: $filePath,notificationId:$notificationId,underwriteChannel:$underwriteChannel){
+        success
+        message
+        }
+      }
+    """;
+
+    List<dynamic> imagesTemp = [frontRight, frontLeft, backRight, backLeft,sideImage];
+    List<dynamic> images = imagesTemp.where((item) => item != null).toList();
+    var counter = 0;
+    var totalLength = images.length;
+    for( dynamic image in images){
+      if (image == null){
+        return {
+          "success": false,
+          "message": "Failed to upload"
+        };
+      }
+
+      print(image.path);
+      List<int> fileBytes = await image.readAsBytes();
+      counter ++;
+      String? fileName = "image-$counter.${image.path.split('.').last}";
+      // print(fileName);
+      // final myFile = await MultipartFile.fromPath(
+      //     "file", image.path,
+      //     filename: fileName);
+
+      final QueryOptions options = QueryOptions(
+        document: gql(dataMap),
+        variables: {
+          "fileName": fileName,
+          "filePath": http.MultipartFile.fromBytes(
+            'file',
+            fileBytes,
+            filename: fileName,
+            contentType: MediaType('application', 'octet-stream'),
+          ),
+          "notificationId": notificationNumber,
+          "underwriteChannel": 2
+        },
+      );
+
+      GraphQLClient client = await DataConnection().connectionClient();
+      final QueryResult result = await client.query(options);
+      if(result.exception !=  null){
+        print(result.exception);
+      }
+      print(result);
+    }
+    if (totalLength == counter){
+      return {
+        "success": true,
+        "message": "Successfully uploaded"
+      };
+    }else{
+      return {
+        "success": false,
+        "message": "Failed to upload"
+      };
+    }
+  }
 
 //
 //   Future<bool> getClaimants(
