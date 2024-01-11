@@ -104,6 +104,7 @@ class _InitialProductFormState extends State<InitialProductForm> {
                   message:
                       error.toString().replaceFirst("Policy exists - ", ""),
                   action: "Renew policy",
+                  secondaryAction: "No thanks",
                 );
 
                 if (res == true) {
