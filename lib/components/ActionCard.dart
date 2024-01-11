@@ -22,8 +22,9 @@ class ActionCard extends StatelessWidget {
     bool portrait = shape == ActionItemShape.portrait;
     bool video = shape == ActionItemShape.video;
 
-    var cardBackground = action.background ??
+    var cardBackground =
         colorScheme(context).surfaceVariant.withOpacity(rounded ? 0 : 0.3);
+    if (!square) cardBackground = action.background ?? cardBackground;
 
     double radius = rounded ? 50 : 10;
     var iconBackground =
