@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:nic/constants.dart';
+import 'package:nic/data/providers/AppProvider.dart';
+import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/BimaPage.dart';
 import 'package:nic/pages/HomePage.dart';
 import 'package:nic/pages/MorePage.dart';
 import 'package:nic/pages/ProfilePage.dart';
 import 'package:nic/pages/UtilitiesPage.dart';
+import 'package:nic/pages/auth/LoginPage.dart';
+import 'package:provider/provider.dart';
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -17,6 +21,7 @@ class _MainAppState extends State<MainApp> {
   int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {
+    UserModel? userObj = Provider.of<AppProvider>(context).authUser;
     var pages = [
       HomePage(
         goToMainPage: (page) {
@@ -27,7 +32,12 @@ class _MainAppState extends State<MainApp> {
       ),
       const BimaPage(),
       const UtilitiesPage(),
-      const ProfilePage(),
+      userObj != null ?  const ProfilePage() : Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ),
+      ),
       const MorePage(),
     ];
 

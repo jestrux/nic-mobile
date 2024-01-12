@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                   fontWeight: FontWeight.w600),
             ),
             onPressed: () {
-              Navigator.of(context).push(CupertinoPageRoute(
+              Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const RegisterPage()));
             },
           ),
@@ -163,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                                 color: colorScheme(context).onSurface)),
                       ),
                       onTap: () {
-                        Navigator.of(context).push(CupertinoPageRoute(
+                        Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => RecoverPassword()));
                       },
                     ),
