@@ -31,7 +31,7 @@ class _ReportClaimState extends State<ReportClaim> {
       }else if(claim['success'] == true){
         Navigator.push(
           context,
-          CupertinoPageRoute(
+          MaterialPageRoute(
             builder: (context) => ReportClaimForm(
               claimForm: claim['form'],
               formId: claim['proposal'],

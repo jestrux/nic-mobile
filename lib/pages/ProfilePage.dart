@@ -85,33 +85,10 @@ class _ProfilePageState extends State<ProfilePage> {
             PageSection(
               // title: "Quick Actions",
               content: [
-                ActionItem(
-                  label: "Account details",
-                  icon: Icons.account_circle,
-                ),
-                user != null
-                    ? ActionItem(
-                        label: "Logout",
-                        icon: Icons.logout,
-                        onClick: () {
-                          String? res =
-                              "Welcome ${user!.firstName} ${user!.lastName}, welcome again next time!";
-                          showToast(res);
-                          persistAuthUser(user = null);
-                        },
-                      )
-                    : ActionItem(
-                        label: "Login",
-                        icon: Icons.login,
-                        onClick: () {
-                          Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                              builder: (context) => const LoginPage(),
-                            ),
-                          );
-                        },
-                      ),
+                // ActionItem(
+                //   label: "Account details",
+                //   icon: Icons.account_circle,
+                // ),
                 ActionItem(
                     label: "Change Password",
                     icon: Icons.password,
@@ -129,7 +106,30 @@ class _ProfilePageState extends State<ProfilePage> {
                         title: "Change My Password",
                         child: const ChangeUserId(),
                       );
-                    })
+                    }),
+                user != null
+                    ? ActionItem(
+                        label: "Logout",
+                        icon: Icons.logout,
+                        onClick: () {
+                          String? res =
+                              "Welcome ${user!.firstName} ${user!.lastName}, welcome again next time!";
+                          showToast(res);
+                          persistAuthUser(user = null);
+                        },
+                      )
+                    : ActionItem(
+                        label: "Login",
+                        icon: Icons.login,
+                        onClick: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPage(),
+                            ),
+                          );
+                        },
+                      )
               ],
               shape: ActionItemShape.rounded,
             ),

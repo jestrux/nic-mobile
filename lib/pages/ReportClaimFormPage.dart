@@ -122,7 +122,7 @@ class _ReportClaimFormState extends State<ReportClaimForm> {
                   description: "Download or share",
                   action: payLoad['claimForm'] != null
                       ? ActionButton.filled("Download", onClick: (d) {
-                          Navigator.of(context).push(CupertinoPageRoute(
+                          Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => DocViewer(
                                     title: "Claim Form",
                                     path: payLoad['claimForm'],
@@ -136,7 +136,7 @@ class _ReportClaimFormState extends State<ReportClaimForm> {
                   description: "Download or share",
                   action: payLoad['acknowledgementDocument'] != null
                       ? ActionButton.filled("Download", onClick: (d) {
-                          Navigator.of(context).push(CupertinoPageRoute(
+                          Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => DocViewer(
                                     title: "Acknowledgement Document",
                                     path: payLoad['acknowledgementDocument'],
