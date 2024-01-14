@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
       title: "Sisi ndiyo Bima",
       showLogo: true,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
