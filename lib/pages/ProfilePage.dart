@@ -7,6 +7,7 @@ import 'package:nic/data/preferences.dart';
 import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/models/proposal_model.dart';
 import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/auth/ChangeUserId.dart';
 import 'package:nic/pages/auth/LoginPage.dart';
@@ -24,6 +25,20 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+
+  Future<List<Map<String, dynamic>>?> getPendingBima(context) async {
+    AppProvider proposalProvider = Provider.of<AppProvider>(context, listen: false);
+    if(proposalProvider.proposals.isEmpty){
+      await fetchDataAndPersistPendingProposals(context);
+    }
+    return proposalProvider.proposals.map<Map<String, dynamic>>((proposal) {
+      return {
+        "title": proposal.policyPropertyName,
+        "description": "${proposal.startDate} - ${proposal.endDate}"
+      };
+    }).toList();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -75,22 +90,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     // UserModel? user = context.read<AppProvider>().authUser;
     UserModel? user = Provider.of<AppProvider>(context).authUser;
-    bool proposalProvider = Provider.of<AppProvider>(context).proposalDataAvailable;
-    // print(proposalProvider);
-    // fetchDataAndPersistPendingProposals()
-    if(proposalProvider){
-      retrievePendingProposals().then((List<Map<String, dynamic>> dataList) {
-        // Use the retrieved data as needed
-        // print("dataList---: $dataList");
-        dataList.map<Map<String, dynamic>>((proposal) {
-          return {
-                  "title": "t591dtp",
-                  "description": "compre",
-                };
-        }).toList();
-      });
-
-    }
 
 
     return RoundedHeaderPage(
@@ -155,32 +154,35 @@ class _ProfilePageState extends State<ProfilePage> {
               shape: ActionItemShape.rounded,
             ),
             const SizedBox(height: 16),
-            InlineList(
-              title: "Pending bima",
-              bottomLabel: "+1 more",
-              bottomAction: ActionButton.all("View all", onClick: (a) {
-                openGenericPage(
-                  title: "Pending Bima",
-                  child: const InlineListBuilder(
-                    padding: EdgeInsets.only(
-                      left: 16,
-                      right: 16,
-                      top: 4,
-                      bottom: 20,
-                    ),
-                    future: fetchBranches,
-                  ),
-                );
-              }),
-              data: [
-                ActionItem(
-                  leading: const Icon(Icons.two_wheeler),
-                  label: "Toyota Camry",
-                  description: "Created 5 minutes ago",
-                  action: ActionButton.filled("Pay now"),
-                ),
-              ],
+            const InlineListBuilder(
+              future: getPendingBima,
             ),
+            // InlineList(
+            //   title: "Pending bima",
+            //   bottomLabel: "+1 more",
+            //   bottomAction: ActionButton.all("View all", onClick: (a) {
+            //     openGenericPage(
+            //       title: "Pending Bima",
+            //       child: const InlineListBuilder(
+            //         padding: EdgeInsets.only(
+            //           left: 16,
+            //           right: 16,
+            //           top: 4,
+            //           bottom: 20,
+            //         ),
+            //         future: fetchBranches,
+            //       ),
+            //     );
+            //   }),
+            //   data: [
+            //     ActionItem(
+            //       leading: const Icon(Icons.two_wheeler),
+            //       label: "Toyota Camry",
+            //       description: "Created 5 minutes ago",
+            //       action: ActionButton.filled("Pay now"),
+            //     ),
+            //   ],
+            // ),
             const SizedBox(height: 18),
             InlineList(
               leading: Icons.post_add,

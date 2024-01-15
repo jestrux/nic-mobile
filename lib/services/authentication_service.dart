@@ -66,9 +66,6 @@ class AuthenticationService {
     if (result.data != null && result.hasException == false) {
       // print(result.data);
       userModel = UserModel.fromJson(result.data);
-
-      // fetch user datas
-      fetchDataAndPersistPendingProposals();
     }
     return userModel;
   }
