@@ -7,11 +7,13 @@ import 'package:nic/data/preferences.dart';
 import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/models/proposal_model.dart';
 import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/auth/ChangeUserId.dart';
 import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:nic/pages/auth/changePassword.dart';
 import 'package:nic/services/misc_services.dart';
+import 'package:nic/services/underwritting_service.dart';
 import 'package:nic/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +25,24 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+
+  Future<List<Map<String, dynamic>>?> getPendingBima(context) async {
+    AppProvider proposalProvider = Provider.of<AppProvider>(context, listen: false);
+    if(proposalProvider.proposals.isEmpty){
+      await fetchDataAndPersistPendingProposals(context);
+    }
+    return proposalProvider.proposals.map<Map<String, dynamic>>((proposal) {
+      return {
+        "title": proposal.policyPropertyName,
+        "description": "${proposal.startDate} - ${proposal.endDate}"
+      };
+    }).toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
   List<ActionItem> policies = [
     ActionItem(
         label: "T124ADC",
@@ -70,9 +90,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     // UserModel? user = context.read<AppProvider>().authUser;
     UserModel? user = Provider.of<AppProvider>(context).authUser;
-    // if (user!.firstName != null){
-    //   print(user.firstName!);
-    // }
+
+
     return RoundedHeaderPage(
       title: "Your Profile",
       child: SingleChildScrollView(
@@ -116,6 +135,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               "Welcome ${user!.firstName} ${user!.lastName}, welcome again next time!";
                           showToast(res);
                           persistAuthUser(user = null);
+                          clearSpecificData("proposal_data");
                         },
                       )
                     : ActionItem(
@@ -134,32 +154,35 @@ class _ProfilePageState extends State<ProfilePage> {
               shape: ActionItemShape.rounded,
             ),
             const SizedBox(height: 16),
-            InlineList(
-              title: "Pending bima",
-              bottomLabel: "+1 more",
-              bottomAction: ActionButton.all("View all", onClick: (a) {
-                openGenericPage(
-                  title: "Pending Bima",
-                  child: const InlineListBuilder(
-                    padding: EdgeInsets.only(
-                      left: 16,
-                      right: 16,
-                      top: 4,
-                      bottom: 20,
-                    ),
-                    future: fetchBranches,
-                  ),
-                );
-              }),
-              data: [
-                ActionItem(
-                  leading: const Icon(Icons.two_wheeler),
-                  label: "Toyota Camry",
-                  description: "Created 5 minutes ago",
-                  action: ActionButton.filled("Pay now"),
-                ),
-              ],
+            const InlineListBuilder(
+              future: getPendingBima,
             ),
+            // InlineList(
+            //   title: "Pending bima",
+            //   bottomLabel: "+1 more",
+            //   bottomAction: ActionButton.all("View all", onClick: (a) {
+            //     openGenericPage(
+            //       title: "Pending Bima",
+            //       child: const InlineListBuilder(
+            //         padding: EdgeInsets.only(
+            //           left: 16,
+            //           right: 16,
+            //           top: 4,
+            //           bottom: 20,
+            //         ),
+            //         future: fetchBranches,
+            //       ),
+            //     );
+            //   }),
+            //   data: [
+            //     ActionItem(
+            //       leading: const Icon(Icons.two_wheeler),
+            //       label: "Toyota Camry",
+            //       description: "Created 5 minutes ago",
+            //       action: ActionButton.filled("Pay now"),
+            //     ),
+            //   ],
+            // ),
             const SizedBox(height: 18),
             InlineList(
               leading: Icons.post_add,

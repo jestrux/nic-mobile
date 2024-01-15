@@ -3,13 +3,14 @@ import 'package:nic/models/recover_user_model.dart';
 import 'package:nic/services/data_connection.dart';
 // import 'package:imis_client_app/services/repository.dart';
 import 'package:nic/models/user_model.dart';
+import 'package:nic/services/underwritting_service.dart';
 
 class AuthenticationService {
-  Future<UserModel?> loginUser({String? username, String? password}) async {
+  Future<dynamic> loginUser({String? username, String? password, dynamic key}) async {
     UserModel? userModel;
     String login = r"""
        mutation($username: String!, $password: String!){
-        tokenAuth(username: $username, password: $password){
+        tokenAuthCustom(username: $username, password: $password){
           token
           user{
             id
@@ -50,26 +51,21 @@ class AuthenticationService {
 
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.mutate(options);
+    if (result.hasException) {
+      final exception = result.exception;
+      if (exception is OperationException) {
+        final graphqlErrors = exception.graphqlErrors;
+        if (graphqlErrors != null && graphqlErrors.isNotEmpty) {
+          // Assuming you only want the first error message
+          final errorMessage = graphqlErrors.first.message;
+          print('GraphQL Error: $errorMessage');
+          return errorMessage;
+        }
+      }
+    }
     if (result.data != null && result.hasException == false) {
       // print(result.data);
       userModel = UserModel.fromJson(result.data);
-      // var tokenBox = Hive.box("token");
-      // tokenBox.put("token", userModel.token);
-      // Repository().setToken(userModel);
-      // var userBox = await Hive.openBox("user");
-      //
-      // userModel.toMap().forEach((key, value) => userBox.put(key, value));
-      // var userProfileBox = await Hive.openBox("userProfile");
-      // userProfileBox.put("customCustomerNumber", userModel.customCustomerNumber);
-      // userProfileBox.put("customerNumberType", userModel.customerNumberType);
-      // userProfileBox.put("total_proposals", userModel.totalProposals);
-      // userProfileBox.put("total_non_life_policies", userModel.totalNonLifePolicies);
-      // userProfileBox.put("total_policies", userModel.totalPolicies);
-      // userProfileBox.put("total_life_policies", userModel.totalLifePolicies);
-      // userProfileBox.put("total_claims", userModel.totalClaims);
-      // if (Repository().getToken() != null) {
-      //   return userModel;
-      // }
     }
     return userModel;
   }

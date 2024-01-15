@@ -1,8 +1,13 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:nic/data/preferences.dart';
+import 'package:nic/data/providers/AppProvider.dart';
+import 'package:nic/models/proposal_model.dart';
 import 'package:nic/services/data_connection.dart';
 import 'package:nic/utils.dart';
+import 'package:provider/provider.dart';
 
 bool productIsNonMotor({required String productId}) =>
     ["UHJvZHVjdE5vZGU6MzAw", "UHJvZHVjdE5vZGU6MzEx"].contains(productId);
@@ -332,3 +337,64 @@ Future<Map<String, dynamic>?> requestControlNumber({
     recurse: true,
   );
 }
+
+  Future<void> fetchDataAndPersistPendingProposals(context) async {
+    String query = r"""
+    query ($underwriteChannel:Int!){
+    pendingProposals(underwriteChannel: $underwriteChannel) {
+      edges {
+        node {
+          id
+          policyPropertyName
+          created
+          startDate
+          endDate
+          actualPremium
+          actualPremiumVatAmount
+          actualPremiumVatExclusive
+        }
+      }
+    }
+  }
+    """;
+    final QueryOptions options = QueryOptions(
+      document: gql(query),
+      variables: const {'underwriteChannel': 2},
+    );
+    GraphQLClient client = await DataConnection().connectionClient();
+    final QueryResult result = await client.query(options);
+    // print(result.data);
+    if (result.hasException) {
+      if (kDebugMode) {
+        print('GraphQL Error: ${result.exception.toString()}');
+      }
+    } else {
+
+      AppProvider proposalProvider =Provider.of<AppProvider>(context, listen: false);
+
+      // Clear existing data
+      proposalProvider.clearProposals();
+
+      final List<Map<String, dynamic>> dataList = [];
+      for (final edge in result.data?['pendingProposals']['edges']) {
+        // print(edge['node']);
+        // Remove __typename key
+        final Map<String, dynamic> proposalData = Map.from(edge['node']);
+        proposalData.remove('__typename');
+        // dataList.add(proposalData);
+        ProposalModel proposal = ProposalModel(
+          policyId: proposalData['id'],
+          policyPropertyName: proposalData['policyPropertyName'],
+          createdDate: proposalData['created'],
+          startDate: proposalData['startDate'],
+          endDate: proposalData['endDate'],
+          basePremium: proposalData['actualPremiumVatExclusive'],
+          vat: proposalData['actualPremiumVatAmount'],
+          premium: proposalData['actualPremium']
+        );
+        proposalProvider.addProposal(proposal);
+      }
+      // Persist data to SharedPreferences
+      // persistDataPendingProposals(dataList);
+    }
+  }
