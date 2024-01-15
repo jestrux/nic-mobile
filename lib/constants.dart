@@ -6,6 +6,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 class Constants {
   static const primaryColor = Color(0xFF2E6B27);
   static const bgLightColor = Color(0XFFebf5f2);
+  static const hqCoordinates = {
+    "latitude": -6.815990607109203,
+    "longitude": 39.29028651278273,
+  };
+  static const hqMapLocation =
+      "https://www.google.com/maps/place/NIC+Insurance/@-6.8159397,39.2903665,17z/data=!3m1!4b1!4m6!3m5!1s0x185c4b103a6c557d:0x267e2848f72c7e76!8m2!3d-6.8159397!4d39.2903665!16s%2Fg%2F11vlhqm3cd?hl=en-TZ&entry=ttu";
+  // static const hqMapLocation =
+  //     "https://maps.app.goo.gl/SEdc3zSEQwqaHCWy9?g_st=ic";
   static const supportPhoneNumber = "080 0110 041";
   static const whatsappChatbotNumber = "15550297411";
   static const supportEmail = "info-nic@nicinsurance.co.tz";
