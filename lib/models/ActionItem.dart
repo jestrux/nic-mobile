@@ -17,6 +17,7 @@ class ActionItem {
   final dynamic trailing;
   final dynamic leading;
   final String? value;
+  final Map<String, dynamic>? extraData;
   final Function? onClick;
 
   ActionItem({
@@ -33,6 +34,7 @@ class ActionItem {
     this.leading,
     this.trailing,
     this.value,
+    this.extraData,
     this.onClick,
   });
 
@@ -42,6 +44,7 @@ class ActionItem {
     leading,
     trailing,
     String? value,
+    Map<String, dynamic>? extraData,
     Function? onClick,
   }) =>
       ActionItem(
@@ -58,6 +61,7 @@ class ActionItem {
         value: value ?? this.value,
         leading: leading ?? this.leading,
         trailing: trailing ?? this.trailing,
+        extraData: extraData ?? this.extraData,
         onClick: onClick ?? this.onClick,
       );
 }

@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/Loader.dart';
 import 'package:nic/components/PolicyPaymentDetails.dart';
+import 'package:nic/pages/FormPage.dart';
 import 'package:nic/services/policy_service.dart';
+import 'package:nic/services/product_service.dart';
+import 'package:nic/services/underwritting_service.dart';
 import 'package:nic/utils.dart';
 
 class BimaRenewal extends StatefulWidget {
   final String? registrationNumber;
-  const BimaRenewal({this.registrationNumber, Key? key}) : super(key: key);
+  final bool? shortRenewal;
+  const BimaRenewal({this.registrationNumber, this.shortRenewal, Key? key})
+      : super(key: key);
 
   @override
   State<BimaRenewal> createState() => _BimaRenewalState();
@@ -15,23 +20,78 @@ class BimaRenewal extends StatefulWidget {
 
 class _BimaRenewalState extends State<BimaRenewal> {
   Map<String, dynamic>? policyDetails;
+  Map<String, dynamic>? proposalForm;
+  late bool shortRenewal;
 
   @override
   void initState() {
     super.initState();
+    shortRenewal = widget.shortRenewal ?? true;
+
     if (widget.registrationNumber != null) {
       fetchPolicyDetails(widget.registrationNumber);
     }
   }
 
   Future<Map<String, dynamic>?> fetchPolicyDetails(registrationNumber) async {
-    var res = await renewPolicy(registrationNumber);
+    var res = await renewPolicy(
+      registrationNumber,
+      shortRenewal: shortRenewal,
+    );
+
+    if (!shortRenewal) {
+      try {
+        if (res == null) throw ();
+
+        var productRes = await getProductById(res['product']);
+        if (productRes == null) throw ();
+
+        res['productId'] = productRes['id'];
+
+        var proposalRes = await fetchProposalForm(
+          productId: res['product'],
+          proposal: res['proposal'],
+          phoneNumber: "",
+          renewal: true,
+        );
+
+        if (proposalRes == null) throw ();
+
+        res = {...res, ...proposalRes};
+
+        openProposalForm({
+          "productId": res['productId'],
+          "proposal": res['proposal'],
+          "product": res['product'],
+          "form": res['form'],
+          "phoneNumber": "",
+        });
+
+        return null;
+      } catch (e) {
+        openErrorAlert(message: "Failed to renew Bima. Please try again!");
+      }
+    }
 
     setState(() {
       policyDetails = res;
     });
 
     return res;
+  }
+
+  openProposalForm(Map<String, dynamic> proposalDetails) {
+    Navigator.pop(context);
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => FormPage(
+          title: "Renew Policy",
+          renewal: true,
+          proposalDetails: proposalDetails,
+        ),
+      ),
+    );
   }
 
   showPolicySummary(dynamic details) {
@@ -66,6 +126,17 @@ class _BimaRenewalState extends State<BimaRenewal> {
     }
 
     if (policyDetails == null) return const Loader();
+
+    if (!shortRenewal) {
+      if (proposalForm == null) return Loader();
+
+      return Container();
+
+      // return DynamicForm(
+      //   fields: proposalForm,
+      //   onSubmit: (payload) async {},
+      // );
+    }
 
     return PolicyPaymentDetails(
       details: policyDetails!,

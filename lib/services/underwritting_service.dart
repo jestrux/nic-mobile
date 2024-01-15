@@ -48,9 +48,10 @@ Future<List<dynamic>?> getInitialProductForm({
 }
 
 Future<Map<String, dynamic>?> fetchProposalForm({
-  required String productId,
+  required dynamic productId,
   required int proposal,
   required String phoneNumber,
+  bool? renewal,
 }) async {
   String queryString =
       r"""query ($product: ID!, $policy: Int!, $renewal: Boolean!, $underwriteChannel: Int!) {
@@ -62,12 +63,11 @@ Future<Map<String, dynamic>?> fetchProposalForm({
     variables: <String, dynamic>{
       "product": productId,
       "policy": proposal,
-      "renewal": false,
+      "renewal": renewal ?? false,
       "underwriteChannel": 2,
     },
   );
-  print("productId----: $productId");
-  print("proposal----: $proposal");
+
   GraphQLClient client = await DataConnection().connectionClient();
   final QueryResult result = await client.query(options);
 
@@ -173,6 +173,7 @@ Future<Map<String, dynamic>?> submitProposalForm({
   required int proposal,
   required String phoneNumber,
   required List<dynamic> data,
+  bool? renewal,
 }) async {
   String queryString =
       r"""mutation ($product: ID!, $data: JSONString!, $proposal: Int!, $renewal: Boolean!, $underwriteChannel: Int!) {
@@ -196,7 +197,7 @@ Future<Map<String, dynamic>?> submitProposalForm({
     variables: <String, dynamic>{
       "product": productId,
       "proposal": proposal,
-      "renewal": false,
+      "renewal": renewal ?? false,
       "verify": false,
       "data": jsonEncode(data),
       "underwriteChannel": 2,

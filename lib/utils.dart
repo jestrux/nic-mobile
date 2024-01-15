@@ -315,17 +315,47 @@ void openSuccessAlert({
 }
 
 void openGenericPage({
+  required Widget child,
   String? title,
   EdgeInsets? padding,
-  required Widget child,
+  String okayText = "Okay",
+  Function? onOkay,
+  String cancelText = "Cancel",
+  onCancel,
 }) {
   Navigator.of(Constants.globalAppKey.currentContext!).push(
     MaterialPageRoute(
       builder: (context) => RoundedHeaderPage(
         title: title,
-        child: SingleChildScrollView(
-          padding: padding ?? const EdgeInsets.symmetric(vertical: 12),
-          child: child,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: padding ?? const EdgeInsets.symmetric(vertical: 12),
+                child: child,
+              ),
+            ),
+            if (onOkay != null)
+              Container(
+                color: colorScheme(context).surfaceVariant,
+                child: SafeArea(
+                  child: FormActions(
+                    backgroundColor: Colors.transparent,
+                    okayText: okayText,
+                    onOkay: onOkay,
+                    onCancel: onCancel,
+                    cancelText: cancelText,
+                    padding: const EdgeInsets.only(
+                      top: 12,
+                      bottom: 12,
+                      left: 24,
+                      right: 24,
+                    ),
+                  ),
+                ),
+              )
+          ],
         ),
       ),
     ),

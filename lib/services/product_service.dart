@@ -163,6 +163,7 @@ Future<List<Map<String, dynamic>>?> getProducts({
       edges {
         node {
           id
+          productId
           name
           description
           mobileName
@@ -173,6 +174,16 @@ Future<List<Map<String, dynamic>>?> getProducts({
             name
             description
             code
+          }
+          benefits {
+            edges {
+              node {
+                benefit {
+                  name
+                  description
+                }
+              }
+            }
           }
         }
       }
@@ -195,10 +206,41 @@ Future<List<Map<String, dynamic>>?> getProducts({
     throw ("Failed to fetch products. Please try again later.");
   }
 
-  List<Map<String, dynamic>> allProductResponse =
-      List.from(result.data!['allProduct']['edges'])
-          .map<Map<String, dynamic>>((element) => element["node"])
-          .toList();
+  List<Map<String, dynamic>> allProductResponse = List.from(
+    result.data!['allProduct']['edges'],
+  ).map<Map<String, dynamic>>(
+    (element) {
+      var product = element["node"];
+      var benefitsEdges = product['benefits']?["edges"];
+
+      if (benefitsEdges != null) {
+        var benefits = List.from(benefitsEdges);
+
+        if (benefits.isNotEmpty) {
+          product["benefits"] = benefits.map<Map<String, dynamic>>(
+            (element) {
+              var benefit = element["node"]["benefit"];
+              return {
+                ...benefit,
+                "title": benefit["name"],
+              };
+            },
+          ).toList();
+        }
+      }
+
+      return product;
+    },
+  ).toList();
 
   return allProductResponse;
+}
+
+Future<Map<String, dynamic>?> getProductById(int id) async {
+  var products = await getProducts();
+
+  return products?.cast<Map<String, dynamic>?>().firstWhere(
+        (element) => element?["productId"] == id,
+        orElse: () => null,
+      );
 }

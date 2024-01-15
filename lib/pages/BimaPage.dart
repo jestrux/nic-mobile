@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/CardWrapper.dart';
+import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/Loader.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/components/modals/GetQuote.dart';
+import 'package:nic/constants.dart';
 import 'package:nic/data/actions.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/services/product_service.dart';
@@ -70,6 +72,99 @@ class _BimaPageState extends State<BimaPage> {
     "travel": Icons.flight,
   };
 
+  void viewProductDetail(ActionItem action) {
+    openGenericPage(
+      title: "Product Detail",
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            action.label,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            action.description!,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  height: 2,
+                ),
+          ),
+          const SizedBox(height: 28),
+          Text(
+            "Product Benefits",
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  // fontWeight: FontWeight.bold,
+                  color: Constants.primaryColor,
+                ),
+          ),
+          const SizedBox(height: 12),
+          InlineListBuilder(
+            future: () async {
+              return action.extraData!["benefits"];
+            },
+            itemBuilder: (item) => Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 7, right: 12),
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colorScheme(context).surfaceVariant,
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.label,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: colorScheme(context).onBackground,
+                        ),
+                        // style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        //       fontWeight: FontWeight.w600,
+                        //     ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        item.description!,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colorScheme(context).onBackground,
+                          height: 1.8,
+                        ),
+                        // style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        //       height: 1.8,
+                        //     ),
+                      ),
+                      const Divider(thickness: 0.1, height: 24),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      okayText: " Purchase ",
+      onOkay: () => handlePurchaseProduct(action),
+      cancelText: "Get a quote",
+      onCancel: action.id == null
+          ? null
+          : () {
+              openAlert(
+                child: GetQuote(
+                  productId: action.id!,
+                ),
+              );
+            },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return RoundedHeaderPage(
@@ -110,6 +205,7 @@ class _BimaPageState extends State<BimaPage> {
                             .split(", ")
                             .last
                             .toLowerCase()],
+                        extraData: product,
                       );
 
                       return Container(
@@ -137,34 +233,9 @@ class _BimaPageState extends State<BimaPage> {
                                       MiniButton(
                                         label: "See details",
                                         flat: true,
-                                        onClick: () {
-                                          openBottomSheet(
-                                            title: action.label,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                left: 12,
-                                                right: 12,
-                                                top: 8,
-                                                bottom: 12,
-                                              ),
-                                              child: Text(
-                                                action.description ??
-                                                    "Product details",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.copyWith(
-                                                      fontSize: 14,
-                                                      height: 2,
-                                                    ),
-                                              ),
-                                            ),
-                                            okayText: "Purchase",
-                                            onOkay: () {
-                                              handlePurchaseProduct(action);
-                                            },
-                                          );
-                                        },
+                                        onClick: () => viewProductDetail(
+                                          action,
+                                        ),
                                       ),
                                       const Spacer(),
                                       if (action.id != null)

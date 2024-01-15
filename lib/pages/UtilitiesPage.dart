@@ -65,7 +65,7 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
   List<ActionItem> quickTipsActions() {
     return [
       ActionItem(
-        label: "Become an Agent",
+        label: "Become\nan NIC Agent",
         image:
             "https://images.unsplash.com/photo-1626178793926-22b28830aa30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGJyb2tlcnxlbnwwfHx8fDE2OTk0NTc4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
       ),

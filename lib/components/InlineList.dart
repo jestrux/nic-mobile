@@ -132,13 +132,15 @@ class InlineList extends StatelessWidget {
 class InlineListBuilder extends StatelessWidget {
   final EdgeInsets? padding;
   final String? emptyStateMessage;
-  final List<Widget>? Function(Map<String, dynamic>)? actionsBuilder;
+  final Widget Function(ActionItem item)? itemBuilder;
+  final List<Widget>? Function(Map<String, dynamic> entry)? actionsBuilder;
   final Future<List<Map<String, dynamic>>?> Function() future;
 
   const InlineListBuilder({
     required this.future,
     this.padding,
     this.emptyStateMessage,
+    this.itemBuilder,
     this.actionsBuilder,
     Key? key,
   }) : super(key: key);
@@ -175,19 +177,26 @@ class InlineListBuilder extends StatelessWidget {
           );
         }
 
-        return Padding(
-          padding: padding ?? EdgeInsets.zero,
-          child: InlineList(
-            data: snapshot.data!.map((entry) {
-              return ActionItem(
-                // leading: Icons.house,
-                label: entry["title"],
-                description: entry["description"],
-                trailing: _buildActions(entry),
-              );
-            }).toList(),
-          ),
-        );
+        var content = snapshot.data!.map((entry) {
+          return ActionItem(
+            // leading: Icons.house,
+            label: entry["title"],
+            description: entry["description"],
+            extraData: entry,
+            trailing: _buildActions(entry),
+          );
+        }).toList();
+
+        return itemBuilder != null
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: content
+                    .map(
+                      (action) => itemBuilder!(action),
+                    )
+                    .toList(),
+              )
+            : InlineList(data: content);
       },
     );
   }

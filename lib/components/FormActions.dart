@@ -10,6 +10,7 @@ class FormActions extends StatelessWidget {
   final Function? onCancel;
   final EdgeInsets? padding;
   final bool loading;
+  final Color? backgroundColor;
 
   const FormActions({
     Key? key,
@@ -19,6 +20,7 @@ class FormActions extends StatelessWidget {
     this.onCancel,
     this.loading = false,
     this.padding,
+    this.backgroundColor,
   }) : super(key: key);
 
   @override
@@ -36,7 +38,8 @@ class FormActions extends StatelessWidget {
             color: colorScheme(context).onBackground.withOpacity(0.04),
           ),
         ),
-        color: colorScheme(context).onBackground.withOpacity(0.04),
+        color: backgroundColor ??
+            colorScheme(context).onBackground.withOpacity(0.04),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,

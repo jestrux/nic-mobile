@@ -5,11 +5,9 @@ import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/DynamicForm/proccessFields.dart';
 import 'package:nic/components/DynamicForm/sampleFields.dart';
 import 'package:nic/components/FormButton.dart';
-import 'package:nic/components/FormInput.dart';
 import 'package:nic/components/KeyValueView.dart';
 import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/Loader.dart';
-import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/services/payment_service.dart';
@@ -18,11 +16,13 @@ import 'package:nic/utils.dart';
 
 class FormPage extends StatefulWidget {
   final String title;
+  final bool? renewal;
   final Map<String, dynamic>? proposalDetails;
   const FormPage({
     Key? key,
     this.proposalDetails,
     this.title = "Form page",
+    this.renewal,
   }) : super(key: key);
 
   @override
@@ -120,6 +120,7 @@ class _FormPageState extends State<FormPage> {
       MaterialPageRoute(
         builder: (context) => FormPage(
           title: "Premium Details",
+          renewal: widget.renewal,
           proposalDetails: {
             ...proposalDetails!,
             "fetchPaymentDetails": true,
@@ -294,6 +295,7 @@ class _FormPageState extends State<FormPage> {
             MaterialPageRoute(
               builder: (context) => FormPage(
                 title: "Premium Details",
+                renewal: widget.renewal,
                 proposalDetails: {
                   ...proposalDetails!,
                   ...response,

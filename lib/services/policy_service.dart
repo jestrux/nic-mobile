@@ -5,7 +5,8 @@ import 'package:nic/models/policy_model.dart';
 import 'package:nic/services/data_connection.dart';
 import 'package:nic/utils.dart';
 
-Future<Map<String, dynamic>?> renewPolicy(String registrationNumber) async {
+Future<Map<String, dynamic>?> renewPolicy(String registrationNumber,
+    {bool? shortRenewal}) async {
   PolicyModel? policy;
   String queryString = r"""
       mutation ($registration_number: String!, $renewal: Boolean!, $proposal: Int!, $underwrite_channel:Int!,$short_renewal:Boolean) {
@@ -33,7 +34,7 @@ Future<Map<String, dynamic>?> renewPolicy(String registrationNumber) async {
       "renewal": true,
       "proposal": 0,
       "underwrite_channel": 2,
-      "short_renewal": true
+      "short_renewal": shortRenewal ?? true
     },
   );
 
@@ -53,8 +54,6 @@ Future<Map<String, dynamic>?> renewPolicy(String registrationNumber) async {
 
   initiateProposalResponse['data'] =
       jsonDecode(initiateProposalResponse['data']);
-
-  devLog("Car details: ${initiateProposalResponse['data']}");
 
   return initiateProposalResponse;
 }
