@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:nic/data/preferences.dart';
 import 'package:nic/services/data_connection.dart';
 import 'package:nic/utils.dart';
 
@@ -332,3 +334,47 @@ Future<Map<String, dynamic>?> requestControlNumber({
     recurse: true,
   );
 }
+
+  Future<void> fetchDataAndPersistPendingProposals() async {
+    String query = r"""
+    query ($underwriteChannel:Int!){
+    pendingProposals(underwriteChannel: $underwriteChannel) {
+      edges {
+        node {
+          id
+          policyPropertyName
+          created
+          startDate
+          endDate
+          actualPremium
+          actualPremiumVatAmount
+          actualPremiumVatExclusive
+        }
+      }
+    }
+  }
+    """;
+    final QueryOptions options = QueryOptions(
+      document: gql(query),
+      variables: const {'underwriteChannel': 2},
+    );
+    GraphQLClient client = await DataConnection().connectionClient();
+    final QueryResult result = await client.query(options);
+    // print(result.data);
+    if (result.hasException) {
+      if (kDebugMode) {
+        print('GraphQL Error: ${result.exception.toString()}');
+      }
+    } else {
+      final List<Map<String, dynamic>> dataList = [];
+      for (final edge in result.data?['pendingProposals']['edges']) {
+        // print(edge['node']);
+        // Remove __typename key
+        final Map<String, dynamic> proposalData = Map.from(edge['node']);
+        proposalData.remove('__typename');
+        dataList.add(proposalData);
+      }
+      // Persist data to SharedPreferences
+      persistDataPendingProposals(dataList);
+    }
+  }

@@ -22,6 +22,8 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     UserModel? userObj = Provider.of<AppProvider>(context).authUser;
+    Provider.of<AppProvider>(context, listen: false).checkProposalDataStored();
+
     var pages = [
       HomePage(
         goToMainPage: (page) {
@@ -32,12 +34,7 @@ class _MainAppState extends State<MainApp> {
       ),
       const BimaPage(),
       const UtilitiesPage(),
-      userObj != null ?  const ProfilePage() : Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginPage(),
-        ),
-      ),
+      userObj != null ?  const ProfilePage() : const LoginPage(),
       const MorePage(),
     ];
 

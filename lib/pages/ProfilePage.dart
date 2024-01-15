@@ -12,6 +12,7 @@ import 'package:nic/pages/auth/ChangeUserId.dart';
 import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:nic/pages/auth/changePassword.dart';
 import 'package:nic/services/misc_services.dart';
+import 'package:nic/services/underwritting_service.dart';
 import 'package:nic/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +24,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+  }
   List<ActionItem> policies = [
     ActionItem(
         label: "T124ADC",
@@ -70,9 +75,24 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     // UserModel? user = context.read<AppProvider>().authUser;
     UserModel? user = Provider.of<AppProvider>(context).authUser;
-    // if (user!.firstName != null){
-    //   print(user.firstName!);
-    // }
+    bool proposalProvider = Provider.of<AppProvider>(context).proposalDataAvailable;
+    // print(proposalProvider);
+    // fetchDataAndPersistPendingProposals()
+    if(proposalProvider){
+      retrievePendingProposals().then((List<Map<String, dynamic>> dataList) {
+        // Use the retrieved data as needed
+        // print("dataList---: $dataList");
+        dataList.map<Map<String, dynamic>>((proposal) {
+          return {
+                  "title": "t591dtp",
+                  "description": "compre",
+                };
+        }).toList();
+      });
+
+    }
+
+
     return RoundedHeaderPage(
       title: "Your Profile",
       child: SingleChildScrollView(
@@ -116,6 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               "Welcome ${user!.firstName} ${user!.lastName}, welcome again next time!";
                           showToast(res);
                           persistAuthUser(user = null);
+                          clearSpecificData("proposal_data");
                         },
                       )
                     : ActionItem(

@@ -12,6 +12,8 @@ import 'package:nic/utils.dart';
 import 'package:nic/services/authentication_service.dart';
 import 'package:provider/provider.dart';
 
+import '../../services/underwritting_service.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -21,20 +23,29 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  Future<UserModel?> tokenAuth(Map<String, dynamic> values) async {
-    return await AuthenticationService().loginUser(username:  values["username"], password : values["password"]);
+  Future<dynamic> tokenAuth(Map<String, dynamic> values) async {
+    return await AuthenticationService().loginUser(username:  values["username"], password : values["password"],key:scaffoldKey);
   }
 
-  showResponse(dynamic user) {
-    if (user != null) {
-      persistAuthUser(user);
-      String? res = "Welcome ${user.firstName} ${user.lastName}";
+  showResponse(dynamic response) {
+    if (response != null && response is UserModel) {
+      persistAuthUser(response);
+      // fetchDataAndPersistPendingProposals(scaffoldKey);
+      String? res = "Welcome ${response.firstName} ${response.lastName}";
       showToast(res);
-      Navigator.of(context).pop();
+      // Navigator.of(context).pop();
+      setState(() {
+        bool temp = true;
+      });
     }else{
+      // print(response);
+      var message = "Failed to login,Please try again..";
+      if(response.contains("credentials")){
+        message = response;
+      }
       openAlert(
           title: "Authenticating",
-          message: "Failed to login,Please try again..",
+          message: message,
           type: AlertType.error
       );
     }
@@ -175,7 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            Positioned(top: 40, left: 0, child: _backButton(context)),
+            // Positioned(top: 40, left: 0, child: _backButton(context)),
           ],
         ),
       ),

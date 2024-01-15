@@ -89,38 +89,38 @@ class UserModel {
 
   UserModel.fromJson(Map<String, dynamic>? jsonData) {
     if (jsonData != null) {
-      if (jsonData['tokenAuth'] != null) {
-        _token = jsonData['tokenAuth']['token'];
-        if (jsonData['tokenAuth']['user'] != null) {
-          _id = jsonData['tokenAuth']['user']['id'];
-          _firstName = jsonData['tokenAuth']['user']['firstName'];
-          _lastName = jsonData['tokenAuth']['user']['lastName'];
-          _email = jsonData['tokenAuth']['user']['email'];
-          if (jsonData['tokenAuth']['user']['profile'] != null) {
+      if (jsonData['tokenAuthCustom'] != null) {
+        _token = jsonData['tokenAuthCustom']['token'];
+        if (jsonData['tokenAuthCustom']['user'] != null) {
+          _id = jsonData['tokenAuthCustom']['user']['id'];
+          _firstName = jsonData['tokenAuthCustom']['user']['firstName'];
+          _lastName = jsonData['tokenAuthCustom']['user']['lastName'];
+          _email = jsonData['tokenAuthCustom']['user']['email'];
+          if (jsonData['tokenAuthCustom']['user']['profile'] != null) {
             _middleName =
-                jsonData['tokenAuth']['user']['profile']['middleName'];
-            _phone = jsonData['tokenAuth']['user']['profile']['phone'];
-            _pic = jsonData['tokenAuth']['user']['profile']['pic'];
-            _customCustomerNumber = jsonData['tokenAuth']['user']['profile']['customCustomerNumber'];
-            _customerNumberType = jsonData['tokenAuth']['user']['profile']['customerNumberType'];
+                jsonData['tokenAuthCustom']['user']['profile']['middleName'];
+            _phone = jsonData['tokenAuthCustom']['user']['profile']['phone'];
+            _pic = jsonData['tokenAuthCustom']['user']['profile']['pic'];
+            _customCustomerNumber = jsonData['tokenAuthCustom']['user']['profile']['customCustomerNumber'];
+            _customerNumberType = jsonData['tokenAuthCustom']['user']['profile']['customerNumberType'];
             _totalPolicies =
-                jsonData['tokenAuth']['user']['profile']['totalPolicies'];
+                jsonData['tokenAuthCustom']['user']['profile']['totalPolicies'];
             _totalLifePolicies =
-                jsonData['tokenAuth']['user']['profile']['totalLifePolicies'];
-            _totalNonLifePolicies = jsonData['tokenAuth']['user']['profile']
+                jsonData['tokenAuthCustom']['user']['profile']['totalLifePolicies'];
+            _totalNonLifePolicies = jsonData['tokenAuthCustom']['user']['profile']
                 ['totalNonLifePolicies'];
             _totalProposals =
-                jsonData['tokenAuth']['user']['profile']['totalProposals'];
-            _totalClaims = jsonData['tokenAuth']['user']['profile']['totalClaims'];
-            _needPasswordChange = jsonData['tokenAuth']['user']['profile']['needPasswordChange'];
-            _customerType = jsonData['tokenAuth']['user']['profile']['customerType'];
-            _intermediaryName = jsonData['tokenAuth']['user']['profile']['intermediaryName'];
-            if (jsonData['tokenAuth']['user']['profile']['branch'] != null) {
+                jsonData['tokenAuthCustom']['user']['profile']['totalProposals'];
+            _totalClaims = jsonData['tokenAuthCustom']['user']['profile']['totalClaims'];
+            _needPasswordChange = jsonData['tokenAuthCustom']['user']['profile']['needPasswordChange'];
+            _customerType = jsonData['tokenAuthCustom']['user']['profile']['customerType'];
+            _intermediaryName = jsonData['tokenAuthCustom']['user']['profile']['intermediaryName'];
+            if (jsonData['tokenAuthCustom']['user']['profile']['branch'] != null) {
               _branch = BranchModel(
-                  id: jsonData['tokenAuth']['user']['profile']['branch']['id'],
-                  name: jsonData['tokenAuth']['user']['profile']['branch']
+                  id: jsonData['tokenAuthCustom']['user']['profile']['branch']['id'],
+                  name: jsonData['tokenAuthCustom']['user']['profile']['branch']
                       ['name'],
-                  code: jsonData['tokenAuth']['user']['profile']['branch']
+                  code: jsonData['tokenAuthCustom']['user']['profile']['branch']
                       ['code']);
             }
           }
