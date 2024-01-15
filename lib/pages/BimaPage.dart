@@ -104,7 +104,7 @@ class _BimaPageState extends State<BimaPage> {
                       var action = ActionItem(
                         id: product["id"],
                         label: product["mobileName"],
-                        // description: product["id"],
+                        description: product["description"],
                         icon: iconMap[product["tag"]
                             .toString()
                             .split(", ")
@@ -134,6 +134,39 @@ class _BimaPageState extends State<BimaPage> {
                                   const SizedBox(height: 12),
                                   Row(
                                     children: [
+                                      MiniButton(
+                                        label: "See details",
+                                        flat: true,
+                                        onClick: () {
+                                          openBottomSheet(
+                                            title: action.label,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 12,
+                                                right: 12,
+                                                top: 8,
+                                                bottom: 12,
+                                              ),
+                                              child: Text(
+                                                action.description ??
+                                                    "Product details",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.copyWith(
+                                                      fontSize: 14,
+                                                      height: 2,
+                                                    ),
+                                              ),
+                                            ),
+                                            okayText: "Purchase",
+                                            onOkay: () {
+                                              handlePurchaseProduct(action);
+                                            },
+                                          );
+                                        },
+                                      ),
+                                      const Spacer(),
                                       if (action.id != null)
                                         Padding(
                                           padding: const EdgeInsets.only(
@@ -162,18 +195,18 @@ class _BimaPageState extends State<BimaPage> {
                                 ],
                               ),
                             ),
-                            Positioned(
-                              top: 0,
-                              bottom: 6,
-                              right: 24,
-                              child: Icon(
-                                action.icon,
-                                size: 24,
-                                color: colorScheme(context)
-                                    .onSurfaceVariant
-                                    .withOpacity(0.2),
-                              ),
-                            )
+                            // Positioned(
+                            //   top: 0,
+                            //   bottom: 6,
+                            //   right: 24,
+                            //   child: Icon(
+                            //     action.icon,
+                            //     size: 24,
+                            //     color: colorScheme(context)
+                            //         .onSurfaceVariant
+                            //         .withOpacity(0.2),
+                            //   ),
+                            // )
                           ],
                         ),
                       );
