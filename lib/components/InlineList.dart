@@ -179,7 +179,7 @@ class InlineListBuilder extends StatelessWidget {
 
         var content = snapshot.data!.map((entry) {
           return ActionItem(
-            // leading: Icons.house,
+            id: entry["id"],
             label: entry["title"],
             description: entry["description"],
             extraData: entry,

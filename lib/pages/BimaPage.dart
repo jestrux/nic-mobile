@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/CardWrapper.dart';
+import 'package:nic/components/ClickableContent.dart';
 import 'package:nic/components/InlineList.dart';
-import 'package:nic/components/Loader.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
@@ -187,103 +187,69 @@ class _BimaPageState extends State<BimaPage> {
             ),
             const SizedBox(height: 16),
             const SectionTitle(title: "All products"),
-            FutureBuilder(
-                future: getProducts(),
-                builder: (ctx, snapshot) {
-                  if (!snapshot.hasData) return const Loader();
-
-                  if (snapshot.data == null) return Container();
-
-                  return Column(
-                    children: snapshot.data!.map((product) {
-                      var action = ActionItem(
-                        id: product["id"],
-                        label: product["mobileName"],
-                        description: product["description"],
-                        icon: iconMap[product["tag"]
-                            .toString()
-                            .split(", ")
-                            .last
-                            .toLowerCase()],
-                        extraData: product,
-                      );
-
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        child: Stack(
-                          children: [
-                            CardWrapper(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 16,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    action.label,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: [
-                                      MiniButton(
-                                        label: "See details",
-                                        flat: true,
-                                        onClick: () => viewProductDetail(
-                                          action,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      if (action.id != null)
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            right: 8,
-                                          ),
-                                          child: MiniButton(
-                                            label: "Get a quote",
-                                            onClick: () {
-                                              openAlert(
-                                                child: GetQuote(
-                                                  productId: action.id!,
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      MiniButton(
-                                        label: " Purchase ",
-                                        filled: true,
-                                        onClick: () {
-                                          handlePurchaseProduct(action);
-                                        },
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
+            InlineListBuilder(
+              future: getProducts,
+              itemBuilder: (action) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  child: CardWrapper(
+                    padding: EdgeInsets.zero,
+                    child: ClickableContent(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 16,
+                      ),
+                      onClick: () => viewProductDetail(action),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            action.label,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
                             ),
-                            // Positioned(
-                            //   top: 0,
-                            //   bottom: 6,
-                            //   right: 24,
-                            //   child: Icon(
-                            //     action.icon,
-                            //     size: 24,
-                            //     color: colorScheme(context)
-                            //         .onSurfaceVariant
-                            //         .withOpacity(0.2),
-                            //   ),
-                            // )
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  );
-                })
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              const MiniButton(
+                                label: "See details",
+                                flat: true,
+                              ),
+                              const Spacer(),
+                              if (action.id != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: 8,
+                                  ),
+                                  child: MiniButton(
+                                    label: "Get a quote",
+                                    onClick: () {
+                                      openAlert(
+                                        child: GetQuote(
+                                          productId: action.id!,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              MiniButton(
+                                label: " Purchase ",
+                                filled: true,
+                                onClick: () {
+                                  handlePurchaseProduct(action);
+                                },
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

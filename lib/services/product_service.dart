@@ -211,6 +211,7 @@ Future<List<Map<String, dynamic>>?> getProducts({
   ).map<Map<String, dynamic>>(
     (element) {
       var product = element["node"];
+      product["title"] = product["mobileName"];
       var benefitsEdges = product['benefits']?["edges"];
 
       if (benefitsEdges != null) {
