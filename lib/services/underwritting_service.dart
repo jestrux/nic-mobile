@@ -338,8 +338,9 @@ Future<Map<String, dynamic>?> requestControlNumber({
   );
 }
 
-  Future<void> fetchDataAndPersistPendingProposals(context) async {
-    String query = r"""
+Future<List<Map<String, dynamic>>?>
+    fetchDataAndPersistPendingProposals() async {
+  String query = r"""
     query ($underwriteChannel:Int!){
     pendingProposals(underwriteChannel: $underwriteChannel) {
       edges {
@@ -357,44 +358,39 @@ Future<Map<String, dynamic>?> requestControlNumber({
     }
   }
     """;
-    final QueryOptions options = QueryOptions(
-      document: gql(query),
-      variables: const {'underwriteChannel': 2},
-    );
-    GraphQLClient client = await DataConnection().connectionClient();
-    final QueryResult result = await client.query(options);
-    // print(result.data);
-    if (result.hasException) {
-      if (kDebugMode) {
-        print('GraphQL Error: ${result.exception.toString()}');
-      }
-    } else {
 
-      AppProvider proposalProvider =Provider.of<AppProvider>(context, listen: false);
+  final QueryOptions options = QueryOptions(
+    document: gql(query),
+    variables: const {'underwriteChannel': 2},
+  );
 
-      // Clear existing data
-      proposalProvider.clearProposals();
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
 
-      final List<Map<String, dynamic>> dataList = [];
-      for (final edge in result.data?['pendingProposals']['edges']) {
-        // print(edge['node']);
-        // Remove __typename key
-        final Map<String, dynamic> proposalData = Map.from(edge['node']);
-        proposalData.remove('__typename');
-        // dataList.add(proposalData);
-        ProposalModel proposal = ProposalModel(
-          policyId: proposalData['id'],
-          policyPropertyName: proposalData['policyPropertyName'],
-          createdDate: proposalData['created'],
-          startDate: proposalData['startDate'],
-          endDate: proposalData['endDate'],
-          basePremium: proposalData['actualPremiumVatExclusive'],
-          vat: proposalData['actualPremiumVatAmount'],
-          premium: proposalData['actualPremium']
-        );
-        proposalProvider.addProposal(proposal);
-      }
-      // Persist data to SharedPreferences
-      // persistDataPendingProposals(dataList);
-    }
+  if (result.data == null) {
+    devLog("Request control number: No data found");
+    throw ("Failed to fetch payment. Please try again later.");
   }
+
+  if (result.data?['pendingProposals']?['edges'] == null) {
+    devLog('PendingProposals: GraphQL Error: ${result.exception.toString()}');
+    throw ("Failed to fetch pending proposals. Please try again.");
+  }
+
+  return List.from(result.data!['pendingProposals']['edges'])
+      .map<Map<String, dynamic>>(
+    (element) {
+      var proposal = element["node"];
+      var description = List<String?>.from([
+        formatDate(proposal['startDate'], format: "dayM"),
+        formatDate(proposal['endDate'], format: "dayM")
+      ]).where((element) => element != null).toList().join(" - ");
+
+      return {
+        ...proposal,
+        "title": proposal['policyPropertyName'],
+        "description": description,
+      };
+    },
+  ).toList();
+}

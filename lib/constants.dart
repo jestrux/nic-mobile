@@ -3,6 +3,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 // Sample control number 994754846842
 
+// Sample user
+// effort.mlimbila@nictanzania.co.tz
+// Devastator@1
+
 class Constants {
   static const primaryColor = Color(0xFF2E6B27);
   static const bgLightColor = Color(0XFFebf5f2);

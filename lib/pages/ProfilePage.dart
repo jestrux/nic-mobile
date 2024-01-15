@@ -1,18 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nic/components/InlineList.dart';
+import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/data/preferences.dart';
 import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
-import 'package:nic/models/proposal_model.dart';
 import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/auth/ChangeUserId.dart';
 import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:nic/pages/auth/changePassword.dart';
-import 'package:nic/services/misc_services.dart';
 import 'package:nic/services/underwritting_service.dart';
 import 'package:nic/utils.dart';
 import 'package:provider/provider.dart';
@@ -25,24 +24,30 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  Future<List<Map<String, dynamic>>?> getPendingBima() async {
+    AppProvider proposalProvider = Provider.of<AppProvider>(
+      context,
+      listen: false,
+    );
 
-  Future<List<Map<String, dynamic>>?> getPendingBima(context) async {
-    AppProvider proposalProvider = Provider.of<AppProvider>(context, listen: false);
-    if(proposalProvider.proposals.isEmpty){
-      await fetchDataAndPersistPendingProposals(context);
+    var proposals = proposalProvider.proposals;
+
+    if (proposals == null) {
+      proposals = await fetchDataAndPersistPendingProposals();
+
+      if (proposals == null) return null;
+
+      proposalProvider.setProposals(proposals);
     }
-    return proposalProvider.proposals.map<Map<String, dynamic>>((proposal) {
-      return {
-        "title": proposal.policyPropertyName,
-        "description": "${proposal.startDate} - ${proposal.endDate}"
-      };
-    }).toList();
+
+    return proposals;
   }
 
   @override
   void initState() {
     super.initState();
   }
+
   List<ActionItem> policies = [
     ActionItem(
         label: "T124ADC",
@@ -90,7 +95,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     // UserModel? user = context.read<AppProvider>().authUser;
     UserModel? user = Provider.of<AppProvider>(context).authUser;
-
 
     return RoundedHeaderPage(
       title: "Your Profile",
@@ -154,8 +158,22 @@ class _ProfilePageState extends State<ProfilePage> {
               shape: ActionItemShape.rounded,
             ),
             const SizedBox(height: 16),
-            const InlineListBuilder(
+            InlineListBuilder(
+              title: "Pending Bima",
+              limit: 2,
               future: getPendingBima,
+              actionsBuilder: (item) {
+                return [
+                  if (item.extraData?["startDate"] == null)
+                    MiniButton(
+                      label: "Pay now",
+                      filled: true,
+                      onClick: () {
+                        openInfoAlert(message: "Some alert!");
+                      },
+                    ),
+                ];
+              },
             ),
             // InlineList(
             //   title: "Pending bima",

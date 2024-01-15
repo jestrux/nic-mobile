@@ -15,11 +15,10 @@ Future setupPreferences(BuildContext context) async {
 
     Map<String, dynamic>? authUser = user == null ? null : jsonDecode(user);
 
-    if (authUser != null) {
-      persistAuthUser(UserModel.fromJson(authUser));
-    }
-
-    persistAppTheme(theme);
+    var provider = Provider.of<AppProvider>(context, listen: false);
+    provider
+        .setAuthUser(authUser == null ? null : UserModel.fromJson(authUser));
+    provider.setTheme(theme);
   });
 }
 
@@ -37,19 +36,19 @@ Future persistAuthUser(UserModel? user) async {
     ).setAuthUser(user);
   });
 }
+
 Future<String?> getUserToken() async {
   return await SharedPreferences.getInstance().then((prefs) async {
     var user = prefs.getString("authUser");
     Map<String, dynamic>? authUser = user == null ? null : jsonDecode(user);
 
     if (authUser != null) {
-      if(authUser['token'] != null){
+      if (authUser['token'] != null) {
         return authUser['token'];
-      }else{
+      } else {
         persistAuthUser(user = null);
         return null;
       }
-
     }
     return null;
   });
@@ -74,46 +73,45 @@ Future persistAppTheme(String theme) async {
   });
 }
 
+// Persist pending proposals to SharedPreferences
+Future<void> persistDataPendingProposals(
+    List<Map<String, dynamic>> dataList) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.remove("proposal_data");
+  print(dataList);
+  final String jsonData = jsonEncode(dataList);
+  prefs.setString('proposal_data', jsonData);
 
+  // notify listerners
+  prefs.setBool('data_available', true);
+  // proposalProvider.setProposalDataAvailable(true);
+}
 
-  // Persist pending proposals to SharedPreferences
-  Future<void> persistDataPendingProposals(List<Map<String, dynamic>> dataList) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove("proposal_data");
-    print(dataList);
-    final String jsonData = jsonEncode(dataList);
-    prefs.setString('proposal_data', jsonData);
+// Retrieve pending proposals from SharedPreferences
+Future<List<Map<String, dynamic>>> retrievePendingProposals() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String storedData = prefs.getString('proposal_data') ?? '[]';
 
-    // notify listerners
-    prefs.setBool('data_available', true);
-    // proposalProvider.setProposalDataAvailable(true);
-  }
+  try {
+    final List<dynamic> decodedData = jsonDecode(storedData);
 
-  // Retrieve pending proposals from SharedPreferences
-  Future<List<Map<String, dynamic>>> retrievePendingProposals() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String storedData = prefs.getString('proposal_data') ?? '[]';
-
-    try {
-      final List<dynamic> decodedData = jsonDecode(storedData);
-
-      if (decodedData is List && decodedData.isNotEmpty) {
-        final List<Map<String, dynamic>> dataList = decodedData
-            .map<Map<String, dynamic>>(
-                (dynamic item) => Map<String, dynamic>.from(item))
-            .toList();
-        return dataList;
-      } else {
-        // Handle the case where the stored data is not a valid List<Map<String, dynamic>>
-        print('Invalid format of stored data: $storedData');
-        return [];
-      }
-    } catch (e) {
-      // Handle JSON parsing error
-      print('Error decoding stored data: $e');
+    if (decodedData is List && decodedData.isNotEmpty) {
+      final List<Map<String, dynamic>> dataList = decodedData
+          .map<Map<String, dynamic>>(
+              (dynamic item) => Map<String, dynamic>.from(item))
+          .toList();
+      return dataList;
+    } else {
+      // Handle the case where the stored data is not a valid List<Map<String, dynamic>>
+      print('Invalid format of stored data: $storedData');
       return [];
     }
+  } catch (e) {
+    // Handle JSON parsing error
+    print('Error decoding stored data: $e');
+    return [];
   }
+}
 
 Future<void> clearSpecificData(keyToRemove) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:nic/models/proposal_model.dart';
 import 'package:nic/models/user_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AppProvider with ChangeNotifier, DiagnosticableTreeMixin {
   UserModel? _user;
@@ -37,17 +35,17 @@ class AppProvider with ChangeNotifier, DiagnosticableTreeMixin {
   //   notifyListeners();
   // }
 
-  final List<ProposalModel> _proposals = [];
+  List<Map<String, dynamic>>? _proposals;
 
-  List<ProposalModel> get proposals => _proposals;
+  List<Map<String, dynamic>>? get proposals => _proposals;
 
-  void addProposal(ProposalModel proposal) {
-    _proposals.add(proposal);
+  void setProposals(List<Map<String, dynamic>> proposals) {
+    _proposals = (_proposals ?? [])..addAll(proposals);
     notifyListeners();
   }
 
   void clearProposals() {
-    _proposals.clear();
+    _proposals?.clear();
     notifyListeners();
   }
 }

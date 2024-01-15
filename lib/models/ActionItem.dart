@@ -38,7 +38,7 @@ class ActionItem {
     this.onClick,
   });
 
-  cloneWith({
+  ActionItem cloneWith({
     ActionItemShape? shape,
     Color? background,
     leading,
