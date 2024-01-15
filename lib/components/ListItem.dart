@@ -10,6 +10,7 @@ import 'package:nic/utils.dart';
 
 class ListItem extends StatelessWidget {
   final bool? flat;
+  final bool? hasCustomActions;
   final String title;
   final String? description;
   final ActionButton? action;
@@ -29,10 +30,12 @@ class ListItem extends StatelessWidget {
     this.trailing,
     this.action,
     this.content,
+    this.hasCustomActions,
     this.onClick,
   }) : super(key: key);
 
-  ListItem.fromContent(ActionItem this.content, {this.flat, super.key})
+  ListItem.fromContent(ActionItem this.content,
+      {this.flat, this.hasCustomActions, super.key})
       : title = content.label,
         description = content.description,
         image = content.image,
@@ -133,9 +136,10 @@ class ListItem extends StatelessWidget {
             ],
           ),
         ),
+        // if (trailing != null && action == null)
         if (trailing != null && action == null)
           Opacity(
-            opacity: 0.6,
+            opacity: hasCustomActions ?? false ? 1 : 0.6,
             child: trailing is String
                 ? Text(
                     trailing,

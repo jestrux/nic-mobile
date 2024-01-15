@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/EmptyState.dart';
-import 'package:nic/components/IconWithButtonBorder.dart';
 import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/Loader.dart';
 import 'package:nic/components/MiniButton.dart';
@@ -16,6 +15,7 @@ class InlineList extends StatelessWidget {
   final String? bottomLabel;
   final ActionButton? bottomAction;
   final dynamic leading;
+  final bool? hasCustomActions;
 
   const InlineList({
     this.title,
@@ -24,6 +24,7 @@ class InlineList extends StatelessWidget {
     this.bottomLabel,
     this.bottomAction,
     this.leading,
+    this.hasCustomActions,
     Key? key,
   }) : super(key: key);
 
@@ -96,7 +97,11 @@ class InlineList extends StatelessWidget {
                             ),
                           ),
                         ),
-                        child: ListItem.fromContent(entry, flat: true),
+                        child: ListItem.fromContent(
+                          entry,
+                          flat: true,
+                          hasCustomActions: hasCustomActions,
+                        ),
                       ),
                     );
                   },
@@ -130,25 +135,31 @@ class InlineList extends StatelessWidget {
 }
 
 class InlineListBuilder extends StatelessWidget {
+  final String? title;
+  final ActionButton? titleAction;
   final EdgeInsets? padding;
   final String? emptyStateMessage;
+  final int? limit;
   final Widget Function(ActionItem item)? itemBuilder;
-  final List<Widget>? Function(Map<String, dynamic> entry)? actionsBuilder;
+  final List<Widget>? Function(ActionItem item)? actionsBuilder;
   final Future<List<Map<String, dynamic>>?> Function() future;
 
   const InlineListBuilder({
     required this.future,
     this.padding,
+    this.title,
+    this.titleAction,
     this.emptyStateMessage,
     this.itemBuilder,
     this.actionsBuilder,
+    this.limit,
     Key? key,
   }) : super(key: key);
 
-  Widget? _buildActions(entry) {
+  Widget? _buildActions(ActionItem item) {
     if (actionsBuilder == null) return null;
 
-    List<Widget>? itemActions = actionsBuilder!(entry);
+    List<Widget>? itemActions = actionsBuilder!(item);
 
     if (itemActions == null) return null;
 
@@ -178,25 +189,56 @@ class InlineListBuilder extends StatelessWidget {
         }
 
         var content = snapshot.data!.map((entry) {
-          return ActionItem(
+          var item = ActionItem(
             id: entry["id"],
             label: entry["title"],
             description: entry["description"],
             extraData: entry,
-            trailing: _buildActions(entry),
+          );
+
+          return item.cloneWith(
+            trailing: _buildActions(item),
           );
         }).toList();
+
+        bool hasLimit = limit != null && content.length > limit!;
 
         return itemBuilder != null
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: content
+                children: (hasLimit ? content.take(limit!).toList() : content)
                     .map(
                       (action) => itemBuilder!(action),
                     )
                     .toList(),
               )
-            : InlineList(data: content);
+            : InlineList(
+                hasCustomActions: actionsBuilder != null,
+                data: (hasLimit ? content.take(limit!).toList() : content),
+                title: title,
+                titleAction: titleAction,
+                bottomLabel:
+                    !hasLimit ? null : "+${content.length - limit!} more",
+                bottomAction: !hasLimit
+                    ? null
+                    : ActionButton.all("View all", onClick: (p0) {
+                        openGenericPage(
+                          padding: const EdgeInsets.only(
+                            top: 24,
+                            bottom: 40,
+                            left: 16,
+                            right: 16,
+                          ),
+                          title: title,
+                          child: InlineListBuilder(
+                            actionsBuilder: actionsBuilder,
+                            future: () async {
+                              return snapshot.data!;
+                            },
+                          ),
+                        );
+                      }),
+              );
       },
     );
   }
