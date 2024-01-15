@@ -141,6 +141,7 @@ class InlineListBuilder extends StatelessWidget {
   final String? emptyStateMessage;
   final int? limit;
   final Widget Function(ActionItem item)? itemBuilder;
+  final Widget? Function(ActionItem item)? iconBuilder;
   final List<Widget>? Function(ActionItem item)? actionsBuilder;
   final Future<List<Map<String, dynamic>>?> Function() future;
 
@@ -151,6 +152,7 @@ class InlineListBuilder extends StatelessWidget {
     this.titleAction,
     this.emptyStateMessage,
     this.itemBuilder,
+    this.iconBuilder,
     this.actionsBuilder,
     this.limit,
     Key? key,
@@ -197,6 +199,7 @@ class InlineListBuilder extends StatelessWidget {
           );
 
           return item.cloneWith(
+            leading: iconBuilder == null ? null : iconBuilder!(item),
             trailing: _buildActions(item),
           );
         }).toList();
