@@ -84,7 +84,7 @@ class _BimaPageState extends State<BimaPage> {
             PageSection(
               // title: "Quick Actions",
               content: [
-                getQuickQuoteAction,
+                getQuickQuoteAction.cloneWith(background: Colors.transparent),
                 bimaStatusAction,
                 bimaRenewalAction,
               ],

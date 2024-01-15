@@ -38,6 +38,7 @@ class ActionItem {
 
   cloneWith({
     ActionItemShape? shape,
+    Color? background,
     leading,
     trailing,
     String? value,
@@ -50,10 +51,10 @@ class ActionItem {
         image: image,
         resourceUrl: resourceUrl,
         description: description,
-        background: background,
         flat: flat,
         action: action,
         shape: shape ?? this.shape,
+        background: background ?? this.background,
         value: value ?? this.value,
         leading: leading ?? this.leading,
         trailing: trailing ?? this.trailing,
