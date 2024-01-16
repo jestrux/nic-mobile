@@ -339,23 +339,27 @@ Future<Map<String, dynamic>?> requestControlNumber({
 }
 
 Future<List<Map<String, dynamic>>?>
-    fetchDataAndPersistPendingProposals() async {
+    fetchProposals() async {
   String query = r"""
     query ($underwriteChannel:Int!){
-    pendingProposals(underwriteChannel: $underwriteChannel) {
-      edges {
-        node {
-          id
-          policyPropertyName
-          created
-          startDate
-          endDate
-          actualPremium
-          actualPremiumVatAmount
-          actualPremiumVatExclusive
+        pendingProposals(underwriteChannel: $underwriteChannel) {
+          edges {
+            node {
+              id
+              policyPropertyName
+              productName
+              created
+              startDate
+              endDate
+              isPaid
+              controlNumber
+              currency
+              actualPremium
+              actualPremiumVatAmount
+              actualPremiumVatExclusive
+            }
+          }
         }
-      }
-    }
   }
     """;
 
@@ -381,10 +385,16 @@ Future<List<Map<String, dynamic>>?>
       .map<Map<String, dynamic>>(
     (element) {
       var proposal = element["node"];
+      // var description = List<String?>.from([
+      //   formatDate(proposal['startDate'], format: "dayM"),
+      //   formatDate(proposal['endDate'], format: "dayM")
+      // ]).where((element) => element != null).toList().join(" - ");
+      var premium = formatMoney(proposal['actualPremium'], currency: proposal['currency']);
       var description = List<String?>.from([
-        formatDate(proposal['startDate'], format: "dayM"),
-        formatDate(proposal['endDate'], format: "dayM")
+        proposal['productName'],
+        premium.toString()
       ]).where((element) => element != null).toList().join(" - ");
+
 
       return {
         ...proposal,

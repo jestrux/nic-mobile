@@ -13,6 +13,7 @@ import 'package:nic/pages/auth/ChangeUserId.dart';
 import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:nic/pages/auth/changePassword.dart';
 import 'package:nic/services/underwritting_service.dart';
+import 'package:nic/services/claim_service.dart';
 import 'package:nic/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+
   Future<List<Map<String, dynamic>>?> getPendingBima() async {
     AppProvider proposalProvider = Provider.of<AppProvider>(
       context,
@@ -33,7 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
     var proposals = proposalProvider.proposals;
 
     if (proposals == null) {
-      proposals = await fetchDataAndPersistPendingProposals();
+      proposals = await fetchProposals();
 
       if (proposals == null) return null;
 
@@ -43,6 +45,24 @@ class _ProfilePageState extends State<ProfilePage> {
     return proposals;
   }
 
+  Future<List<Map<String, dynamic>>?> getReportClaims() async {
+    AppProvider proposalProvider = Provider.of<AppProvider>(
+      context,
+      listen: false,
+    );
+
+    var userClaims = proposalProvider.userClaims;
+
+    if (userClaims == null) {
+      userClaims = await ClaimService().fetchClaims();
+
+      if (userClaims == null) return null;
+
+      proposalProvider.setClaims(userClaims);
+    }
+
+    return userClaims;
+  }
   @override
   void initState() {
     super.initState();
@@ -59,19 +79,6 @@ class _ProfilePageState extends State<ProfilePage> {
       leading: Icons.directions_car,
       description: "Covered until January 2024",
       // action: ActionButton.outlined("Renew")
-    ),
-  ];
-
-  List<ActionItem> claims = [
-    ActionItem(
-      label: "Third party body fatal",
-      // leading: Icons.post_add,
-      description: "Payment approved",
-    ),
-    ActionItem(
-      label: "On damage",
-      description: "Submitted two days ago",
-      action: ActionButton.outlined("Check status"),
     ),
   ];
 
@@ -95,7 +102,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     // UserModel? user = context.read<AppProvider>().authUser;
     UserModel? user = Provider.of<AppProvider>(context).authUser;
-
+    print(user?.totalClaims);
+    print(user?.totalProposals);
     return RoundedHeaderPage(
       title: "Your Profile",
       child: SingleChildScrollView(
@@ -108,10 +116,6 @@ class _ProfilePageState extends State<ProfilePage> {
             PageSection(
               // title: "Quick Actions",
               content: [
-                // ActionItem(
-                //   label: "Account details",
-                //   icon: Icons.account_circle,
-                // ),
                 ActionItem(
                     label: "Change Password",
                     icon: Icons.password,
@@ -162,52 +166,45 @@ class _ProfilePageState extends State<ProfilePage> {
               title: "Pending Bima",
               limit: 2,
               future: getPendingBima,
+              iconBuilder:(d) => Icons.pending_actions,
               actionsBuilder: (item) {
                 return [
-                  if (item.extraData?["startDate"] == null)
+                  if (item.extraData?["controlNumber"] == null && item.extraData?["isPaid"] == false)
                     MiniButton(
-                      label: "Pay now",
+                      label: "Get Bill No.",
+                      // filled: true,
+                      onClick: () {
+                        openInfoAlert(message: "Some alert!");
+                      },
+                    ),
+                  if (item.extraData?["controlNumber"] != null && item.extraData?["isPaid"] == false)
+                    MiniButton(
+                      label: "Pay Now",
                       filled: true,
+                      onClick: () {
+                        openInfoAlert(message: "Some alert!");
+                      },
+                    )
+                ];
+              },
+            ),
+            const SizedBox(height: 16),
+            InlineListBuilder(
+              title: "Recent Claims",
+              limit: 2,
+              future: getReportClaims,
+              iconBuilder:(d) => Icons.post_add,
+              actionsBuilder: (item) {
+                return [
+                    MiniButton(
+                      label: "Check Status",
+                      // filled: true,
                       onClick: () {
                         openInfoAlert(message: "Some alert!");
                       },
                     ),
                 ];
               },
-            ),
-            // InlineList(
-            //   title: "Pending bima",
-            //   bottomLabel: "+1 more",
-            //   bottomAction: ActionButton.all("View all", onClick: (a) {
-            //     openGenericPage(
-            //       title: "Pending Bima",
-            //       child: const InlineListBuilder(
-            //         padding: EdgeInsets.only(
-            //           left: 16,
-            //           right: 16,
-            //           top: 4,
-            //           bottom: 20,
-            //         ),
-            //         future: fetchBranches,
-            //       ),
-            //     );
-            //   }),
-            //   data: [
-            //     ActionItem(
-            //       leading: const Icon(Icons.two_wheeler),
-            //       label: "Toyota Camry",
-            //       description: "Created 5 minutes ago",
-            //       action: ActionButton.filled("Pay now"),
-            //     ),
-            //   ],
-            // ),
-            const SizedBox(height: 18),
-            InlineList(
-              leading: Icons.post_add,
-              title: "Recent Claims",
-              data: claims,
-              bottomLabel: "+1 more",
-              bottomAction: ActionButton.all("All claims"),
             ),
             const SizedBox(height: 16),
             InlineList(

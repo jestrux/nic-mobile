@@ -261,68 +261,74 @@ class ClaimService {
           throw ("Failed to purchase product. Please try again later.");
         }
 
-        // if(uploadClaimNotificationDocumentFolder)
-        // failedFiles
         if (result.exception != null) {
           print(result.exception);
         }
-      } catch (e) {}
+      } catch (e) {
+        devLog("Failed to upload claim images/files");
+      }
+    }
+    return null;
+
+  }
+
+  Future<List<Map<String, dynamic>>?> fetchClaims() async {
+    String query = r"""
+    query ($underwriteChannel:Int!){
+        allClaimant(underwriteChannel: $underwriteChannel) {
+          edges {
+            node {
+              id
+              displayName
+              claimantNumber
+              insuredItem
+              claimedBenefit
+              claimantStatus
+              claimantNetPayable
+              created
+              canUpload
+            }
+          }
+        }
+      }
+    """;
+
+    final QueryOptions options = QueryOptions(
+      document: gql(query),
+      variables: const {'underwriteChannel': 2},
+    );
+
+    GraphQLClient client = await DataConnection().connectionClient();
+    final QueryResult result = await client.query(options);
+
+    if (result.data == null) {
+      devLog("Request control number: No data found");
+      throw ("Failed to fetch payment. Please try again later.");
     }
 
-    // return {"success": false, "message": "Failed to upload"};
+    if (result.data?['allClaimant']?['edges'] == null) {
+      devLog('allClaimant: GraphQL Error: ${result.exception.toString()}');
+      throw ("Failed to fetch pending proposals. Please try again.");
+    }
 
-    // List<dynamic> imagesTemp = [
-    //   frontRight,
-    //   frontLeft,
-    //   backRight,
-    //   backLeft,
-    //   sideImage
-    // ];
-    // // List<dynamic> images = imagesTemp.where((item) => item != null).toList();
-    // var counter = 0;
-    // var totalLength = images.length;
-    // for (dynamic image in images) {
-    //   if (image == null) {
-    //     return {"success": false, "message": "Failed to upload"};
-    //   }
+    return List.from(result.data!['allClaimant']['edges'])
+        .map<Map<String, dynamic>>(
+          (element) {
+        var claim = element["node"];
+        var claimAmount = formatMoney(claim['claimantNetPayable'], currency: "TZS");
+        var description = List<String?>.from([
+          claim['claimedBenefit'],
+          claimAmount.toString()
+        ]).where((element) => element != null).toList().join(" - ");
 
-    //   print(image);
-    //   List<int> fileBytes = await image.readAsBytes();
-    //   counter++;
-    //   String? fileName = "image-$counter.${image.path.split('.').last}";
-    //   // print(fileName);
-    //   // final myFile = await MultipartFile.fromPath(
-    //   //     "file", image.path,
-    //   //     filename: fileName);
 
-    //   final QueryOptions options = QueryOptions(
-    //     document: gql(dataMap),
-    //     variables: {
-    //       "fileName": fileName,
-    //       // "filePath": File(image.path),
-    //       "filePath": http.MultipartFile.fromBytes(
-    //         'file',
-    //         fileBytes,
-    //         filename: fileName,
-    //         contentType: MediaType('application', 'octet-stream'),
-    //       ),
-    //       "notificationId": notificationNumber,
-    //       "underwriteChannel": 2
-    //     },
-    //   );
-
-    //   GraphQLClient client = await DataConnection().connectionClient();
-    //   final QueryResult result = await client.query(options);
-    //   if (result.exception != null) {
-    //     print(result.exception);
-    //   }
-    //   print(result);
-    // }
-    // if (totalLength == counter) {
-    //   return {"success": true, "message": "Successfully uploaded"};
-    // } else {
-    //   return {"success": false, "message": "Failed to upload"};
-    // }
+        return {
+          ...claim,
+          "title": claim['insuredItem'],
+          "description": description,
+        };
+      },
+    ).toList();
   }
 
 //
