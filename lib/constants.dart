@@ -3,10 +3,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 // Sample control number 994754846842
 
-// Sample user
+// Sample user local
 // effort.mlimbila@nictanzania.co.tz
 // Devastator@1
 
+// Sample user uat
 // effort.mlimbila@nicinsurance.co.tz
 // devastator
 

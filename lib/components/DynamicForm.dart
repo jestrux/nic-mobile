@@ -119,6 +119,7 @@ class DynamicForm extends StatefulWidget {
   final DynamicFormPayloadFormat payloadFormat;
   final ChoicePickerMode choicePickerMode;
   final Function? onCancel;
+  final bool onBottomSheet;
   final Map<String, List<String?>>? errors;
   final Widget Function(Function onSubmit, bool loading)? builder;
 
@@ -131,6 +132,7 @@ class DynamicForm extends StatefulWidget {
     this.onChange,
     this.onSuccess,
     this.onCancel,
+    this.onBottomSheet = false,
     this.builder,
     this.payloadFormat = DynamicFormPayloadFormat.questionAnswer,
     this.choicePickerMode = ChoicePickerMode.regular,
@@ -326,23 +328,13 @@ class _DynamicFormState extends State<DynamicForm> {
         ),
         widget.builder != null
             ? widget.builder!(onSubmit, loading)
-            : widget.onCancel == null
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ),
-                    child: FormButton.filled(
-                      widget.submitLabel ?? "Submit",
-                      loading: loading,
-                      onClick: onSubmit,
-                    ),
-                  )
-                : FormActions(
-                    loading: loading,
-                    onCancel: widget.onCancel,
-                    okayText: widget.submitLabel ?? "Submit",
-                    onOkay: onSubmit,
-                  ),
+            : FormActions(
+                loading: loading,
+                onCancel: widget.onCancel,
+                okayText: widget.submitLabel ?? " Submit ",
+                onOkay: onSubmit,
+                onBottomSheet: widget.onBottomSheet,
+              )
       ],
     );
   }

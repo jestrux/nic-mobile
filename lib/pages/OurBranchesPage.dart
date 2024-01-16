@@ -120,10 +120,7 @@ class OurBranchesPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   const SizedBox(height: 16),
-                  InlineListBuilder(
-                    future: () => fetchBranches(context),
-                    iconBuilder: (item) => Icons.house,
-                  )
+                  InlineListBuilder(future: () => fetchBranches(context))
                 ],
               ),
             ),

@@ -88,6 +88,16 @@ class _BimaPageState extends State<BimaPage> {
     return products;
   }
 
+  void purchaseProduct(action) {
+    handlePurchaseProduct(
+      action,
+      authUser: Provider.of<AppProvider>(
+        context,
+        listen: false,
+      ).authUser,
+    );
+  }
+
   void viewProductDetail(ActionItem action) {
     openGenericPage(
       title: "Product Detail",
@@ -167,7 +177,7 @@ class _BimaPageState extends State<BimaPage> {
         ],
       ),
       okayText: " Purchase ",
-      onOkay: () => handlePurchaseProduct(action),
+      onOkay: () => purchaseProduct(action),
       cancelText: "Get a quote",
       onCancel: action.id == null
           ? null
@@ -253,9 +263,7 @@ class _BimaPageState extends State<BimaPage> {
                               MiniButton(
                                 label: " Purchase ",
                                 filled: true,
-                                onClick: () {
-                                  handlePurchaseProduct(action);
-                                },
+                                onClick: () => purchaseProduct(action),
                               ),
                             ],
                           )

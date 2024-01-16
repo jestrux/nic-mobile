@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/DynamicForm/proccessFields.dart';
+import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/KeyValueView.dart';
 import 'package:nic/components/Loader.dart';
 import 'package:nic/services/product_service.dart';
@@ -220,39 +221,45 @@ class _GetQuoteState extends State<GetQuote> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading) return const Loader();
+    if (loading) return const SafeArea(child: Loader());
 
     if (quotationDetails?["premium"] != null) {
       var premiumVat =
           quotationDetails!["totalPremium"] - quotationDetails!["premium"];
 
-      return Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(
-              top: 12,
-              bottom: 4,
-            ),
-            child: Text(
-              "Quote details",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+      return SafeArea(
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(
+                top: 12,
+                bottom: 4,
+              ),
+              child: Text(
+                "Quote details",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
-          KeyValueView(data: {
-            "Base Premium": {
-              "type": "money",
-              "value": quotationDetails!["premium"]
-            },
-            "Premium VAT": {"type": "money", "value": premiumVat},
-            "Total Premium": {
-              "type": "money",
-              "value": quotationDetails!["totalPremium"]
-            },
-          })
-        ],
+            KeyValueView(
+              data: {
+                "Base Premium": {
+                  "type": "money",
+                  "value": quotationDetails!["premium"]
+                },
+                "Premium VAT": {"type": "money", "value": premiumVat},
+                "Total Premium": {
+                  "type": "money",
+                  "value": quotationDetails!["totalPremium"]
+                },
+              },
+            ),
+            const SizedBox(height: 8),
+            FormActions(onOkay: () => Navigator.pop(context)),
+          ],
+        ),
       );
     }
 
@@ -278,6 +285,7 @@ class _GetQuoteState extends State<GetQuote> {
             DynamicForm(
               choicePickerMode: ChoicePickerMode.dialog,
               fields: form,
+              onBottomSheet: true,
               onCancel: () => Navigator.of(context).pop(),
               // submitLabel: "Check",
               onSubmit: (payload) async {

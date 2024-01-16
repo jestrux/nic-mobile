@@ -1,13 +1,8 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:nic/data/preferences.dart';
-import 'package:nic/data/providers/AppProvider.dart';
-import 'package:nic/models/proposal_model.dart';
 import 'package:nic/services/data_connection.dart';
 import 'package:nic/utils.dart';
-import 'package:provider/provider.dart';
 
 bool productIsNonMotor({required String productId}) =>
     ["UHJvZHVjdE5vZGU6MzAw", "UHJvZHVjdE5vZGU6MzEx"].contains(productId);
@@ -338,8 +333,7 @@ Future<Map<String, dynamic>?> requestControlNumber({
   );
 }
 
-Future<List<Map<String, dynamic>>?>
-    fetchProposals() async {
+Future<List<Map<String, dynamic>>?> fetchProposals() async {
   String query = r"""
     query ($underwriteChannel:Int!){
         pendingProposals(underwriteChannel: $underwriteChannel) {
@@ -389,12 +383,13 @@ Future<List<Map<String, dynamic>>?>
       //   formatDate(proposal['startDate'], format: "dayM"),
       //   formatDate(proposal['endDate'], format: "dayM")
       // ]).where((element) => element != null).toList().join(" - ");
-      var premium = formatMoney(proposal['actualPremium'], currency: proposal['currency']);
-      var description = List<String?>.from([
-        proposal['productName'],
-        premium.toString()
-      ]).where((element) => element != null).toList().join(" - ");
-
+      var premium = formatMoney(proposal['actualPremium'],
+          currency: proposal['currency']);
+      var description =
+          List<String?>.from([proposal['productName'], premium.toString()])
+              .where((element) => element != null)
+              .toList()
+              .join(" - ");
 
       return {
         ...proposal,

@@ -27,7 +27,7 @@ class ChoiceItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var defaultContentPadding = leading != null
-        ? const EdgeInsets.symmetric(vertical: 8, horizontal: 20)
+        ? const EdgeInsets.symmetric(vertical: 8, horizontal: 24)
         : const EdgeInsets.symmetric(vertical: 12, horizontal: 20);
 
     double selectedIndicatorSize = size == ChoiceItemSize.SM ? 18 : 24;
@@ -37,35 +37,35 @@ class ChoiceItem extends StatelessWidget {
       child: Container(
         padding: padding ?? defaultContentPadding,
         decoration: BoxDecoration(
-          // border: Border(
-          //   top: BorderSide(
-          //     color: borderColor,
-          //     width: 1,
-          //   ),
-          // ),
-          // borderRadius: const BorderRadius.all(Radius.circular(5)),
-          color: selected ?? false
-              ? colorScheme(context).onSurface.withOpacity(0.08)
-              : Colors.transparent,
-        ),
+            // border: Border(
+            //   top: BorderSide(
+            //     color: borderColor,
+            //     width: 1,
+            //   ),
+            // ),
+            // borderRadius: const BorderRadius.all(Radius.circular(5)),
+            // color: selected ?? false
+            //     ? colorScheme(context).onSurface.withOpacity(0.08)
+            //     : Colors.transparent,
+            ),
         child: Row(
           children: <Widget>[
             if (leading != null)
               Theme(
                 data: Theme.of(context).copyWith(
                   iconTheme: Theme.of(context).iconTheme.copyWith(
-                        size: 14,
+                        size: 18,
                         color: colorScheme(context).primary,
                       ),
                 ),
                 child: Container(
-                  width: 28,
-                  height: 28,
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
                     color: colorScheme(context).surfaceVariant.withOpacity(0.6),
                   ),
-                  margin: const EdgeInsets.only(right: 10),
+                  margin: const EdgeInsets.only(top: 4, right: 16),
                   child: leading,
                 ),
               ),
@@ -75,7 +75,7 @@ class ChoiceItem extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   if (subtitle != null && subtitle!.isNotEmpty)
                     Opacity(
@@ -90,12 +90,15 @@ class ChoiceItem extends StatelessWidget {
             ),
             // const Spacer(),
             if (selected != null)
-              Icon(
-                selected! ? Icons.check_circle : Icons.circle_outlined,
-                color: selected!
-                    ? colorScheme(context).primary
-                    : colorScheme(context).onBackground.withOpacity(0.2),
-                size: selectedIndicatorSize,
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Icon(
+                  selected! ? Icons.check_circle : Icons.circle_outlined,
+                  color: selected!
+                      ? colorScheme(context).primary
+                      : colorScheme(context).onBackground.withOpacity(0.2),
+                  size: selectedIndicatorSize,
+                ),
               ),
           ],
         ),

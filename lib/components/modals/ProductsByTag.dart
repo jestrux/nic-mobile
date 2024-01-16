@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/Loader.dart';
-import 'package:nic/components/modals/InitialProductForm.dart';
 import 'package:nic/services/product_service.dart';
 import 'package:nic/utils.dart';
 
@@ -13,56 +12,49 @@ class ProductsByTag extends StatefulWidget {
 }
 
 class _ProductsByTagState extends State<ProductsByTag> {
+  List<Map<String, dynamic>>? choices;
+
   @override
   void initState() {
-    fetchProducts();
+    getProducts(tag: widget.tag).then(handleProductResult);
     super.initState();
   }
 
-  void purchaseProduct(product) {
-    openAlert(
-      title: "Purchase ${product['mobileName']}",
-      child: InitialProductForm(
-        productId: product['id'],
-        productName: product['mobileName'],
-      ),
-    );
-  }
-
-  void fetchProducts() async {
-    var res = await getProducts(tag: widget.tag);
-
-    Navigator.of(context).pop();
-
+  void handleProductResult(List<Map<String, dynamic>>? res) async {
     if (res == null || List.from(res).isEmpty) {
+      Navigator.of(context).pop();
       return openErrorAlert(message: "Failed to fetch products");
     }
 
     var products = List.from(res);
 
     if (products.length == 1) {
-      return purchaseProduct(products.first);
+      Navigator.of(context).pop(products.first);
+      return;
     }
 
-    var choices = List.from(res).map((product) {
-      return {
-        "label": product["mobileName"],
-        "value": product,
-      };
-    }).toList();
-
-    var product = await showChoicePicker(
-      title: "Select product",
-      choices: choices,
-      mode: ChoicePickerMode.alert,
-      confirm: true,
-    );
-
-    if (product != null) purchaseProduct(product);
+    setState(() {
+      choices = List.from(res).map((product) {
+        return {
+          "label": product["mobileName"],
+          "value": product,
+        };
+      }).toList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Loader();
+    if (choices != null) {
+      return ChoicePickerContent(
+        title: "Select product",
+        choices: choices!,
+        confirm: true,
+        mode: ChoicePickerMode.regular,
+        onSelect: Navigator.of(context).pop,
+      );
+    }
+
+    return const SafeArea(child: Loader());
   }
 }

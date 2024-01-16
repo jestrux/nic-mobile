@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/AdsBar.dart';
-import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/data/actions.dart';
+import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   final void Function(int) goToMainPage;
@@ -55,7 +56,14 @@ class _HomePageState extends State<HomePage> {
               content: buyBimaActions,
               shape: ActionItemShape.regular,
               onItemClick: (action) {
-                handlePurchaseProduct(action, matchTag: true);
+                handlePurchaseProduct(
+                  action,
+                  matchTag: true,
+                  authUser: Provider.of<AppProvider>(
+                    context,
+                    listen: false,
+                  ).authUser,
+                );
               },
             ),
             const SizedBox(height: 16),

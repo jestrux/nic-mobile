@@ -11,6 +11,7 @@ import 'package:nic/components/modals/ReportClaim.dart';
 import 'package:nic/components/modals/ProductsByTag.dart';
 import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionItem.dart';
+import 'package:nic/models/user_model.dart';
 import 'package:nic/utils.dart';
 import 'package:nic/constants.dart';
 
@@ -83,7 +84,7 @@ var getQuickQuoteAction = ActionItem(
   icon: Icons.calculate,
   onClick: () async {
     var productId = await showChoicePicker(
-      mode: ChoicePickerMode.alert,
+      // mode: ChoicePickerMode.alert,
       confirm: true,
       title: "Select product to get a quote",
       choices: products.map((product) {
@@ -92,7 +93,8 @@ var getQuickQuoteAction = ActionItem(
     );
 
     if (productId != null) {
-      openAlert(
+      openBottomSheet(
+        ignoreSafeArea: true,
         child: GetQuote(productId: productId),
       );
     }
@@ -211,7 +213,29 @@ List<ActionItem> buyBimaActions = [
   ),
 ];
 
-void handlePurchaseProduct(ActionItem product, {matchTag = false}) async {
+Future<bool?> buyForOther(String productName, UserModel? authUser) async {
+  if (authUser == null) return true;
+
+  var res = await showChoicePicker(
+    title: "Purchase $productName",
+    // mode: ChoicePickerMode.alert,
+    choices: [
+      {"icon": Icons.person, "label": "For yourself"},
+      {"icon": Icons.record_voice_over, "label": "For someone else"},
+    ],
+    confirm: true,
+  );
+
+  if (res == null) return null;
+
+  return res != "For yourself";
+}
+
+void handlePurchaseProduct(
+  ActionItem product, {
+  UserModel? authUser,
+  bool matchTag = false,
+}) async {
   if (product.id == null) {
     return openInfoAlert(
       title: "Product upcoming",
@@ -228,18 +252,29 @@ void handlePurchaseProduct(ActionItem product, {matchTag = false}) async {
   var tag = tagMap[product.id];
 
   if (matchTag && tag != null) {
-    openAlert(
+    var res = await openBottomSheet(
+      ignoreSafeArea: true,
       child: ProductsByTag(tag: tag),
     );
 
-    return;
+    if (res == null) return;
+
+    product = ActionItem(
+      id: res["id"],
+      label: res["mobileName"],
+    );
   }
 
-  openAlert(
+  var buyForOtherCheck = await buyForOther(product.label, authUser);
+
+  if (buyForOtherCheck == null) return;
+
+  openGenericPage(
     title: "Purchase ${product.label}",
     child: InitialProductForm(
       productId: product.id!,
       productName: product.label,
+      buyForOther: buyForOtherCheck,
     ),
   );
 }

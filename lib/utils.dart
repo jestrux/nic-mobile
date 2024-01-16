@@ -338,7 +338,7 @@ void openGenericPage({
             ),
             if (onOkay != null)
               Container(
-                color: colorScheme(context).surfaceVariant,
+                color: colorScheme(context).onBackground.withOpacity(0.1),
                 child: SafeArea(
                   child: FormActions(
                     backgroundColor: Colors.transparent,
@@ -451,6 +451,7 @@ Future<void> openUrl(String? url) async {
 class ChoicePickerContent extends StatefulWidget {
   final bool confirm;
   final List<dynamic> choices;
+  final String? title;
   final dynamic value;
   final ChoicePickerMode? mode;
   final Function onSelect;
@@ -460,6 +461,7 @@ class ChoicePickerContent extends StatefulWidget {
     this.confirm = false,
     required this.choices,
     this.value,
+    this.title,
     this.mode,
     required this.onSelect,
   }) : super(key: key);
@@ -535,24 +537,41 @@ class ChoicePickerContentState extends State<ChoicePickerContent> {
 
   @override
   Widget build(BuildContext context) {
-    Widget? actionButtons = !widget.confirm
-        ? null
-        : FormActions(
-            okayText: "Continue",
-            onOkay: () {
-              if (value == null) return showToast("Please select one");
+    var onBottomSheet = widget.mode == ChoicePickerMode.regular;
 
-              widget.onSelect(value);
-            },
-            onCancel: () {
-              Navigator.of(context).pop();
-            },
-          );
+    Widget? actionButtons =
+        !widget.confirm || widget.mode == ChoicePickerMode.dialog
+            ? null
+            : FormActions(
+                onBottomSheet: onBottomSheet,
+                okayText: "Continue",
+                onOkay: () {
+                  if (value == null) return showToast("Please select one");
+                  widget.onSelect(value);
+                },
+                onCancel: () => Navigator.of(context).pop(),
+              );
 
     return SizedBox(
       width: double.infinity,
       child: Column(
         children: [
+          if (widget.title != null && widget.title!.isNotEmpty)
+            Container(
+              margin: EdgeInsets.only(
+                top: widget.mode == ChoicePickerMode.alert ? 24 : 4,
+                bottom: 8,
+                left: 16,
+                right: 16,
+              ),
+              child: Text(
+                widget.title!,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
           Container(
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.7,
@@ -606,6 +625,7 @@ Future<dynamic> showChoicePicker({
     value: value,
     confirm: confirm ?? false,
     mode: mode,
+    title: mode == ChoicePickerMode.dialog ? null : title,
     onSelect: (value) {
       Navigator.of(context).pop(value);
     },
@@ -651,13 +671,16 @@ Future<dynamic> showChoicePicker({
 
   if (mode == ChoicePickerMode.alert) {
     return openAlert(
-      title: title,
       child: choicePickerContent,
     );
   }
 
   if (mode == ChoicePickerMode.dialog) {
-    void handler([bool cancel = false]) {
+    handler([bool cancel = false]) {
+      if (!cancel && choicePickerContentKey.currentState?.value == null) {
+        return showToast("Please select one");
+      }
+
       Navigator.pop(
         context,
         cancel ? null : choicePickerContentKey.currentState?.value,
@@ -715,25 +738,11 @@ Future<dynamic> showChoicePicker({
   }
 
   return openBottomSheet(
+    ignoreSafeArea: confirm ?? false,
     padding: EdgeInsets.zero,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (title != null && title.isNotEmpty)
-          Container(
-            margin: const EdgeInsets.only(
-              bottom: 6,
-              left: 20,
-              right: 20,
-            ),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
         SizedBox(
           width: double.infinity,
           child: choicePickerContent,
@@ -747,6 +756,7 @@ Future<dynamic> showChoicePicker({
 Future<dynamic> openBottomSheet({
   Widget? child,
   String? title,
+  bool ignoreSafeArea = false,
   bool dismissible = true,
   EdgeInsets? padding,
   String? cancelText,
@@ -754,13 +764,17 @@ Future<dynamic> openBottomSheet({
   Function? onOkay,
   Function? onCancel,
 }) {
+  var hideInsets = ignoreSafeArea || onOkay != null;
+
   var actualPadding = padding ??
-      const EdgeInsets.only(
-        left: 12,
-        right: 12,
-        bottom: 16,
-        top: 8,
-      );
+      (hideInsets
+          ? EdgeInsets.zero
+          : const EdgeInsets.only(
+              left: 12,
+              right: 12,
+              bottom: 16,
+              top: 8,
+            ));
   return showModalBottomSheet(
     useRootNavigator: true,
     isScrollControlled: true,
@@ -769,30 +783,31 @@ Future<dynamic> openBottomSheet({
     isDismissible: dismissible,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return SafeArea(
-        child: AnimatedPadding(
-          padding: MediaQuery.of(context).viewInsets,
-          duration: const Duration(milliseconds: 100),
-          curve: Curves.decelerate,
-          child: Wrap(
-            children: [
-              Container(
-                alignment: Alignment.center,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 560),
-                    decoration: BoxDecoration(
-                      color: colorScheme(context).background,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
+      return AnimatedPadding(
+        padding: MediaQuery.of(context).viewInsets,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.decelerate,
+        child: Wrap(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 560),
+                  decoration: BoxDecoration(
+                    color: colorScheme(context).background,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
                     ),
-                    padding: actualPadding,
+                  ),
+                  padding: actualPadding,
+                  child: SafeArea(
+                    bottom: !hideInsets,
                     child: Column(children: [
                       const SizedBox(height: 10),
                       Row(
@@ -830,39 +845,29 @@ Future<dynamic> openBottomSheet({
                       child ?? Container(),
                       if (onOkay != null || onCancel != null)
                         const SizedBox(height: 12),
-                      onOkay != null && onCancel != null
+                      onOkay != null
                           ? FormActions(
+                              onBottomSheet: true,
                               cancelText: cancelText ?? "Cancel",
-                              onCancel: () {
-                                Navigator.of(context).pop();
-                                onCancel();
-                              },
+                              onCancel: onCancel == null
+                                  ? null
+                                  : () {
+                                      Navigator.of(context).pop();
+                                      onCancel();
+                                    },
                               okayText: okayText ?? "Okay",
                               onOkay: () {
                                 Navigator.of(context).pop();
                                 onOkay();
                               },
                             )
-                          : onOkay != null
-                              ? Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  child: FormButton.filled(
-                                    okayText ?? "Okay",
-                                    onClick: () {
-                                      Navigator.of(context).pop();
-                                      onOkay();
-                                    },
-                                  ),
-                                )
-                              : Container(),
+                          : Container(),
                     ]),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     },
