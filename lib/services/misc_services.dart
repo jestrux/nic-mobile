@@ -3,7 +3,7 @@ import 'package:nic/constants.dart';
 import 'package:nic/services/data_connection.dart';
 import 'package:nic/utils.dart';
 
-Future<List<Map<String, dynamic>>?> fetchBranches() async {
+Future<List<Map<String, dynamic>>?> getBranches() async {
   String queryString = r"""
     query {
       allBranches {
@@ -60,7 +60,7 @@ Future<List<Map<String, dynamic>>?> fetchBranches() async {
     }
 
     return {
-      "title": props["name"],
+      "title": capitalize(props["name"]),
       "description": location,
       "email": Constants.supportEmail,
       "phone": Constants.supportPhoneNumber,

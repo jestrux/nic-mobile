@@ -3,9 +3,11 @@ import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/constants.dart';
+import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/services/misc_services.dart';
 import 'package:nic/utils.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OurBranchesPage extends StatelessWidget {
@@ -31,6 +33,22 @@ class OurBranchesPage extends StatelessWidget {
       }
     }
     ;
+  }
+
+  Future<List<Map<String, dynamic>>?> fetchBranches(
+    BuildContext context,
+  ) async {
+    AppProvider provider = Provider.of<AppProvider>(context, listen: false);
+
+    if (provider.branches != null) return provider.branches;
+
+    var branches = await getBranches();
+
+    if (branches == null) return null;
+
+    provider.setBranches(branches);
+
+    return branches;
   }
 
   @override
@@ -94,16 +112,17 @@ class OurBranchesPage extends StatelessWidget {
               ],
             ),
           ),
-          const Expanded(
+          Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.only(bottom: 24, left: 16, right: 16),
+              padding: const EdgeInsets.only(bottom: 24, left: 16, right: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   InlineListBuilder(
-                    future: fetchBranches,
+                    future: () => fetchBranches(context),
+                    iconBuilder: (item) => Icons.house,
                   )
                 ],
               ),

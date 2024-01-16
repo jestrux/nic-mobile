@@ -8,9 +8,11 @@ import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/constants.dart';
 import 'package:nic/data/actions.dart';
+import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/services/product_service.dart';
 import 'package:nic/utils.dart';
+import 'package:provider/provider.dart';
 
 class BimaPage extends StatefulWidget {
   const BimaPage({Key? key}) : super(key: key);
@@ -71,6 +73,20 @@ class _BimaPageState extends State<BimaPage> {
     "motorcycle": Icons.two_wheeler,
     "travel": Icons.flight,
   };
+
+  Future<List<Map<String, dynamic>>?> fetchProducts() async {
+    AppProvider provider = Provider.of<AppProvider>(context, listen: false);
+
+    if (provider.products != null) return provider.products;
+
+    var products = await getProducts();
+
+    if (products == null) return null;
+
+    provider.setProducts(products);
+
+    return products;
+  }
 
   void viewProductDetail(ActionItem action) {
     openGenericPage(
@@ -188,7 +204,7 @@ class _BimaPageState extends State<BimaPage> {
             const SizedBox(height: 16),
             const SectionTitle(title: "All products"),
             InlineListBuilder(
-              future: getProducts,
+              future: fetchProducts,
               itemBuilder: (action) {
                 return Container(
                   margin: const EdgeInsets.symmetric(vertical: 6),

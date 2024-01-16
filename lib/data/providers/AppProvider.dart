@@ -50,4 +50,23 @@ class AppProvider with ChangeNotifier, DiagnosticableTreeMixin {
     notifyListeners();
   }
 
+  // PRODUCTS
+  List<Map<String, dynamic>>? _products;
+
+  List<Map<String, dynamic>>? get products => _products;
+
+  void setProducts(List<Map<String, dynamic>> products) {
+    _products = (_products ?? [])..addAll(products);
+    notifyListeners();
+  }
+
+  // BRANCHES
+  List<Map<String, dynamic>>? _branches;
+
+  List<Map<String, dynamic>>? get branches => _branches;
+
+  void setBranches(List<Map<String, dynamic>> branches) {
+    _branches = (_branches ?? [])..addAll(branches);
+    notifyListeners();
+  }
 }

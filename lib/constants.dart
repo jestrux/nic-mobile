@@ -7,6 +7,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 // effort.mlimbila@nictanzania.co.tz
 // Devastator@1
 
+// effort.mlimbila@nicinsurance.co.tz
+// devastator
+
 class Constants {
   static const primaryColor = Color(0xFF2E6B27);
   static const bgLightColor = Color(0XFFebf5f2);
