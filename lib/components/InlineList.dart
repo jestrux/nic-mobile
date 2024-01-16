@@ -141,7 +141,7 @@ class InlineListBuilder extends StatelessWidget {
   final String? emptyStateMessage;
   final int? limit;
   final Widget Function(ActionItem item)? itemBuilder;
-  final Widget? Function(ActionItem item)? iconBuilder;
+  final dynamic Function(ActionItem item)? iconBuilder;
   final List<Widget>? Function(ActionItem item)? actionsBuilder;
   final Future<List<Map<String, dynamic>>?> Function() future;
 
@@ -234,6 +234,7 @@ class InlineListBuilder extends StatelessWidget {
                           ),
                           title: title,
                           child: InlineListBuilder(
+                            iconBuilder: iconBuilder,
                             actionsBuilder: actionsBuilder,
                             future: () async {
                               return snapshot.data!;
