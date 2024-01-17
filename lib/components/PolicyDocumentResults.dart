@@ -57,12 +57,10 @@ class PolicyDocumentResults extends StatelessWidget {
           },
       ];
 
-  void selectDocument(policy) {
-    showChoicePicker(choices: getChoices(policy));
-  }
-
   Widget _buildDocuments(BuildContext context, policy) {
-    var documents = InlineListBuilder(future: () async => getChoices(policy));
+    var documents = getChoices(policy);
+
+    if (documents.isEmpty) return Container();
 
     return Container(
       margin: const EdgeInsets.only(
@@ -78,42 +76,36 @@ class PolicyDocumentResults extends StatelessWidget {
         ),
         borderRadius: const BorderRadius.all(Radius.circular(8)),
       ),
-      child: Column(
-        children: [
-          ExpandableItem(
-            title: "Policy Documents",
-            child: Column(
-              children: [
-                ...getChoices(policy)
-                    .map(
-                      (choice) => Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            top: BorderSide(
-                              width: 0.12,
-                              color: colorScheme(context).onBackground,
-                            ),
-                          ),
-                        ),
-                        child: ListItem(
-                          flat: true,
-                          title: choice["label"],
-                          trailing: const Opacity(
-                            opacity: 0.5,
-                            child: Icon(
-                              Icons.chevron_right,
-                              size: 20,
-                            ),
-                          ),
-                          onClick: choice["onClick"],
-                        ),
+      child: ExpandableItem(
+        title: "Policy Documents",
+        child: Column(
+          children: documents
+              .map(
+                (choice) => Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        width: 0.12,
+                        color: colorScheme(context).onBackground,
                       ),
-                    )
-                    .toList()
-              ],
-            ),
-          ),
-        ],
+                    ),
+                  ),
+                  child: ListItem(
+                    flat: true,
+                    title: choice["label"],
+                    trailing: const Opacity(
+                      opacity: 0.5,
+                      child: Icon(
+                        Icons.chevron_right,
+                        size: 20,
+                      ),
+                    ),
+                    onClick: choice["onClick"],
+                  ),
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
   }
