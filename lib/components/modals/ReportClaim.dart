@@ -15,31 +15,32 @@ class ReportClaim extends StatefulWidget {
 }
 
 class _ReportClaimState extends State<ReportClaim> {
-    Future<dynamic> reportClaim(Map<String, dynamic> values) async {
-      return await ClaimService().initiateReportClaim(registrationNumber: values["registrationNumber"]);
-    }
+  Future<dynamic> reportClaim(Map<String, dynamic> values) async {
+    return await ClaimService()
+        .initiateReportClaim(values["registrationNumber"]);
+  }
 
-    reportClaimResponse(dynamic claim) {
-      // print(claim);
-      Navigator.of(context).pop();
-      if (claim == null){
-        return openAlert(
-            title: "Report Claim",
-            message: "Failed find your insured item, communicate with NIC nearest branch.",
-            type: AlertType.error
-        );
-      }else if(claim['success'] == true){
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ReportClaimForm(
-              claimForm: claim['form'],
-              formId: claim['proposal'],
-              viewMode: 1,
-            ),
+  reportClaimResponse(dynamic claim) {
+    // print(claim);
+    Navigator.of(context).pop();
+    if (claim == null) {
+      return openAlert(
+          title: "Report Claim",
+          message:
+              "Failed find your insured item, communicate with NIC nearest branch.",
+          type: AlertType.error);
+    } else if (claim['success'] == true) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ReportClaimForm(
+            claimForm: claim['form'],
+            formId: claim['proposal'],
+            viewMode: 1,
           ),
-        );
-      }
+        ),
+      );
+    }
   }
 
   @override

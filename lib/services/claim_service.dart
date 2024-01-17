@@ -20,7 +20,7 @@ class ClaimService {
   bool isLoading = false;
   bool? start = true;
 
-  Future<ClaimModel?> getClaim({String? searchKey}) async {
+  Future<ClaimModel?> getClaim(String? searchKey) async {
     ClaimModel? claim;
     String dataMap = r"""
         query( $searchKey: String!){
@@ -64,40 +64,40 @@ class ClaimService {
     );
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.query(options);
-    if (result.data != null) {
-      // print(result.data['allClaimants']['edges'][0]['node']);
-      if (result.data!['allClaimants']['edges'].length > 0) {
-        var c = result.data!['allClaimants']['edges'][0]['node'];
-        claim = ClaimModel(
-          claimantNumber: c['claimantNumber'],
-          claimNumber: c['claimNumber'],
-          displayName: c['displayName'],
-          claimantStatus: c['claimantStatus'],
-          propertyName: c['claim']['notification']['propertyName'],
-          intimationDate: c['created'],
-          claimAmount: c['claimantClaimAmount'],
-          netPayable: c['claimantNetPayable'],
-          corporate: c['corporate'] != null ? c['corporate']['name'] : '',
-        );
-      }
+
+    var results = result.data?['allClaimants']?['edges'];
+
+    if (results?.length < 1) {
+      devLog('Policy documents: GraphQL Error: ${result.exception.toString()}');
+      throw ("No claims matching to fetch documents. Please try again.");
     }
 
-    return claim;
+    var c = result.data!['allClaimants']['edges'][0]['node'];
+    return ClaimModel(
+      claimantNumber: c['claimantNumber'],
+      claimNumber: c['claimNumber'],
+      displayName: c['displayName'],
+      claimantStatus: c['claimantStatus'],
+      propertyName: c['claim']['notification']['propertyName'],
+      intimationDate: c['created'],
+      claimAmount: c['claimantClaimAmount'],
+      netPayable: c['claimantNetPayable'],
+      corporate: c['corporate'] != null ? c['corporate']['name'] : '',
+    );
   }
 
   Future<Map<String, dynamic>?> initiateReportClaim(
-      {String? registrationNumber}) async {
-    ClaimModel? claim;
+      String? registrationNumber) async {
     String dataMap = r"""
       mutation ($registrationNumber: String!,$underwriteChannel: Int!) {
-      initiateReportClaim(registrationNumber: $registrationNumber,underwriteChannel:$underwriteChannel) {
-        success
-        message
-        proposal
-        product
+        initiateReportClaim(registrationNumber: $registrationNumber,underwriteChannel:$underwriteChannel) {
+          success
+          message
+          proposal
+          product
+        }
       }
-    }
-  """;
+    """;
 
     final QueryOptions options = QueryOptions(
       document: gql(dataMap),
@@ -106,25 +106,24 @@ class ClaimService {
         "underwriteChannel": 2
       },
     );
+
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.query(options);
-    if (result.exception != null) {
-      print(result.exception);
+
+    if (!(result.data?['initiateReportClaim']?['success'] ?? false)) {
+      devLog('Initiate claim: GraphQL Error: ${result.exception.toString()}');
+      throw ("Failed find your insured item, communicate with NIC nearest branch.");
     }
 
-    if (result.data != null) {
-      var payLoad = result.data!['initiateReportClaim'];
-      // return reportClaimForm(product: payLoad['product']);
-      return {
-        "success": payLoad['success'],
-        "message": payLoad['message'],
-        "product": payLoad['product'],
-        "proposal": payLoad['proposal'],
-        "form": await reportClaimForm(product: payLoad['product'])
-      };
-    }
+    var payLoad = result.data!['initiateReportClaim'];
 
-    return null;
+    return {
+      "success": payLoad['success'],
+      "message": payLoad['message'],
+      "product": payLoad['product'],
+      "proposal": payLoad['proposal'],
+      "form": await reportClaimForm(product: payLoad['product'])
+    };
   }
 
   Future<dynamic> reportClaimForm({int? product}) async {
@@ -269,7 +268,6 @@ class ClaimService {
       }
     }
     return null;
-
   }
 
   Future<List<Map<String, dynamic>>?> fetchClaims() async {
@@ -313,14 +311,15 @@ class ClaimService {
 
     return List.from(result.data!['allClaimant']['edges'])
         .map<Map<String, dynamic>>(
-          (element) {
+      (element) {
         var claim = element["node"];
-        var claimAmount = formatMoney(claim['claimantNetPayable'], currency: "TZS");
-        var description = List<String?>.from([
-          claim['claimedBenefit'],
-          claimAmount.toString()
-        ]).where((element) => element != null).toList().join(" - ");
-
+        var claimAmount =
+            formatMoney(claim['claimantNetPayable'], currency: "TZS");
+        var description = List<String?>.from(
+                [claim['claimedBenefit'], claimAmount.toString()])
+            .where((element) => element != null)
+            .toList()
+            .join(" - ");
 
         return {
           ...claim,

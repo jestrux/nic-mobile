@@ -14,7 +14,7 @@ class BimaStatus extends StatefulWidget {
 
 class _BimaStatusState extends State<BimaStatus> {
   Future<PolicyModel?> getPolicy(Map<String, dynamic> values) async {
-    return await fetchPolicyStatus(searchKey: values["searchKey"]);
+    return await fetchPolicyStatus(values["searchKey"]);
   }
 
   showPolicySummary(dynamic policy) {

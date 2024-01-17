@@ -1,49 +1,183 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:nic/components/DynamicForm.dart';
+import 'package:nic/components/KeyValueView.dart';
+import 'package:nic/components/PolicyDocumentResults.dart';
 import 'package:nic/components/life/lifeSearchForm.dart';
 import 'package:nic/components/life/searchPolicies.dart';
 import 'package:nic/components/modals/BimaRenewal.dart';
-import 'package:nic/components/modals/BimaStatus.dart';
-import 'package:nic/components/modals/ClaimStatus.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/components/modals/InitialProductForm.dart';
 import 'package:nic/components/modals/PaymentInformation.dart';
-import 'package:nic/components/modals/ReportClaim.dart';
 import 'package:nic/components/modals/ProductsByTag.dart';
 import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/models/user_model.dart';
+import 'package:nic/pages/ReportClaimFormPage.dart';
+import 'package:nic/services/claim_service.dart';
+import 'package:nic/services/policy_service.dart';
 import 'package:nic/utils.dart';
 import 'package:nic/constants.dart';
+
+Future<dynamic> openSingleFormField({
+  String title = "Search policy",
+  String label = "Registration Number",
+  String placeholder = "Enter policy number or plate number",
+  String errorMessage = "Unknown error. Please try again.",
+  required Future Function(String searchKey) handler,
+  void Function(dynamic result)? onSuccess,
+  void Function(dynamic error)? onError,
+}) async {
+  void onPop([dynamic value]) =>
+      Navigator.of(Constants.globalAppKey.currentContext!).pop(value);
+
+  void handleError([dynamic error]) {
+    onPop();
+
+    if (onError != null) return onError(error);
+
+    openAlert(
+      title: "$title failed!",
+      message: error,
+      type: AlertType.error,
+    );
+  }
+
+  return await openAlert(
+    title: title,
+    child: DynamicForm(
+      payloadFormat: DynamicFormPayloadFormat.regular,
+      fields: [
+        DynamicFormField(
+          name: "registrationNumber",
+          label: "Registration Number",
+          placeholder: placeholder,
+        ),
+      ],
+      onCancel: onPop,
+      // submitLabel: "Report",
+      onSubmit: (Map<String, dynamic> values) async => await handler(
+        values["registrationNumber"],
+      ),
+      onSuccess: (response) {
+        if (response == null) return handleError(errorMessage);
+
+        onPop(response);
+
+        if (onSuccess != null) onSuccess(response);
+      },
+      onError: (error, formData) => handleError(error),
+    ),
+  );
+}
 
 var claimStatusAction = ActionItem(
   label: "Claim status",
   icon: Icons.pending_actions,
-  onClick: () async {
-    openAlert(
-      title: "Claim Status",
-      child: const ClaimStatus(),
+  onClick: () {
+    openSingleFormField(
+      title: "Check Claim Status",
+      label: "Claimant File Number",
+      placeholder: "Enter file number here...",
+      handler: ClaimService().getClaim,
+      onSuccess: (claimant) {
+        openAlert(
+          title: "Claim Details",
+          child: KeyValueView(
+            data: {
+              "Claimant Number": claimant.claimantNumber,
+              "Claimant Name": claimant.fullClaimantName,
+              "Intimation Date": {
+                "type": "date",
+                "value": DateFormat('dd/MM/yyyy').parse(claimant.intimationDate)
+              },
+              "Claimed Amount": {
+                "type": "money",
+                "value":
+                    claimant.claimAmount == '0E-20' ? 0.0 : claimant.claimAmount
+              },
+              "NIC Net-payable": claimant.netPayable > 0
+                  ? {"type": "money", "value": claimant.netPayable}
+                  : 'Not Yet Calculated',
+              "Status": {
+                "type": "status",
+                "value": claimant.claimantStatus,
+                "variant": KeyValueStatusVariant.success,
+              },
+            },
+          ),
+        );
+      },
     );
+
+    // openAlert(
+    //   title: "Claim Status",
+    //   child: const ClaimStatus(),
+    // );
   },
 );
 
 var reportClaimAction = ActionItem(
-    label: "Report Claim",
-    icon: Icons.post_add,
-    onClick: () async {
-      openAlert(
-        title: "Report Claim",
-        child: const ReportClaim(),
-      );
-    });
+  label: "Report Claim",
+  icon: Icons.post_add,
+  onClick: () {
+    openSingleFormField(
+      title: "Report Claim",
+      handler: ClaimService().initiateReportClaim,
+      onSuccess: (claim) {
+        Navigator.push(
+          Constants.globalAppKey.currentContext!,
+          MaterialPageRoute(
+            builder: (context) => ReportClaimForm(
+              claimForm: claim['form'],
+              formId: claim['proposal'],
+              viewMode: 1,
+            ),
+          ),
+        );
+      },
+    );
+    // openAlert(
+    //   title: "Report Claim",
+    //   child: const ReportClaim(),
+    // );
+  },
+);
 
 var bimaStatusAction = ActionItem(
   label: "Bima Status",
   icon: Icons.timelapse,
-  onClick: () async {
-    openAlert(
-      title: "Bima Status",
-      child: const BimaStatus(),
+  onClick: () {
+    openSingleFormField(
+      title: "Check Bima Status",
+      label: "Policy Reference No.",
+      handler: fetchPolicyStatus,
+      onSuccess: (policy) {
+        openAlert(
+          title: "Policy Details",
+          child: KeyValueView(
+            data: {
+              "Policy Number": policy.policyNumber,
+              "Assured / Insured": policy.policyPropertyName,
+              "Policy Start Date": {"type": "date", "value": policy.startDate},
+              "Policy End Date": {"type": "date", "value": policy.endDate},
+              "Status": {
+                "type": "status",
+                "value": policy.isExpired! ? "Expired" : "Active",
+                "variant": policy.isExpired!
+                    ? KeyValueStatusVariant.danger
+                    : KeyValueStatusVariant.success,
+              },
+            },
+          ),
+        );
+      },
     );
+
+    // openAlert(
+    //   title: "Bima Status",
+    //   child: const BimaStatus(),
+    // );
   },
 );
 
@@ -71,12 +205,33 @@ var lifeContributionsAction = ActionItem(
   },
 );
 
+var policyDocumentsAction = ActionItem(
+  label: "Policy Documents",
+  icon: Icons.description,
+  onClick: () async {
+    var res = await openSingleFormField(
+      title: "Search for policy documents",
+      handler: fetchPolicyDocuments,
+    );
+    if (res != null) {
+      openGenericPage(
+        title: "Documents for ${List.from(res).first['policyPropertyName']}",
+        child: PolicyDocumentResults(
+          policies: res,
+        ),
+      );
+    }
+    // openAlert(title: "Changia Bima", child: const SearchLifePolicy());
+  },
+);
+
 var changiaBimaAction = ActionItem(
-    label: "Changia Bima",
-    icon: Icons.savings,
-    onClick: () async {
-      openAlert(title: "Changia Bima", child: const SearchLifePolicy());
-    });
+  label: "Changia Bima",
+  icon: Icons.savings,
+  onClick: () async {
+    openAlert(title: "Changia Bima", child: const SearchLifePolicy());
+  },
+);
 
 var getQuickQuoteAction = ActionItem(
   label: "Get a Quick Quote",

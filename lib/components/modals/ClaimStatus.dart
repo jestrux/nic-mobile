@@ -15,28 +15,33 @@ class ClaimStatus extends StatefulWidget {
 
 class _ClaimStatusState extends State<ClaimStatus> {
   Future<ClaimModel?> getClaim(Map<String, dynamic> values) async {
-    return await ClaimService().getClaim(searchKey: values["searchKey"]);
+    return await ClaimService().getClaim(values["searchKey"]);
   }
 
   showClaimStatus(dynamic claimant) {
     Navigator.of(context).pop();
-    if (claimant == null){
+    if (claimant == null) {
       return openAlert(
-            title: "Claim Status",
-            message: "Failed find your claim",
-            type: AlertType.error
-        );
+          title: "Claim Status",
+          message: "Failed find your claim",
+          type: AlertType.error);
     }
-    var claimAmount  = claimant.claimAmount == '0E-20' ? 0.0 : claimant.claimAmount;
+    var claimAmount =
+        claimant.claimAmount == '0E-20' ? 0.0 : claimant.claimAmount;
     openAlert(
       title: "Policy Details",
       child: KeyValueView(
         data: {
           "Claimant Number": claimant.claimantNumber,
           "Claimant Name": claimant.fullClaimantName,
-          "Intimation Date": {"type": "date", "value": DateFormat('dd/MM/yyyy').parse(claimant.intimationDate)},
+          "Intimation Date": {
+            "type": "date",
+            "value": DateFormat('dd/MM/yyyy').parse(claimant.intimationDate)
+          },
           "Claimed Amount": {"type": "money", "value": claimAmount},
-          "NIC Net-payable": claimant.netPayable > 0 ? {"type": "money", "value": claimant.netPayable} :'Not Yet Calculated',
+          "NIC Net-payable": claimant.netPayable > 0
+              ? {"type": "money", "value": claimant.netPayable}
+              : 'Not Yet Calculated',
           "Status": {
             "type": "status",
             "value": claimant.claimantStatus,
