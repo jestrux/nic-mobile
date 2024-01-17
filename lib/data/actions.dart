@@ -50,7 +50,7 @@ Future<dynamic> openSingleFormField({
       fields: [
         DynamicFormField(
           name: "registrationNumber",
-          label: "Registration Number",
+          label: label,
           placeholder: placeholder,
         ),
       ],
