@@ -17,23 +17,34 @@ class UtilitiesPage extends StatefulWidget {
 class _UtilitiesPageState extends State<UtilitiesPage> {
   List<ActionItem> resources = [
     ActionItem(
-      label: "Claim form",
-      resourceUrl: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
-      action: ActionButton.flat(
-        "Download",
-        leftIcon: Icons.download,
-        onClick: (item) => openUrl(item.resourceUrl),
-      ),
-    ),
-    ActionItem(
-      label: "Vendor form",
+      label: "Policy document",
       resourceUrl: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
       onClick: (item) => openUrl(item.resourceUrl),
-      action: ActionButton.flat(
-        "Download",
-        leftIcon: Icons.download,
-        onClick: (item) => openUrl(item.resourceUrl),
-      ),
+      // action: ActionButton.flat(
+      //   "Download",
+      //   leftIcon: Icons.download,
+      //   onClick: (item) => openUrl(item.resourceUrl),
+      // ),
+    ),
+    ActionItem(
+      label: "Cover note",
+      resourceUrl: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+      onClick: (item) => openUrl(item.resourceUrl),
+      // action: ActionButton.flat(
+      //   "Download",
+      //   leftIcon: Icons.download,
+      //   onClick: (item) => openUrl(item.resourceUrl),
+      // ),
+    ),
+    ActionItem(
+      label: "Tax Invoice",
+      resourceUrl: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+      onClick: (item) => openUrl(item.resourceUrl),
+      // action: ActionButton.flat(
+      //   "Download",
+      //   leftIcon: Icons.download,
+      //   onClick: (item) => openUrl(item.resourceUrl),
+      // ),
     ),
   ];
 

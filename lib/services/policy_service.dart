@@ -58,7 +58,7 @@ Future<Map<String, dynamic>?> renewPolicy(String registrationNumber,
   return initiateProposalResponse;
 }
 
-Future<PolicyModel?> fetchPolicyStatus({String? searchKey}) async {
+Future<PolicyModel?> fetchPolicyStatus(String searchKey) async {
   PolicyModel? policy;
   String queryString = r"""
       query($key: String!, $underwriteChannel: Int!){
@@ -120,4 +120,94 @@ Future<PolicyModel?> fetchPolicyStatus({String? searchKey}) async {
   }
 
   return policy;
+}
+
+Future<List<Map<String, dynamic>>?> fetchPolicyDocuments(
+  String searchKey,
+) async {
+  String queryString = r"""
+      query($searchKey: String!,$underwriteChannel:Int!){
+        allCustomerPolicyGlobalSearchable(orderBy: ["-id"],searchKey:$searchKey,underwriteChannel:$underwriteChannel){
+          pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+            hasPreviousPage
+          }
+          edges{
+            node{
+              id
+              displayName
+              policyPropertyName
+              policyNumber
+              totalPremiumVatExclusive
+              totalPremium
+              premiumVat
+              startDate
+              endDate
+              enforcedDate
+              status
+              statusName
+              isPaid
+              isExpired
+              isLife
+              productName
+              currency {
+                id
+                name
+                code
+              }
+              proposalDocument
+              policyDocument
+              covernoteDocument
+              receiptVoucher
+              taxinvoiceDocument
+            }
+          }
+        }
+      }
+    """;
+
+  final QueryOptions options = QueryOptions(
+    document: gql(queryString),
+    variables: <String, dynamic>{
+      // "searchKey":"t591dtp",
+      "searchKey": searchKey,
+      "underwriteChannel": 2,
+    },
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data == null) {
+    devLog("Policy documents: No data found");
+    throw ("Failed to fetch documents. Please try again.");
+  }
+
+  if (result.data?['allCustomerPolicyGlobalSearchable']?['edges'] == null) {
+    devLog('Policy documents: GraphQL Error: ${result.exception.toString()}');
+    throw ("Failed to fetch documents. Please try again.");
+  }
+
+  var results =
+      List.from(result.data!['allCustomerPolicyGlobalSearchable']['edges']);
+
+  if (results.isEmpty) throw ("No results found matching $searchKey");
+
+  return results.map<Map<String, dynamic>>(
+    (element) {
+      var policy = element["node"];
+      var description = [
+        formatDate(policy['startDate'], format: "dayM"),
+        formatDate(policy['endDate'], format: "dayM"),
+      ].toList().join(" - ");
+
+      return {
+        ...policy,
+        "title": policy['productName'],
+        "description": description,
+      };
+    },
+  ).toList();
 }

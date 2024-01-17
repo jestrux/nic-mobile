@@ -97,7 +97,7 @@ class InlineList extends StatelessWidget {
                             ),
                           ),
                         ),
-                        child: ListItem.fromContent(
+                        child: ListItem.fromAction(
                           entry,
                           flat: true,
                           hasCustomActions: hasCustomActions,
@@ -195,6 +195,7 @@ class InlineListBuilder extends StatelessWidget {
             id: entry["id"],
             label: entry["title"],
             description: entry["description"],
+            onClick: entry["onClick"],
             extraData: entry,
           );
 
@@ -206,7 +207,7 @@ class InlineListBuilder extends StatelessWidget {
 
         bool hasLimit = limit != null && content.length > limit!;
 
-        return itemBuilder != null
+        var list = itemBuilder != null
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: (hasLimit ? content.take(limit!).toList() : content)
@@ -243,6 +244,13 @@ class InlineListBuilder extends StatelessWidget {
                         );
                       }),
               );
+
+        if (padding == null) return list;
+
+        return Padding(
+          padding: padding!,
+          child: list,
+        );
       },
     );
   }

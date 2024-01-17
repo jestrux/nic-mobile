@@ -34,7 +34,7 @@ class ListItem extends StatelessWidget {
     this.onClick,
   }) : super(key: key);
 
-  ListItem.fromContent(ActionItem this.content,
+  ListItem.fromAction(ActionItem this.content,
       {this.flat, this.hasCustomActions, super.key})
       : title = content.label,
         description = content.description,

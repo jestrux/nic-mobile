@@ -155,20 +155,17 @@ var lifeContributionsAction = ActionItem(
 var policyDocumentsAction = ActionItem(
   label: "Policy Documents",
   icon: Icons.description,
-  onClick: () async {
-    var res = await openSingleFormField(
+  onClick: () {
+    openSingleFormField(
       title: "Search for policy documents",
       handler: fetchPolicyDocuments,
-    );
-    if (res != null) {
-      openGenericPage(
-        title: "Documents for ${List.from(res).first['policyPropertyName']}",
+      onSuccess: (res) => openGenericPage(
+        title: "${List.from(res).first['policyPropertyName']} documents",
         child: PolicyDocumentResults(
           policies: res,
         ),
-      );
-    }
-    // openAlert(title: "Changia Bima", child: const SearchLifePolicy());
+      ),
+    );
   },
 );
 

@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:nic/components/ChoiceItem.dart';
 import 'package:nic/components/ClickableContent.dart';
+import 'package:nic/components/DocumentViewer.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/FormButton.dart';
@@ -232,6 +233,17 @@ class AlertContent extends StatelessWidget {
       ),
     );
   }
+}
+
+void openDocument(String path, {String title = ""}) {
+  Navigator.of(Constants.globalAppKey.currentContext!).push(
+    MaterialPageRoute(
+      builder: (context) => DocViewer(
+        title: title,
+        path: path,
+      ),
+    ),
+  );
 }
 
 Future<dynamic> openSingleFormField({
