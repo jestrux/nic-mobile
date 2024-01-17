@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nic/components/ExpandableItem.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/ListItem.dart';
 import 'package:nic/components/PolicyInfo.dart';
 import 'package:nic/models/ActionButton.dart';
-import 'package:nic/models/ActionItem.dart';
-import 'package:nic/models/policy_model.dart';
 import 'package:nic/utils.dart';
 
 class PolicyDocumentResults extends StatelessWidget {
@@ -74,7 +71,6 @@ class PolicyDocumentResults extends StatelessWidget {
         bottom: 18,
       ),
       decoration: BoxDecoration(
-        // color: colorScheme(context).surfaceVariant.withOpacity(0.25),
         color: colorScheme(context).surface,
         border: Border.all(
           width: 0.6,
@@ -84,53 +80,33 @@ class PolicyDocumentResults extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Container(
-          //   decoration: BoxDecoration(
-          //     border: Border(
-          //       bottom: BorderSide(
-          //         width: 0.12,
-          //         color: colorScheme(context).onBackground,
-          //       ),
-          //     ),
-          //   ),
-          //   child: ListItem(
-          //     title: "Policy Details",
-          //     flat: true,
-          //     trailing: const Opacity(
-          //       opacity: 0.5,
-          //       child: Icon(
-          //         Icons.chevron_right,
-          //         size: 20,
-          //       ),
-          //     ),
-          //     onClick: () {
-          //       openBottomSheet(
-          //         title: "Policy Details",
-          //         child: PolicyInfo(
-          //           policy: policy,
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
           ExpandableItem(
             title: "Policy Documents",
-            // child: PolicyInfo(policy: policy),
             child: Column(
               children: [
                 ...getChoices(policy)
                     .map(
-                      (choice) => ListItem(
-                        flat: true,
-                        title: choice["label"],
-                        trailing: const Opacity(
-                          opacity: 0.5,
-                          child: Icon(
-                            Icons.chevron_right,
-                            size: 20,
+                      (choice) => Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(
+                              width: 0.12,
+                              color: colorScheme(context).onBackground,
+                            ),
                           ),
                         ),
-                        onClick: choice["onClick"],
+                        child: ListItem(
+                          flat: true,
+                          title: choice["label"],
+                          trailing: const Opacity(
+                            opacity: 0.5,
+                            child: Icon(
+                              Icons.chevron_right,
+                              size: 20,
+                            ),
+                          ),
+                          onClick: choice["onClick"],
+                        ),
                       ),
                     )
                     .toList()
@@ -140,37 +116,17 @@ class PolicyDocumentResults extends StatelessWidget {
         ],
       ),
     );
-
-    return InlineListBuilder(
-      padding: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        bottom: 12,
-      ),
-      future: () async => [
-        {"title": "Policy Documents", "onClick": (d) => selectDocument(policy)},
-        {
-          "title": "Policy Details",
-          "onClick": (d) => openBottomSheet(
-                title: "Policy Details",
-                child: PolicyInfo(
-                  policy: policy,
-                ),
-              )
-        },
-      ],
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return InlineListBuilder(
-      padding: EdgeInsets.symmetric(horizontal: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       future: () async => policies,
       itemBuilder: (item) {
         return Container(
-          padding: EdgeInsets.only(top: 2),
-          margin: EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.only(top: 2),
+          margin: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: colorScheme(context).surfaceVariant.withOpacity(0.25),
             border: Border.all(
@@ -181,18 +137,9 @@ class PolicyDocumentResults extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // const Divider(thickness: 0.5, height: 16),
-
               ListItem(
                 title: item.label,
                 description: item.description,
-                // trailing: const Opacity(
-                //   opacity: 0.5,
-                //   child: Icon(
-                //     Icons.chevron_right,
-                //     size: 20,
-                //   ),
-                // ),
                 onClick: () {
                   openBottomSheet(
                     title: "Policy Details",
@@ -213,19 +160,7 @@ class PolicyDocumentResults extends StatelessWidget {
                 ),
                 flat: true,
               ),
-              // const Divider(
-              //   thickness: 0.3,
-              //   height: 8,
-              //   indent: 20,
-              //   endIndent: 20,
-              // ),
               _buildDocuments(context, item.extraData),
-              // ExpandableItem(
-              //   child: PolicyInfo(
-              //     policy: item.extraData!,
-              //   ),
-              // ),
-              // const Divider(thickness: 0.5, height: 16),
             ],
           ),
         );
