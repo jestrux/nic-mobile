@@ -118,7 +118,7 @@ class AdsBarOne extends StatelessWidget {
                       Opacity(
                         opacity: 0.9,
                         child: Text(
-                          "Insurance against fire, floods, buglary. Insurance against fire, floods, buglary.",
+                          "Insurance against fire, floods, buglary and \nother sorts of crimes against homes.",
                           maxLines: 2,
                           style: TextStyle(
                             fontSize: 12,
