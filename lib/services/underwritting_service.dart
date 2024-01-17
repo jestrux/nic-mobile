@@ -366,8 +366,8 @@ Future<List<Map<String, dynamic>>?> fetchProposals() async {
   final QueryResult result = await client.query(options);
 
   if (result.data == null) {
-    devLog("Request control number: No data found");
-    throw ("Failed to fetch payment. Please try again later.");
+    devLog("fetch pending proposal: No data found");
+    throw ("Failed to fetch pending proposal. Please try again later.");
   }
 
   if (result.data?['pendingProposals']?['edges'] == null) {
@@ -394,6 +394,90 @@ Future<List<Map<String, dynamic>>?> fetchProposals() async {
       return {
         ...proposal,
         "title": proposal['policyPropertyName'],
+        "description": description,
+      };
+    },
+  ).toList();
+}
+
+
+Future<List<Map<String, dynamic>>?>
+fetchUserPolicies() async {
+  String query = r"""
+  query($loggedOnly:Boolean,$underwriteChannel:Int!){
+    allCustomerPolicyGlobalSearchable(orderBy: ["-id"],loggedOnly:$loggedOnly,underwriteChannel:$underwriteChannel){
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+      edges{
+        node{
+          id
+          displayName
+          policyPropertyName
+          policyNumber
+          totalPremiumVatExclusive
+          totalPremium
+          premiumVat
+          startDate
+          endDate
+          enforcedDate
+          status
+          statusName
+          isPaid
+          isExpired
+          isLife
+          productName
+          currency {
+            id
+            name
+            code
+          }
+          proposalDocument
+          policyDocument
+          covernoteDocument
+          receiptVoucher
+          taxinvoiceDocument
+        }
+      }
+    }
+  }
+    """;
+
+  final QueryOptions options = QueryOptions(
+    document: gql(query),
+    variables: const {'underwriteChannel': 2,'loggedOnly':true},
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data == null) {
+    devLog("allCustomerPolicyGlobalSearchable: No data found");
+    throw ("Failed to fetch policies. Please try again later.");
+  }
+
+  if (result.data?['allCustomerPolicyGlobalSearchable']?['edges'] == null) {
+    devLog('allCustomerPolicyGlobalSearchable: GraphQL Error: ${result.exception.toString()}');
+    throw ("Failed to fetch policies. Please try again.");
+  }
+
+  return List.from(result.data!['allCustomerPolicyGlobalSearchable']['edges'])
+      .map<Map<String, dynamic>>(
+        (element) {
+      var policies = element["node"];
+      var premium = formatMoney(policies['totalPremium'], currency: policies['currency']['code']);
+      var description = List<String?>.from([
+        policies['productName'],
+        premium.toString()
+      ]).where((element) => element != null).toList().join(" - ");
+
+
+      return {
+        ...policies,
+        "title": policies['policyPropertyName'],
         "description": description,
       };
     },

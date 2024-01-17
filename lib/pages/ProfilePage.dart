@@ -12,6 +12,7 @@ import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/auth/ChangeUserId.dart';
 import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:nic/pages/auth/changePassword.dart';
+import 'package:nic/services/life/premium_cards.dart';
 import 'package:nic/services/underwritting_service.dart';
 import 'package:nic/services/claim_service.dart';
 import 'package:nic/utils.dart';
@@ -63,24 +64,49 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return userClaims;
   }
+
+  Future<List<Map<String, dynamic>>?> getUserPolicies() async {
+    AppProvider proposalProvider = Provider.of<AppProvider>(
+      context,
+      listen: false,
+    );
+
+    var userPolicies = proposalProvider.userPolicies;
+
+    if (userPolicies == null) {
+      userPolicies = await fetchUserPolicies();
+
+      if (userPolicies == null) return null;
+
+      proposalProvider.setPolicies(userPolicies);
+    }
+
+    return userPolicies;
+  }
+
+  Future<List<Map<String, dynamic>>?> getUserContributions() async {
+    AppProvider proposalProvider = Provider.of<AppProvider>(
+      context,
+      listen: false,
+    );
+
+    var userContributions = proposalProvider.userContributions;
+
+    if (userContributions == null) {
+      userContributions = await fetchUserLifeContribution();
+
+      if (userContributions == null) return null;
+
+      proposalProvider.setUserContributions(userContributions);
+    }
+
+    return userContributions;
+  }
+
   @override
   void initState() {
     super.initState();
   }
-
-  List<ActionItem> policies = [
-    ActionItem(
-        label: "T124ADC",
-        leading: Icons.directions_car,
-        description: "Expires in two weeks",
-        action: ActionButton.outlined("Renew")),
-    ActionItem(
-      label: "T311LTY",
-      leading: Icons.directions_car,
-      description: "Covered until January 2024",
-      // action: ActionButton.outlined("Renew")
-    ),
-  ];
 
   List<ActionItem> lifeContributions = [
     ActionItem(
@@ -102,8 +128,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     // UserModel? user = context.read<AppProvider>().authUser;
     UserModel? user = Provider.of<AppProvider>(context).authUser;
-    print(user?.totalClaims);
-    print(user?.totalProposals);
+    // print(user?.totalClaims);
+    // print(user?.totalProposals);
     return RoundedHeaderPage(
       title: "Your Profile",
       child: SingleChildScrollView(
@@ -207,21 +233,50 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             const SizedBox(height: 16),
-            InlineList(
+            InlineListBuilder(
               title: "Policies",
-              data: policies,
-              bottomLabel: "+5 more",
-              bottomAction: ActionButton.all("All policies"),
+              limit: 2,
+              future: getUserPolicies,
+              iconBuilder:(d) => Icons.file_present,
+              actionsBuilder: (item) {
+                return [
+                  // MiniButton(
+                  //   label: "Check Status",
+                  //   // filled: true,
+                  //   onClick: () {
+                  //     openInfoAlert(message: "Some alert!");
+                  //   },
+                  // ),
+                ];
+              },
             ),
             const SizedBox(height: 16),
-            InlineList(
-              leading: Icons.paid,
-              title: "Life contributions",
-              titleAction: ActionButton.add("Make Contribution"),
-              data: lifeContributions,
-              bottomLabel: "+12 more",
-              bottomAction: ActionButton.all("All contributions"),
+            // fetchUserLifeContribution
+            InlineListBuilder(
+              title: "Life Contributions",
+              limit: 2,
+              future: getUserContributions,
+              iconBuilder:(d) => Icons.file_present,
+              actionsBuilder: (item) {
+                return [
+                  // MiniButton(
+                  //   label: "Check Status",
+                  //   // filled: true,
+                  //   onClick: () {
+                  //     openInfoAlert(message: "Some alert!");
+                  //   },
+                  // ),
+                ];
+              },
             ),
+            // InlineList(
+            //   leading: Icons.paid,
+            //   title: "Life contributions",
+            //   titleAction: ActionButton.add("Make Contribution"),
+            //   data: lifeContributions,
+            //   bottomLabel: "+12 more",
+            //   bottomAction: ActionButton.all("All contributions"),
+            // ),
           ],
         ),
       ),

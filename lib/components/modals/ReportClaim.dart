@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/KeyValueView.dart';
+import 'package:nic/constants.dart';
 import 'package:nic/models/policy_model.dart';
 import 'package:nic/pages/ReportClaimFormPage.dart';
 import 'package:nic/services/claim_service.dart';
@@ -20,23 +21,24 @@ class _ReportClaimState extends State<ReportClaim> {
         .initiateReportClaim(values["registrationNumber"]);
   }
 
-  reportClaimResponse(dynamic claim) {
-    // print(claim);
-    Navigator.of(context).pop();
-    if (claim == null) {
-      return openAlert(
-          title: "Report Claim",
-          message:
-              "Failed find your insured item, communicate with NIC nearest branch.",
-          type: AlertType.error);
-    } else if (claim['success'] == true) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ReportClaimForm(
-            claimForm: claim['form'],
-            formId: claim['proposal'],
-            viewMode: 1,
+    reportClaimResponse(dynamic claim) {
+      // print(claim);
+      Navigator.of(context).pop();
+      if (claim == null){
+        return openAlert(
+            title: "Report Claim",
+            message: "Failed find your insured item, communicate with NIC nearest branch. ${Constants.supportPhoneNumber}",
+            type: AlertType.error
+        );
+      }else if(claim['success'] == true){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReportClaimForm(
+              claimForm: claim['form'],
+              formId: claim['proposal'],
+              viewMode: 1,
+            ),
           ),
         ),
       );
