@@ -317,6 +317,7 @@ void openSuccessAlert({
 void openGenericPage({
   required Widget child,
   String? title,
+  String? subtitle,
   EdgeInsets? padding,
   String okayText = "Okay",
   Function? onOkay,
@@ -330,6 +331,36 @@ void openGenericPage({
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (subtitle != null && subtitle.isNotEmpty)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 16,
+                ),
+                decoration: BoxDecoration(
+                  color: colorScheme(context).onSurface.withOpacity(0.06),
+                  border: Border(
+                    bottom: BorderSide(
+                      width: 0.1,
+                      color: colorScheme(context).onSurface.withOpacity(0.5),
+                    ),
+                  ),
+                ),
+                // child: Text(
+                //   subtitle,
+                //   textAlign: TextAlign.center,
+                //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                //         fontWeight: FontWeight.w600,
+                //       ),),
+                child: Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontSize: 18,
+                      ),
+                ),
+              ),
             Expanded(
               child: SingleChildScrollView(
                 padding: padding ?? const EdgeInsets.symmetric(vertical: 12),

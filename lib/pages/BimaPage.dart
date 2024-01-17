@@ -4,6 +4,7 @@ import 'package:nic/components/ClickableContent.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
+import 'package:nic/components/ProductDetail.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/constants.dart';
@@ -101,81 +102,9 @@ class _BimaPageState extends State<BimaPage> {
   void viewProductDetail(ActionItem action) {
     openGenericPage(
       title: "Product Detail",
+      subtitle: action.label,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            action.label,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            action.description!,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  height: 2,
-                ),
-          ),
-          const SizedBox(height: 28),
-          Text(
-            "Product Benefits",
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  // fontWeight: FontWeight.bold,
-                  color: Constants.primaryColor,
-                ),
-          ),
-          const SizedBox(height: 12),
-          InlineListBuilder(
-            future: () async {
-              return action.extraData!["benefits"];
-            },
-            itemBuilder: (item) => Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 7, right: 12),
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: colorScheme(context).surfaceVariant,
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.label,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: colorScheme(context).onBackground,
-                        ),
-                        // style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        //       fontWeight: FontWeight.w600,
-                        //     ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        item.description!,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: colorScheme(context).onBackground,
-                          height: 1.8,
-                        ),
-                        // style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        //       height: 1.8,
-                        //     ),
-                      ),
-                      const Divider(thickness: 0.1, height: 24),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      child: ProductDetail(product: action),
       okayText: " Purchase ",
       onOkay: () => purchaseProduct(action),
       cancelText: "Get a quote",

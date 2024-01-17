@@ -32,6 +32,7 @@ class FormActions extends StatelessWidget {
     var defaultPadding = onBottomSheet
         ? const EdgeInsets.only(
             top: 12,
+            bottom: 12,
             left: 24,
             right: 24,
           )
@@ -41,15 +42,10 @@ class FormActions extends StatelessWidget {
           );
 
     var content = onCancel == null
-        ? Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-            ),
-            child: FormButton.filled(
-              okayText,
-              loading: loading,
-              onClick: () => onOkay(),
-            ),
+        ? FormButton.filled(
+            okayText,
+            loading: loading,
+            onClick: () => onOkay(),
           )
         : Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -71,7 +67,7 @@ class FormActions extends StatelessWidget {
           );
 
     return Container(
-      padding: onCancel == null ? null : padding ?? defaultPadding,
+      padding: padding ?? defaultPadding,
       decoration: BoxDecoration(
         // border: Border(
         //   top: BorderSide(

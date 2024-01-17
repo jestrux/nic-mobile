@@ -270,7 +270,8 @@ void handlePurchaseProduct(
   if (buyForOtherCheck == null) return;
 
   openGenericPage(
-    title: "Purchase ${product.label}",
+    title: "Purchase Product",
+    subtitle: product.label,
     child: InitialProductForm(
       productId: product.id!,
       productName: product.label,
