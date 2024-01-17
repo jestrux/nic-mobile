@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:nic/components/ChoiceItem.dart';
 import 'package:nic/components/ClickableContent.dart';
+import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/FormButton.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
@@ -231,6 +232,58 @@ class AlertContent extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<dynamic> openSingleFormField({
+  String title = "Search policy",
+  String label = "Registration Number",
+  String placeholder = "Enter policy number or plate number",
+  String errorMessage = "Unknown error. Please try again.",
+  required Future Function(String searchKey) handler,
+  void Function(dynamic result)? onSuccess,
+  void Function(dynamic error)? onError,
+}) async {
+  void onPop([dynamic value]) =>
+      Navigator.of(Constants.globalAppKey.currentContext!).pop(value);
+
+  void handleError([dynamic error]) {
+    onPop();
+
+    if (onError != null) return onError(error);
+
+    openAlert(
+      title: "$title failed!",
+      message: error,
+      type: AlertType.error,
+    );
+  }
+
+  return await openAlert(
+    title: title,
+    child: DynamicForm(
+      payloadFormat: DynamicFormPayloadFormat.regular,
+      fields: [
+        DynamicFormField(
+          name: "registrationNumber",
+          label: label,
+          placeholder: placeholder,
+        ),
+      ],
+      onCancel: onPop,
+      // submitLabel: "Report",
+      onSubmit: (Map<String, dynamic> values) async => await handler(
+        values["registrationNumber"],
+      ),
+      onSuccess: (response) {
+        if (response == null) return handleError(errorMessage);
+
+        onPop(response);
+
+        if (onSuccess != null) onSuccess(response);
+      },
+      onError: (error, formData) => handleError(error),
+    ),
+  );
 }
 
 Future<dynamic> openAlert({
