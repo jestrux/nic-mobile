@@ -7,7 +7,6 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nic/components/FormActions.dart';
-import 'package:nic/components/FormButton.dart';
 import 'package:nic/components/FormInput.dart';
 import 'package:nic/components/VideoThumbnailImage.dart';
 import 'package:nic/pages/PlayVideoPage.dart';
@@ -26,7 +25,8 @@ enum DynamicFormFieldType {
   password,
   file,
   video,
-  phoneNumber
+  phoneNumber,
+  hidden
 }
 
 var keyboardTypeMap = {
@@ -37,6 +37,7 @@ var keyboardTypeMap = {
 };
 
 var dynamicFormFieldTypeMap = {
+  "hidden": DynamicFormFieldType.hidden,
   "video": DynamicFormFieldType.video,
   "file": DynamicFormFieldType.file,
   "text": DynamicFormFieldType.text,
@@ -87,6 +88,8 @@ class DynamicFormField {
   final dynamic max;
   final String? tags;
   final bool required;
+  final bool autoFocus;
+  final bool disabled;
   final bool canClear;
   final Function? show;
 
@@ -99,6 +102,8 @@ class DynamicFormField {
     this.min,
     this.max,
     this.tags,
+    this.autoFocus = false,
+    this.disabled = false,
     this.canClear = false,
     this.required = true,
     this.show,
@@ -312,7 +317,7 @@ class _DynamicFormState extends State<DynamicForm> {
 
                   return FormField(
                     field: field,
-                    autoFocus: widget.fields.length == 1,
+                    autoFocus: widget.fields.length == 1 || field.autoFocus,
                     choicePickerMode: widget.choicePickerMode,
                     autoValidate: submitAttempted &&
                         (form?.fields[field.name]?.isDirty ?? false),
@@ -374,6 +379,8 @@ class FormField extends StatelessWidget {
       ]),
       builder: (FormFieldState<dynamic> fieldState) {
         List<String> allErrors = [];
+
+        if (field.type == DynamicFormFieldType.hidden) return Container();
 
         if (fieldState.errorText != null) allErrors.add(fieldState.errorText!);
         if (errors != null) allErrors.addAll(errors!);
@@ -706,7 +713,7 @@ class FormField extends StatelessWidget {
           leading: leading,
           value: selectedValueLabel ?? fieldState.value,
           icon: icon,
-          onClick: onClick,
+          onClick: field.disabled ? () => {} : onClick,
           autoFocus: autoFocus,
           obscureText: field.type == DynamicFormFieldType.password,
           onChange: (value) {

@@ -50,18 +50,14 @@ class _PaymentInformationState extends State<PaymentInformation> {
         });
       },
       onSubmit: (data) {
-        return fetchPaymentInformation(
-          controlNumber: data['controlNumber'],
-        );
+        return fetchPaymentInformation(data['controlNumber']);
+      },
+      onError: (error, data) {
+        setState(() {
+          error = error;
+        });
       },
       onSuccess: (response) {
-        if (response == null || response["controlNumber"] == null) {
-          setState(() {
-            error = "Control number not found";
-          });
-          return;
-        }
-
         Navigator.of(context).pop();
 
         if (widget.skipPaymentPreview) {
@@ -82,10 +78,7 @@ class _PaymentInformationState extends State<PaymentInformation> {
           okayText: "Pay now",
           onOkay: response["isPaid"] ?? false
               ? null
-              : () {
-                  Navigator.of(context).pop();
-                  openPaymentForm(response);
-                },
+              : () => Navigator.of(context).pop(response),
           child: Padding(
             padding: const EdgeInsets.only(top: 4),
             child: KeyValueView(
@@ -115,7 +108,7 @@ class _PaymentInformationState extends State<PaymentInformation> {
               },
             ),
           ),
-        );
+        ).then((value) => openPaymentForm(value));
       },
     );
   }

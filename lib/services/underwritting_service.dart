@@ -27,26 +27,14 @@ Future<List<dynamic>?> getInitialProductForm({
   GraphQLClient client = await DataConnection().connectionClient();
   final QueryResult result = await client.query(options);
 
-  List<dynamic>? initialForm;
-
-  if (result.data == null) {
-    devLog("Init quotation: No data found");
-    throw ("Failed to fetch form. Please try again later.");
+  if (result.data?['initialForm'] == null) {
+    devLog("Init quotation: Failed to fetch form");
+    throw ("Failed to purchase product. Please try again later.");
   }
 
-  var initialFormResponse = result.data!['initialForm'];
-
-  if (initialFormResponse == null) {
-    throw ("Failed to fetch quotation. Please try again later.");
-  }
-
-  var fullinitialForm = jsonDecode(
-    jsonDecode(initialFormResponse),
-  );
-
-  initialForm = List.from(fullinitialForm);
-
-  return initialForm;
+  return List.from(jsonDecode(
+    jsonDecode(result.data!['initialForm']),
+  ));
 }
 
 Future<Map<String, dynamic>?> fetchProposalForm({

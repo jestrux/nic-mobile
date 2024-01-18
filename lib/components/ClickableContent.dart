@@ -12,16 +12,16 @@ class ClickableContent extends StatelessWidget {
     super.key,
     this.child,
     this.inkColor,
-    this.onClick = Constants.randoFunction,
+    this.onClick,
     this.padding = EdgeInsets.zero,
     this.border,
   });
 
   @override
   Widget build(BuildContext context) {
-    var actualColor = inkColor ?? colorScheme(context).surfaceVariant;
-
-    if (onClick == null) return child ?? Container();
+    var actualColor = onClick == null
+        ? Colors.transparent
+        : inkColor ?? colorScheme(context).surfaceVariant;
 
     return Material(
       type: MaterialType.transparency,
@@ -34,15 +34,17 @@ class ClickableContent extends StatelessWidget {
           focusColor: actualColor,
           highlightColor: actualColor,
           splashColor: actualColor,
-          onTap: () {
-            try {
-              onClick!();
-            } catch (e) {
-              var offset = (context.findRenderObject() as RenderBox)
-                  .localToGlobal(Offset.zero);
-              onClick!(offset);
-            }
-          },
+          onTap: onClick == null
+              ? null
+              : () {
+                  try {
+                    onClick!();
+                  } catch (e) {
+                    var offset = (context.findRenderObject() as RenderBox)
+                        .localToGlobal(Offset.zero);
+                    onClick!(offset);
+                  }
+                },
           child: Padding(
             padding: padding,
             child: child,

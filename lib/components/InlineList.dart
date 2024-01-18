@@ -134,7 +134,7 @@ class InlineList extends StatelessWidget {
   }
 }
 
-class InlineListBuilder extends StatelessWidget {
+class InlineListBuilder extends StatefulWidget {
   final String? title;
   final ActionButton? titleAction;
   final EdgeInsets? padding;
@@ -158,10 +158,17 @@ class InlineListBuilder extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  Widget? _buildActions(ActionItem item) {
-    if (actionsBuilder == null) return null;
+  @override
+  State<InlineListBuilder> createState() => _InlineListBuilderState();
+}
 
-    List<Widget>? itemActions = actionsBuilder!(item);
+class _InlineListBuilderState extends State<InlineListBuilder> {
+  Key key = GlobalKey();
+
+  Widget? _buildActions(ActionItem item) {
+    if (widget.actionsBuilder == null) return null;
+
+    List<Widget>? itemActions = widget.actionsBuilder!(item);
 
     if (itemActions == null) return null;
 
@@ -180,13 +187,40 @@ class InlineListBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: future(),
+      key: key,
+      future: widget.future(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Loader();
+        Widget? nonContentScreen;
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          nonContentScreen = const PlaceholderLoader();
+        } else if (!snapshot.hasData) {
+          nonContentScreen = EmptyState(
+            message: "Failed to load data...",
+            action: ActionButton.flat(
+              "Retry",
+              onClick: (d) {
+                setState(() {
+                  key = GlobalKey();
+                });
+              },
+            ),
+          );
+        } else if (snapshot.data!.isEmpty) {
+          nonContentScreen = EmptyState(
+            message: widget.emptyStateMessage,
+          );
+        }
 
-        if (snapshot.data == null) {
-          return EmptyState(
-            message: emptyStateMessage,
+        if (nonContentScreen != null) {
+          if (widget.title == null) return nonContentScreen;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.title != null) SectionTitle(title: widget.title!),
+              const SizedBox(height: 4),
+              nonContentScreen,
+            ],
           );
         }
 
@@ -200,29 +234,33 @@ class InlineListBuilder extends StatelessWidget {
           );
 
           return item.cloneWith(
-            leading: iconBuilder == null ? null : iconBuilder!(item),
+            leading:
+                widget.iconBuilder == null ? null : widget.iconBuilder!(item),
             trailing: _buildActions(item),
           );
         }).toList();
 
-        bool hasLimit = limit != null && content.length > limit!;
+        bool hasLimit = widget.limit != null && content.length > widget.limit!;
 
-        var list = itemBuilder != null
+        var list = widget.itemBuilder != null
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: (hasLimit ? content.take(limit!).toList() : content)
-                    .map(
-                      (action) => itemBuilder!(action),
-                    )
-                    .toList(),
+                children:
+                    (hasLimit ? content.take(widget.limit!).toList() : content)
+                        .map(
+                          (action) => widget.itemBuilder!(action),
+                        )
+                        .toList(),
               )
             : InlineList(
-                hasCustomActions: actionsBuilder != null,
-                data: (hasLimit ? content.take(limit!).toList() : content),
-                title: title,
-                titleAction: titleAction,
-                bottomLabel:
-                    !hasLimit ? null : "+${content.length - limit!} more",
+                hasCustomActions: widget.actionsBuilder != null,
+                data:
+                    (hasLimit ? content.take(widget.limit!).toList() : content),
+                title: widget.title,
+                titleAction: widget.titleAction,
+                bottomLabel: !hasLimit
+                    ? null
+                    : "+${content.length - widget.limit!} more",
                 bottomAction: !hasLimit
                     ? null
                     : ActionButton.all("View all", onClick: (p0) {
@@ -233,10 +271,10 @@ class InlineListBuilder extends StatelessWidget {
                             left: 16,
                             right: 16,
                           ),
-                          title: title,
+                          title: widget.title,
                           child: InlineListBuilder(
-                            iconBuilder: iconBuilder,
-                            actionsBuilder: actionsBuilder,
+                            iconBuilder: widget.iconBuilder,
+                            actionsBuilder: widget.actionsBuilder,
                             future: () async {
                               return snapshot.data!;
                             },
@@ -245,10 +283,10 @@ class InlineListBuilder extends StatelessWidget {
                       }),
               );
 
-        if (padding == null) return list;
+        if (widget.padding == null) return list;
 
         return Padding(
-          padding: padding!,
+          padding: widget.padding!,
           child: list,
         );
       },
