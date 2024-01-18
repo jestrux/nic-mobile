@@ -69,4 +69,34 @@ class AppProvider with ChangeNotifier, DiagnosticableTreeMixin {
     _branches = (_branches ?? [])..addAll(branches);
     notifyListeners();
   }
+//   USER POLICIES
+  List<Map<String, dynamic>>? _userPolicies;
+
+  List<Map<String, dynamic>>? get userPolicies => _userPolicies;
+
+  void setPolicies(List<Map<String, dynamic>> userPolicies) {
+    _userPolicies = (_userPolicies ?? [])..addAll(userPolicies);
+    notifyListeners();
+  }
+
+  void clearPolicies() {
+    _userPolicies?.clear();
+    notifyListeners();
+  }
+
+
+//  USER LIFE CONTRIBUTIONS
+  List<Map<String, dynamic>>? _userContributions;
+
+  List<Map<String, dynamic>>? get userContributions => _userContributions;
+
+  void setUserContributions(List<Map<String, dynamic>> userContributions) {
+    _userContributions = (_userContributions ?? [])..addAll(userContributions);
+    notifyListeners();
+  }
+
+  void clearUserContributions() {
+    _userContributions?.clear();
+    notifyListeners();
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:nic/models/life/premiumCardModel.dart';
 import 'package:nic/services/data_connection.dart';
+import 'package:nic/utils.dart';
 
 getTotalCollectedPremium({String? policyId}) async {
   var totalPremium;
@@ -68,3 +69,49 @@ Future<List<PremiumCardModel>> getPolicyPremiumCards({String? policyId}) async {
   }
   return premiumCards;
 }
+
+
+Future<List<Map<String, dynamic>>?>
+    fetchUserLifeContribution() async {
+  String query = r"""
+    query($loggedOnly:Boolean,$policyId:String!){
+      lifePolicyPremiumCards(loggedOnly:$loggedOnly,policyId:$policyId){
+        id, 
+        amount,
+        allocation{
+          id,
+          allocationDate
+        }
+      }
+    }
+    """;
+
+  final QueryOptions options = QueryOptions(
+    document: gql(query),
+    variables: const {'loggedOnly':true,'policyId':''},
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+  if (result.data == null) {
+    devLog("user lifePolicyPremiumCards: No data found");
+    throw ("Failed to fetch user lifePolicyPremiumCards. Please try again later.");
+  }
+
+  if (result.data?['lifePolicyPremiumCards'] == null) {
+    devLog('lifePolicyPremiumCards: GraphQL Error: ${result.exception.toString()}');
+    throw ("Failed to fetch lifePolicyPremiumCards. Please try again.");
+  }
+
+  return List.from(result.data!['lifePolicyPremiumCards'])
+      .map<Map<String, dynamic>>(
+    (element) {
+      return {
+        ...element,
+        "title":formatMoney(element['amount'], currency: "TZS"),
+        "description": formatDate(element['allocation']['allocationDate'], format: "dayM"),
+      };
+    },
+  ).toList();
+}
+
