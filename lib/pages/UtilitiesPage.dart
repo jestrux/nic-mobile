@@ -125,12 +125,12 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
               shape: ActionItemShape.rounded,
               columns: 2,
             ),
-            const SizedBox(height: 16),
-            InlineList(
-              title: "Resources",
-              data: resources,
-              leading: Icons.description,
-            ),
+            // const SizedBox(height: 16),
+            // InlineList(
+            //   title: "Resources",
+            //   data: resources,
+            //   leading: Icons.description,
+            // ),
             const SizedBox(height: 20),
             PageSection(
               padding: EdgeInsets.zero,
