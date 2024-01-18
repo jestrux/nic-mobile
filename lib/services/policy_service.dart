@@ -101,25 +101,12 @@ Future<PolicyModel?> fetchPolicyStatus(String searchKey) async {
 
   GraphQLClient client = await DataConnection().connectionClient();
   final QueryResult result = await client.query(options);
-  if (result.data != null) {
-    if (result.data!['checkCustomerPolicyStatus']['edges'].length > 0) {
-      var policyMap =
-          result.data!['checkCustomerPolicyStatus']['edges'][0]['node'];
-      policy = PolicyModel.fromMap(policyMap);
-      // policy = PolicyModel(
-      //   policyPropertyName: policyMap['policyPropertyName'],
-      //   policyNumber: policyMap['policyNumber'],
-      //   startDate: policyMap['startDate'],
-      //   endDate: policyMap['endDate'],
-      //   isExpired: policyMap['isExpired'],
-      //   isLife: policyMap['isLife'],
-      //   productName:
-      //       "${policyMap['product']['productClass']['name']} ${policyMap['product']['name']}",
-      // );
-    }
+  if (result.data?['checkCustomerPolicyStatus']?['edges'].length < 1) {
+    throw ("No policy found for $searchKey");
   }
 
-  return policy;
+  return PolicyModel.fromMap(
+      result.data!['checkCustomerPolicyStatus']['edges'][0]['node']);
 }
 
 Future<List<Map<String, dynamic>>?> fetchPolicyDocuments(

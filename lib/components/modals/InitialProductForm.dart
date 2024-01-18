@@ -101,10 +101,13 @@ class _InitialProductFormState extends State<InitialProductForm> {
                 if (error.toString().contains("Policy exists - ")) {
                   Navigator.pop(context);
 
-                  String? registrationNumber = List.from(formData["data"])
-                      .singleWhere((field) => field["field_name"]
-                          .toString()
-                          .contains("Registration_number"))?["answer"];
+                  String? registrationNumber =
+                      List.from(formData["data"]).firstWhere(
+                    (field) => field["field_name"]
+                        .toString()
+                        .contains("Registration_number"),
+                    orElse: () => null,
+                  )?["answer"];
 
                   var res = await openPrompt(
                     title: "Policy already exists!",

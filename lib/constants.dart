@@ -8,8 +8,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 // Devastator@1
 
 // Sample user uat
-// effort.mlimbila@nicinsurance.co.tz
-// devastator
+// effort.mlimbila
+// Devastator@1
 
 class Constants {
   static const primaryColor = Color(0xFF2E6B27);

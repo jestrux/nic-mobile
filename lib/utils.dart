@@ -263,10 +263,9 @@ Future<dynamic> openSingleFormField({
 
     if (onError != null) return onError(error);
 
-    openAlert(
+    openErrorAlert(
       title: "$title failed!",
       message: error,
-      type: AlertType.error,
     );
   }
 

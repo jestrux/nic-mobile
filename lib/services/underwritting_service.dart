@@ -10,14 +10,16 @@ bool productIsNonMotor({required String productId}) =>
 Future<List<dynamic>?> getInitialProductForm({
   required String productId,
 }) async {
-  String queryString = r"""query($product: ID!, $underwriteChannel: Int!) {
-    initialForm(product: $product, underwriteChannel: $underwriteChannel)
+  String queryString =
+      r"""query($product: ID!, $underwriteChannel: Int!, $check: Boolean!) {
+    initialForm(product: $product, underwriteChannel: $underwriteChannel, check: $check)
   }""";
 
   final QueryOptions options = QueryOptions(
     document: gql(queryString),
     variables: <String, dynamic>{
       "product": productId,
+      "check": true,
       "underwriteChannel": 2,
     },
   );
@@ -117,8 +119,9 @@ Future<Map<String, dynamic>?> initiateProposal({
     }
   }""";
 
-  var phoneNumber = List.from(data)
-      .singleWhere((field) => field["field_name"] == "owner_phone")?["answer"];
+  String? phoneNumber = List.from(data).firstWhere(
+      (field) => field["field_name"] == "owner_phone",
+      orElse: () => null)?["answer"];
 
   final QueryOptions options = QueryOptions(
     document: gql(queryString),
@@ -164,7 +167,7 @@ Future<Map<String, dynamic>?> initiateProposal({
   return fetchProposalForm(
     productId: productId,
     proposal: initiateProposalResponse["proposal"],
-    phoneNumber: phoneNumber,
+    phoneNumber: phoneNumber ?? "",
   );
 }
 
