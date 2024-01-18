@@ -190,25 +190,37 @@ class _InlineListBuilderState extends State<InlineListBuilder> {
       key: key,
       future: widget.future(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Loader();
-
-        if (snapshot.data == null) {
-          return EmptyState(
-            message: "Error fetching data.",
-            action: ActionItem(
-              label: "Retry",
-              onClick: () {
+        Widget? nonContentScreen;
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          nonContentScreen = const PlaceholderLoader();
+        } else if (!snapshot.hasData) {
+          nonContentScreen = EmptyState(
+            message: "Failed to load data...",
+            action: ActionButton.flat(
+              "Retry",
+              onClick: (d) {
                 setState(() {
                   key = GlobalKey();
                 });
               },
             ),
           );
+        } else if (snapshot.data!.isEmpty) {
+          nonContentScreen = EmptyState(
+            message: widget.emptyStateMessage,
+          );
         }
 
-        if (snapshot.data!.isEmpty) {
-          return EmptyState(
-            message: widget.emptyStateMessage,
+        if (nonContentScreen != null) {
+          if (widget.title == null) return nonContentScreen;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.title != null) SectionTitle(title: widget.title!),
+              const SizedBox(height: 4),
+              nonContentScreen,
+            ],
           );
         }
 
