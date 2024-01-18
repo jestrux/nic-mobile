@@ -13,6 +13,7 @@ import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/components/FormActions.dart';
 import 'package:nic/components/FormButton.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
+import 'package:nic/components/modals/MakePayment.dart';
 import 'package:nic/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -242,6 +243,20 @@ void openDocument(String path, {String title = ""}) {
         title: title,
         path: path,
       ),
+    ),
+  );
+}
+
+Future<dynamic> openPaymentForm(
+  Map<String, dynamic> data, {
+  String title = "Make Payment",
+}) {
+  return openAlert(
+    title: "Make Payment",
+    child: MakePayment(
+      amount: data["BillAmount"],
+      controlNumber: data["controlNumber"],
+      phoneNumber: data["payerPhone"],
     ),
   );
 }

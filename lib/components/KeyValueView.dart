@@ -27,11 +27,13 @@ Map<String, dynamic> KeyValueBuilder({
 class KeyValueView extends StatelessWidget {
   final String? title;
   final bool? striped;
+  final bool? bordered;
   final Map<String, dynamic> data;
   const KeyValueView({
     Key? key,
     this.title,
     this.striped,
+    this.bordered,
     required this.data,
   }) : super(key: key);
 
@@ -119,12 +121,31 @@ class KeyValueView extends StatelessWidget {
                   );
                 }
 
+                var keyIndex = keys.indexOf(key);
+                var isEvenRow = keyIndex % 2 == 0;
+                var isStriped = (striped ?? true) && !isEvenRow;
+                var isBordered = (bordered ?? false) &&
+                    isEvenRow &&
+                    keyIndex != keys.length - 1;
+
                 return MapEntry(
                   key,
                   Container(
-                    color: !(striped ?? true) || keys.indexOf(key) % 2 == 0
-                        ? null
-                        : colorScheme(context).onSurface.withOpacity(0.06),
+                    decoration: BoxDecoration(
+                      color: !isStriped
+                          ? null
+                          : colorScheme(context).onSurface.withOpacity(0.06),
+                      border: !isBordered
+                          ? null
+                          : Border(
+                              bottom: BorderSide(
+                                width: 1,
+                                color: colorScheme(context)
+                                    .onBackground
+                                    .withOpacity(0.1),
+                              ),
+                            ),
+                    ),
                     padding: padding,
                     constraints: const BoxConstraints(
                       minHeight: 36,

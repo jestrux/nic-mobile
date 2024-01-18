@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nic/components/InlineList.dart';
 import 'package:nic/components/MiniButton.dart';
@@ -6,7 +5,6 @@ import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/data/preferences.dart';
 import 'package:nic/data/providers/AppProvider.dart';
-import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/auth/ChangeUserId.dart';
@@ -26,7 +24,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-
   Future<List<Map<String, dynamic>>?> getPendingBima() async {
     AppProvider proposalProvider = Provider.of<AppProvider>(
       context,
@@ -192,10 +189,11 @@ class _ProfilePageState extends State<ProfilePage> {
               title: "Pending Bima",
               limit: 2,
               future: getPendingBima,
-              iconBuilder:(d) => Icons.pending_actions,
+              iconBuilder: (d) => Icons.pending_actions,
               actionsBuilder: (item) {
                 return [
-                  if (item.extraData?["controlNumber"] == null && item.extraData?["isPaid"] == false)
+                  if (item.extraData?["controlNumber"] == null &&
+                      item.extraData?["isPaid"] == false)
                     MiniButton(
                       label: "Get Bill No.",
                       // filled: true,
@@ -203,12 +201,24 @@ class _ProfilePageState extends State<ProfilePage> {
                         openInfoAlert(message: "Some alert!");
                       },
                     ),
-                  if (item.extraData?["controlNumber"] != null && item.extraData?["isPaid"] == false)
+                  if (item.extraData?["controlNumber"] != null &&
+                      item.extraData?["isPaid"] == false)
                     MiniButton(
                       label: "Pay Now",
                       filled: true,
-                      onClick: () {
-                        openInfoAlert(message: "Some alert!");
+                      onClick: (d) {
+                        var data = item.extraData!;
+                        devLog("Control number: ${data["controlNumber"]}");
+
+                        openPaymentForm(
+                          {
+                            "amount": data["actualPremium"],
+                            "controlNumber": data["controlNumber"].toString(),
+                            "phoneNumber": "",
+                          },
+                          title:
+                              "Make Payment for ${data['policyPropertyName']}",
+                        );
                       },
                     )
                 ];
@@ -219,16 +229,16 @@ class _ProfilePageState extends State<ProfilePage> {
               title: "Recent Claims",
               limit: 2,
               future: getReportClaims,
-              iconBuilder:(d) => Icons.post_add,
+              iconBuilder: (d) => Icons.post_add,
               actionsBuilder: (item) {
                 return [
-                    MiniButton(
-                      label: "Check Status",
-                      // filled: true,
-                      onClick: () {
-                        openInfoAlert(message: "Some alert!");
-                      },
-                    ),
+                  MiniButton(
+                    label: "Check Status",
+                    // filled: true,
+                    onClick: () {
+                      openInfoAlert(message: "Some alert!");
+                    },
+                  ),
                 ];
               },
             ),
@@ -237,7 +247,7 @@ class _ProfilePageState extends State<ProfilePage> {
               title: "Policies",
               limit: 2,
               future: getUserPolicies,
-              iconBuilder:(d) => Icons.file_present,
+              iconBuilder: (d) => Icons.file_present,
               actionsBuilder: (item) {
                 return [
                   // MiniButton(
@@ -251,12 +261,11 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             const SizedBox(height: 16),
-            // fetchUserLifeContribution
             InlineListBuilder(
               title: "Life Contributions",
               limit: 2,
               future: getUserContributions,
-              iconBuilder:(d) => Icons.file_present,
+              iconBuilder: (d) => Icons.file_present,
               actionsBuilder: (item) {
                 return [
                   // MiniButton(
@@ -269,14 +278,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ];
               },
             ),
-            // InlineList(
-            //   leading: Icons.paid,
-            //   title: "Life contributions",
-            //   titleAction: ActionButton.add("Make Contribution"),
-            //   data: lifeContributions,
-            //   bottomLabel: "+12 more",
-            //   bottomAction: ActionButton.all("All contributions"),
-            // ),
           ],
         ),
       ),

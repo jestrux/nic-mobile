@@ -7,13 +7,13 @@ import 'package:nic/components/life/searchPolicies.dart';
 import 'package:nic/components/modals/BimaRenewal.dart';
 import 'package:nic/components/modals/GetQuote.dart';
 import 'package:nic/components/modals/InitialProductForm.dart';
-import 'package:nic/components/modals/PaymentInformation.dart';
 import 'package:nic/components/modals/ProductsByTag.dart';
 import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/ReportClaimFormPage.dart';
 import 'package:nic/services/claim_service.dart';
+import 'package:nic/services/payment_service.dart';
 import 'package:nic/services/policy_service.dart';
 import 'package:nic/utils.dart';
 import 'package:nic/constants.dart';
@@ -220,11 +220,73 @@ var makePaymentAction = ActionItem(
 
     if (selectedChoice == null) return;
 
-    openAlert(
-      title: "Enter payment control number",
-      child: PaymentInformation(
-        skipPaymentPreview: selectedChoice == "Pay Now",
-      ),
+    var payingNow = selectedChoice == "Pay Now";
+
+    openSingleFormField(
+      title: payingNow ? "Make Payment" : "Fetch Payment Information",
+      label: "Enter Control Number",
+      placeholder: "",
+      handler: fetchPaymentInformation,
+      onSuccess: (response) {
+        var context = Constants.globalAppKey.currentContext!;
+        var paymentInfo = {
+          "amount": response["BillAmount"],
+          "controlNumber": response["controlNumber"],
+          "phoneNumber": response["payerPhone"],
+        };
+
+        if (payingNow) {
+          if (response["isPaid"] ?? false) {
+            openInfoAlert(
+              message: "Payment already been made for this control number.",
+            );
+            return;
+          }
+
+          openPaymentForm(paymentInfo);
+
+          return;
+        }
+
+        openAlert(
+          title: "Payment Information",
+          cancelText: "Close",
+          onCancel: () => Navigator.of(context).pop(),
+          okayText: "Pay now",
+          onOkay: response["isPaid"] ?? false
+              ? null
+              : () => Navigator.of(context).pop(response),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: KeyValueView(
+              data: {
+                "Payment for": response["description"],
+                "Receipt #": response["receiptNumber"],
+                "Created on": KeyValueBuilder(
+                  type: KeyValueType.date,
+                  value: response["BillGenDt"],
+                ),
+                "Due by": KeyValueBuilder(
+                  type: KeyValueType.date,
+                  value: response["BillExpDt"],
+                ),
+                "Amount": KeyValueBuilder(
+                  type: KeyValueType.money,
+                  value: response["BillAmount"],
+                ),
+                "Status": KeyValueBuilder(
+                  value: response["isPaid"] ? "Paid" : "Pending",
+                  type: KeyValueType.status,
+                  statusVariant: response["isPaid"]
+                      ? KeyValueStatusVariant.success
+                      : KeyValueStatusVariant.warning,
+                ),
+                "Payer": "${response['payerName']}( ${response['payerPhone']} )"
+              },
+            ),
+          ),
+        ).then((value) => openPaymentForm(paymentInfo));
+      },
     );
   },
 );

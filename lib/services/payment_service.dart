@@ -2,9 +2,9 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:nic/services/data_connection.dart';
 import 'package:nic/utils.dart';
 
-Future<Map<String, dynamic>?> fetchPaymentInformation({
-  required String controlNumber,
-}) async {
+Future<Map<String, dynamic>?> fetchPaymentInformation(
+  String controlNumber,
+) async {
   // query ($controlNumber: String!, $underwriteChannel: Int!) {
   //   paymentInformation(controlNumber: $controlNumber, underwriteChannel: $underwriteChannel){
   String queryString = r"""
@@ -43,34 +43,31 @@ Future<Map<String, dynamic>?> fetchPaymentInformation({
     },
   );
 
-  Map<String, dynamic>? paymentInformation;
   GraphQLClient client = await DataConnection().connectionClient();
   final QueryResult result = await client.query(options);
-  if (result.data != null) {
-    if (result.data!['paymentInformation']['edges'].length > 0) {
-      paymentInformation =
-          result.data!['paymentInformation']['edges'][0]['node'];
 
-      if (paymentInformation != null) {
-        var validKeys = [
-          "controlNumber",
-          "BillGenDt",
-          "BillExpDt",
-          "BillAmount",
-          "description",
-          "isPaid",
-          "payerName",
-          "payerPhone",
-          "receiptNumber",
-        ];
-
-        paymentInformation
-            .removeWhere((key, value) => !validKeys.contains(key));
-      }
-
-      devLog("paymentInformation: $paymentInformation");
-    }
+  if (result.data?['paymentInformation']?['edges'].length < 1) {
+    throw ("Control number not found");
   }
+
+  Map<String, dynamic> paymentInformation =
+      result.data!['paymentInformation']['edges'][0]['node'];
+
+  var validKeys = [
+    "controlNumber",
+    "BillGenDt",
+    "BillExpDt",
+    "BillAmount",
+    "description",
+    "isPaid",
+    "payerName",
+    "payerPhone",
+    "receiptNumber",
+  ];
+
+  paymentInformation.removeWhere((key, value) => !validKeys.contains(key));
+
+  devLog("paymentInformation: $paymentInformation");
 
   return paymentInformation;
 }
