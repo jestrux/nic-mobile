@@ -44,7 +44,7 @@ class _InitialProductFormState extends State<InitialProductForm> {
                   "required": true,
                 },
               {
-                "type": "text",
+                "type": "phone",
                 "name": "owner_phone",
                 "label": "Phone Number",
                 "required": true,

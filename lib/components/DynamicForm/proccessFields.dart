@@ -157,7 +157,7 @@ List<DynamicFormField>? processFields(
           show: field["show"],
           name: field["name"],
           label: field["label"],
-          tags: field["tags"],
+          tags: field["tags"] ?? field["tag"],
           required: field["required"] ?? true,
           choices: field["choices"],
           max: field["max_value"],

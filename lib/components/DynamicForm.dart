@@ -37,6 +37,10 @@ var keyboardTypeMap = {
 };
 
 var dynamicFormFieldTypeMap = {
+  "phone": DynamicFormFieldType.phoneNumber,
+  "phone_number": DynamicFormFieldType.phoneNumber,
+  "phoneNumber": DynamicFormFieldType.phoneNumber,
+
   "hidden": DynamicFormFieldType.hidden,
   "video": DynamicFormFieldType.video,
   "file": DynamicFormFieldType.file,
@@ -374,6 +378,17 @@ class FormField extends StatelessWidget {
           FormBuilderValidators.required(
             errorText:
                 isBooleanField ? "You have to accept this condition" : null,
+          ),
+        if (field.type == DynamicFormFieldType.phoneNumber)
+          FormBuilderValidators.minLength(
+            5,
+            errorText: isBooleanField ? "Phone number is to short" : null,
+          ),
+        if (field.tags != null &&
+            field.tags!.toString().toLowerCase().contains("nida"))
+          FormBuilderValidators.minLength(
+            5,
+            errorText: isBooleanField ? "Number is to short" : null,
           ),
         if (isBooleanField) FormBuilderValidators.equal(true)
       ]),
