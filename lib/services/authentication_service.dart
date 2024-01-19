@@ -4,8 +4,7 @@ import 'package:nic/services/data_connection.dart';
 import 'package:nic/models/user_model.dart';
 
 class AuthenticationService {
-  Future<dynamic> loginUser({String? username, String? password, dynamic key}) async {
-    UserModel? userModel;
+  Future<UserModel?> loginUser({String? username, String? password}) async {
     String login = r"""
        mutation($username: String!, $password: String!){
         tokenAuthCustom(username: $username, password: $password){
@@ -49,35 +48,45 @@ class AuthenticationService {
 
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.mutate(options);
-    if (result.hasException) {
-      final exception = result.exception;
-      if (exception is OperationException) {
-        final graphqlErrors = exception.graphqlErrors;
-        if (graphqlErrors != null && graphqlErrors.isNotEmpty) {
-          // Assuming you only want the first error message
-          final errorMessage = graphqlErrors.first.message;
-          print('GraphQL Error: $errorMessage');
-          return errorMessage;
-        }
-      }
+
+    var res = result.data?['tokenAuthCustom'];
+    if (res?['user']?['profile'] == null) {
+      throw ("Invalid email or password!");
     }
-    if (result.data != null && result.hasException == false) {
-      // print(result.data);
-      userModel = UserModel.fromJson(result.data);
-    }
-    return userModel;
+
+    // if (result.hasException) {
+    //   final exception = result.exception;
+    //   if (exception is OperationException) {
+    //     final graphqlErrors = exception.graphqlErrors;
+    //     if (graphqlErrors != null && graphqlErrors.isNotEmpty) {
+    //       // Assuming you only want the first error message
+    //       final errorMessage = graphqlErrors.first.message;
+    //       print('GraphQL Error: $errorMessage');
+    //       return errorMessage;
+    //     }
+    //   }
+    // }
+
+    // if (result.data != null && result.hasException == false) {
+    //   // print(result.data);
+    // }
+
+    return UserModel.fromJson({
+      "token": res["token"],
+      ...res["user"],
+      ...res["user"]["profile"],
+    });
   }
 
-  Future<Map<String, dynamic>?> registerCustomer({
-    String? fullName,
-    String? phoneNumber,
-    String? nida,
-    String? password,
-    bool? salesPerson,
-    int? selectedGender,
-    String? dob,
-    String? branch
-  }) async {
+  Future<UserModel?> registerCustomer(
+      {String? fullName,
+      String? phoneNumber,
+      String? nida,
+      String? password,
+      bool? salesPerson,
+      int? selectedGender,
+      String? dob,
+      String? branch}) async {
     String register = r"""
    mutation ($nida: String!, $phone: String!, $fullName: String!, $password: String!, $salesPerson: Boolean!, $selectedGender:Int!, $dob:String!, $branch:String!, $underwriteChannel:Int!) {
         registerMobile(input: {nida: $nida, phone: $phone, fullName: $fullName, password: $password, salesPerson: $salesPerson, selectedGender: $selectedGender, dob:$dob, branch:$branch,underwriteChannel:$underwriteChannel}) {
@@ -127,10 +136,10 @@ class AuthenticationService {
         'nida': nida,
         "password": password,
         "salesPerson": salesPerson,
-        "selectedGender":selectedGender,
-        "dob":dob,
-        "branch":branch,
-        "underwriteChannel":2
+        "selectedGender": selectedGender,
+        "dob": dob,
+        "branch": branch,
+        "underwriteChannel": 2
       },
     );
 
@@ -138,24 +147,36 @@ class AuthenticationService {
     // print("branch----: ${branch}");
     GraphQLClient client = await DataConnection().connectionClient();
     final QueryResult result = await client.mutate(options);
-    if (result.data != null) {
-      if (result.data!['registerMobile']['success'] == true) {
-        UserModel userModel = UserModel.fromRegisterJson(
-          result.data,
-        );
-          return {
-            "status": true,
-            "data": userModel,
-          };
-        // }
-      } else {
-        return {
-          "status": false,
-          "errors": result.data!['registerMobile']['errors']
-        };
-      }
+
+    var res = result.data?['registerMobile'];
+    if (res?['user']?['profile'] == null || !(res?['success'] ?? false)) {
+      throw ("Registration failed!");
     }
-    return null;
+
+    return UserModel.fromJson({
+      "token": res["token"],
+      ...res["user"],
+      ...res["user"]["profile"],
+    });
+
+    // if (result.data != null) {
+    //   if (result.data!['registerMobile']['success'] == true) {
+    //     UserModel userModel = UserModel.fromRegisterJson(
+    //       result.data,
+    //     );
+    //     return {
+    //       "status": true,
+    //       "data": userModel,
+    //     };
+    //     // }
+    //   } else {
+    //     return {
+    //       "status": false,
+    //       "errors": result.data!['registerMobile']['errors']
+    //     };
+    //   }
+    // }
+    // return null;
   }
 
   // Future<UserModel> getUser() async {
@@ -291,16 +312,12 @@ class AuthenticationService {
       var temp = result.data!;
       // print(result.data!);
       dynamic info = {
-        "status":temp['changePassword']['success'],
-        "message":"${temp['changePassword']['message']}"
+        "status": temp['changePassword']['success'],
+        "message": "${temp['changePassword']['message']}"
       };
       return info;
-
     } else {
-      return {
-        'status':false,
-        "message":"Failed to reset password."
-      };
+      return {'status': false, "message": "Failed to reset password."};
     }
   }
 
@@ -327,16 +344,12 @@ class AuthenticationService {
       var temp = result.data!;
       // print(result.data!);
       dynamic info = {
-        "status":temp['updateUserId']['success'],
-        "message":"${temp['updateUserId']['message']}"
+        "status": temp['updateUserId']['success'],
+        "message": "${temp['updateUserId']['message']}"
       };
       return info;
-
     } else {
-      return {
-        'status':false,
-        "message":"Failed to update."
-      };
+      return {'status': false, "message": "Failed to update."};
     }
   }
 }

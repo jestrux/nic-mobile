@@ -8,7 +8,6 @@ import 'package:nic/services/authentication_service.dart';
 import 'package:nic/services/branch_service.dart';
 import 'package:nic/utils.dart';
 
-
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -22,30 +21,34 @@ class _RegisterPageState extends State<RegisterPage> {
   DateTime? initialValue;
   List<Map<String, dynamic>> branchList = [];
 
-  Future<Map<String, dynamic>?> registerCustomer(Map<String, dynamic> values) async {
-    var response =  await AuthenticationService().registerCustomer(
-        fullName:values['fullName'],
-        phoneNumber:values['phoneNumber'],
-        nida:values['nidaId'],
-        password:values['password'],
-        salesPerson:false,
-        selectedGender:values['gender'],
-        dob:values['birthDate'],
-        branch:values['branch']
+  Future<UserModel?> registerCustomer(Map<String, dynamic> values) async {
+    var user = await AuthenticationService().registerCustomer(
+      fullName: values['fullName'],
+      phoneNumber: values['phoneNumber'],
+      nida: values['nidaId'],
+      password: values['password'],
+      salesPerson: false,
+      selectedGender: values['gender'],
+      dob: values['birthDate'],
+      branch: values['branch'],
     );
-    return response;
+
+    await persistAuthUser(user);
+
+    return user;
   }
-  showResponse(dynamic response){
-    if(response != null && response!['status']){
+
+  showResponse(dynamic response) async {
+    if (response != null && response!['status']) {
       UserModel? user = response!['data'];
       persistAuthUser(user);
       String? res = "Welcome ${user!.firstName} ${user!.lastName}";
       showToast(res);
       Navigator.of(context).popUntil(ModalRoute.withName("/"));
-    }else if(response != null ) {
+    } else if (response != null) {
       String? errors = "Failed to Register";
-      if(response!['errors'] != null){
-        for(var i in response!['errors']){
+      if (response!['errors'] != null) {
+        for (var i in response!['errors']) {
           String field = i['field'];
           String messages = i['messages'][0];
           errors = "$errors \n $field :  $messages";
@@ -53,24 +56,20 @@ class _RegisterPageState extends State<RegisterPage> {
         print("errors---: $errors");
       }
       openAlert(
-          title: "Authenticating",
-          message: "$errors",
-          type: AlertType.error
-      );
-    }else{
+          title: "Authenticating", message: "$errors", type: AlertType.error);
+    } else {
       openAlert(
           title: "Authenticating",
           message: "Connection failure, Please try again!",
-          type: AlertType.error
-      );
+          type: AlertType.error);
     }
   }
 
   Future<dynamic> getBranches() async {
-    var tempBranchList =  await BranchService().getBranches();
+    var tempBranchList = await BranchService().getBranches();
     setState(() {
-      for (var i in tempBranchList){
-        branchList.add({"label":i['node']['name'],"value":i['node']['id']});
+      for (var i in tempBranchList) {
+        branchList.add({"label": i['node']['name'], "value": i['node']['id']});
       }
     });
   }
@@ -79,7 +78,8 @@ class _RegisterPageState extends State<RegisterPage> {
   void initState() {
     super.initState();
     getBranches();
-    initialValue = DateTime(DateTime.now().year-10, DateTime.now().month, DateTime.now().day);
+    initialValue = DateTime(
+        DateTime.now().year - 10, DateTime.now().month, DateTime.now().day);
   }
 
   Widget _backButton() {
@@ -121,7 +121,9 @@ class _RegisterPageState extends State<RegisterPage> {
           Positioned(
             top: -height * .15,
             right: -MediaQuery.of(context).size.width * .5,
-            child: const BezierContainer(customColor: Color(0xff1b5e20),),
+            child: const BezierContainer(
+              customColor: Color(0xff1b5e20),
+            ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -137,57 +139,52 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 30),
                   DynamicForm(
                     payloadFormat: DynamicFormPayloadFormat.regular,
-                    fields:  [
+                    fields: [
                       const DynamicFormField(
-                        label: "Full Name",
-                        name: "fullName",
-                        placeholder: 'Enter full name..',
-                        canClear: true
-                      ),
+                          label: "Full Name",
+                          name: "fullName",
+                          placeholder: 'Enter full name..',
+                          canClear: true),
                       const DynamicFormField(
-                        label: "ID No.",
-                        name: "nidaId",
-                        placeholder:"Enter NIDA/ ZANID/ TIN/ Driving License Number..",
-                        canClear: true
-                      ),
+                          label: "ID No.",
+                          name: "nidaId",
+                          placeholder:
+                              "Enter NIDA/ ZANID/ TIN/ Driving License Number..",
+                          canClear: true),
                       const DynamicFormField(
-                        label: "Phone Number",
-                        name: "phoneNumber",
-                        placeholder: "Enter eg. +255712 345 678",
-                          canClear: true
-                      ),
+                          label: "Phone Number",
+                          name: "phoneNumber",
+                          placeholder: "Enter eg. +255712 345 678",
+                          canClear: true),
                       const DynamicFormField(
-                          label: "Select Gender",
-                          name: "gender",
-                          choices: [
-                            {"value":1,"label":"Male"},
-                            {"value":2,"label":"Female"}
-                          ],
-                          placeholder: "Select your gender..",
-                          type: DynamicFormFieldType.radio,
-
+                        label: "Select Gender",
+                        name: "gender",
+                        choices: [
+                          {"value": 1, "label": "Male"},
+                          {"value": 2, "label": "Female"}
+                        ],
+                        placeholder: "Select your gender..",
+                        type: DynamicFormFieldType.radio,
                       ),
                       DynamicFormField(
-                        label: "Birth Date",
+                          label: "Birth Date",
                           name: "birthDate",
                           type: DynamicFormFieldType.date,
                           max: initialValue,
-                          placeholder: "Pick a birthdate.."
-                      ),
-                       DynamicFormField(
-                        label: "Preferred branch",
-                        name: "branch",
-                        type: DynamicFormFieldType.choice,
-                        choices: branchList,
-                        canClear: true,
-                           placeholder: "Select preferred branch.."
-                      ),
+                          placeholder: "Pick a birthdate.."),
+                      DynamicFormField(
+                          label: "Preferred branch",
+                          name: "branch",
+                          type: DynamicFormFieldType.choice,
+                          choices: branchList,
+                          canClear: true,
+                          placeholder: "Select preferred branch.."),
                       const DynamicFormField(
-                        label: "Password",
-                        name: "password",
-                        type: DynamicFormFieldType.password,
-                          placeholder: "Enter password, (Must be 8 characters or more).."
-                      ),
+                          label: "Password",
+                          name: "password",
+                          type: DynamicFormFieldType.password,
+                          placeholder:
+                              "Enter password, (Must be 8 characters or more).."),
                       const DynamicFormField(
                         label: "Accept terms and Condition",
                         name: "terms",
@@ -196,7 +193,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                     submitLabel: "Register",
                     onSubmit: registerCustomer,
-                    onSuccess: showResponse,
+                    onSuccess: (user) {
+                      showToast("Welcome ${user.firstName} ${user.lastName}");
+                      Navigator.of(context).popUntil(ModalRoute.withName("/"));
+                    },
+                    onError: (error, formData) => openErrorAlert(
+                      message: error.toString(),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   const SizedBox(height: 20),

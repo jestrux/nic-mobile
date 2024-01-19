@@ -21,26 +21,27 @@ class UserModel {
   String? _intermediaryName;
   BranchModel? _branch;
 
-  UserModel(
-      {token,
-      id,
-      firstName,
-      middleName,
-      lastName,
-      email,
-        phone,
-      BranchModel? branch,
-      pic,
-      customCustomerNumber,
-      customerNumberType,
-      totalPolicies,
-      totalLifePolicies,
-      totalProposals,
-      totalNonLifePolicies,
-      totalClaims,
-        needPasswordChange,
-        customerType,
-        intermediaryName}) {
+  UserModel({
+    token,
+    id,
+    firstName,
+    middleName,
+    lastName,
+    email,
+    phone,
+    BranchModel? branch,
+    pic,
+    customCustomerNumber,
+    customerNumberType,
+    totalPolicies,
+    totalLifePolicies,
+    totalProposals,
+    totalNonLifePolicies,
+    totalClaims,
+    needPasswordChange,
+    customerType,
+    intermediaryName,
+  }) {
     _token = token;
     _id = id;
     _firstName = firstName;
@@ -63,69 +64,59 @@ class UserModel {
   }
 
   Map<String, dynamic> toMap() {
-    var map = Map<String, dynamic>();
-    map['token'] = _token;
-    map['id'] = _id;
-    map['firstName'] = _firstName;
-    map['middleName'] = _middleName;
-    map['lastName'] = _lastName;
-    map['email'] = _email;
-    map['phone'] = _phone;
-    map['fullName'] = fullName;
-    map['branchName'] = _branch != null? _branch!.name: '';
-    map['pic'] = _pic;
-    map['customCustomerNumber'] = _customCustomerNumber;
-    map['customerNumberType'] = _customerNumberType;
-    map['total_policies'] = _totalPolicies;
-    map['total_life_policies'] = _totalLifePolicies;
-    map['total_non_life_policies'] = _totalNonLifePolicies;
-    map['total_proposals'] = _totalProposals;
-    map['total_claims'] = _totalClaims;
-    map['needPasswordChange'] = _needPasswordChange;
-    map['intermediaryName'] = _intermediaryName;
-    map['customerType'] = _customerType;
-    return map;
+    return {
+      'token': _token,
+      'id': _id,
+      'firstName': _firstName,
+      'middleName': _middleName,
+      'lastName': _lastName,
+      'email': _email,
+      'phone': _phone,
+      'fullName': fullName,
+      'branchName': _branch != null ? _branch!.name : '',
+      'pic': _pic,
+      'customCustomerNumber': _customCustomerNumber,
+      'customerNumberType': _customerNumberType,
+      'total_policies': _totalPolicies,
+      'total_life_policies': _totalLifePolicies,
+      'total_non_life_policies': _totalNonLifePolicies,
+      'total_proposals': _totalProposals,
+      'total_claims': _totalClaims,
+      'needPasswordChange': _needPasswordChange,
+      'intermediaryName': _intermediaryName,
+      'customerType': _customerType,
+    };
   }
 
-  UserModel.fromJson(Map<String, dynamic>? jsonData) {
-    if (jsonData != null) {
-      if (jsonData['tokenAuthCustom'] != null) {
-        _token = jsonData['tokenAuthCustom']['token'];
-        if (jsonData['tokenAuthCustom']['user'] != null) {
-          _id = jsonData['tokenAuthCustom']['user']['id'];
-          _firstName = jsonData['tokenAuthCustom']['user']['firstName'];
-          _lastName = jsonData['tokenAuthCustom']['user']['lastName'];
-          _email = jsonData['tokenAuthCustom']['user']['email'];
-          if (jsonData['tokenAuthCustom']['user']['profile'] != null) {
-            _middleName =
-                jsonData['tokenAuthCustom']['user']['profile']['middleName'];
-            _phone = jsonData['tokenAuthCustom']['user']['profile']['phone'];
-            _pic = jsonData['tokenAuthCustom']['user']['profile']['pic'];
-            _customCustomerNumber = jsonData['tokenAuthCustom']['user']['profile']['customCustomerNumber'];
-            _customerNumberType = jsonData['tokenAuthCustom']['user']['profile']['customerNumberType'];
-            _totalPolicies =
-                jsonData['tokenAuthCustom']['user']['profile']['totalPolicies'];
-            _totalLifePolicies =
-                jsonData['tokenAuthCustom']['user']['profile']['totalLifePolicies'];
-            _totalNonLifePolicies = jsonData['tokenAuthCustom']['user']['profile']
-                ['totalNonLifePolicies'];
-            _totalProposals =
-                jsonData['tokenAuthCustom']['user']['profile']['totalProposals'];
-            _totalClaims = jsonData['tokenAuthCustom']['user']['profile']['totalClaims'];
-            _needPasswordChange = jsonData['tokenAuthCustom']['user']['profile']['needPasswordChange'];
-            _customerType = jsonData['tokenAuthCustom']['user']['profile']['customerType'];
-            _intermediaryName = jsonData['tokenAuthCustom']['user']['profile']['intermediaryName'];
-            if (jsonData['tokenAuthCustom']['user']['profile']['branch'] != null) {
-              _branch = BranchModel(
-                  id: jsonData['tokenAuthCustom']['user']['profile']['branch']['id'],
-                  name: jsonData['tokenAuthCustom']['user']['profile']['branch']
-                      ['name'],
-                  code: jsonData['tokenAuthCustom']['user']['profile']['branch']
-                      ['code']);
-            }
-          }
-        }
-      }
+  UserModel.fromJson(Map<String, dynamic>? data) {
+    if (data == null) return;
+
+    _token = data['token'];
+    _id = data['id'];
+    _firstName = data['firstName'];
+    _lastName = data['lastName'];
+    _email = data['email'];
+    _middleName = data['middleName'];
+    _phone = data['phone'];
+    _pic = data['pic'];
+    _customCustomerNumber = data['customCustomerNumber'];
+    _customerNumberType = data['customerNumberType'];
+    _totalPolicies = data['totalPolicies'];
+    _totalLifePolicies = data['totalLifePolicies'];
+    _totalNonLifePolicies = data['totalNonLifePolicies'];
+    _totalProposals = data['totalProposals'];
+    _totalClaims = data['totalClaims'];
+    _needPasswordChange = data['needPasswordChange'];
+    _customerType = data['customerType'];
+    _intermediaryName = data['intermediaryName'];
+
+    if (data['branch'] != null) {
+      var branch = data['branch'];
+      _branch = BranchModel(
+        id: branch['id'],
+        name: branch['name'],
+        code: branch['code'],
+      );
     }
   }
   //
@@ -205,45 +196,34 @@ class UserModel {
   // }
   //
 
-  UserModel.fromRegisterJson(Map<String, dynamic>? jsonData) {
-    if (jsonData != null) {
-      if (jsonData['registerMobile'] != null) {
-        _token = jsonData['registerMobile']['token'];
-        if (jsonData['registerMobile']['user'] != null) {
-          _id = jsonData['registerMobile']['user']['id'];
-          _firstName = jsonData['registerMobile']['user']['firstName'];
-          _lastName = jsonData['registerMobile']['user']['lastName'];
-          _email = jsonData['registerMobile']['user']['email'];
-          if (jsonData['registerMobile']['user']['profile'] != null) {
-            _middleName =
-            jsonData['registerMobile']['user']['profile']['middleName'];
-            _phone = jsonData['registerMobile']['user']['profile']['phone'];
-            _pic = jsonData['registerMobile']['user']['profile']['pic'];
-            _customCustomerNumber = jsonData['registerMobile']['user']['profile']['customCustomerNumber'];
-            _customerNumberType = jsonData['registerMobile']['user']['profile']['customerNumberType'];
-            _totalPolicies =
-            jsonData['registerMobile']['user']['profile']['totalPolicies'];
-            _totalLifePolicies =
-            jsonData['registerMobile']['user']['profile']['totalLifePolicies'];
-            _totalNonLifePolicies = jsonData['registerMobile']['user']['profile']
-            ['totalNonLifePolicies'];
-            _totalProposals =
-            jsonData['registerMobile']['user']['profile']['totalProposals'];
-            _totalClaims = jsonData['registerMobile']['user']['profile']['totalClaims'];
-            _needPasswordChange = jsonData['registerMobile']['user']['profile']['needPasswordChange'];
-            _customerType = jsonData['registerMobile']['user']['profile']['customerType'];
-            _intermediaryName = jsonData['registerMobile']['user']['profile']['intermediaryName'];
-            if (jsonData['registerMobile']['user']['profile']['branch'] != null) {
-              _branch = BranchModel(
-                  id: jsonData['registerMobile']['user']['profile']['branch']['id'],
-                  name: jsonData['registerMobile']['user']['profile']['branch']
-                  ['name'],
-                  code: jsonData['registerMobile']['user']['profile']['branch']
-                  ['code']);
-            }
-          }
-        }
-      }
+  UserModel.fromRegisterJson(Map<String, dynamic>? data) {
+    if (data == null) return;
+
+    _token = data['token'];
+    _id = data['id'];
+    _firstName = data['firstName'];
+    _lastName = data['lastName'];
+    _email = data['email'];
+
+    _middleName = data['middleName'];
+    _phone = data['phone'];
+    _pic = data['pic'];
+    _customCustomerNumber = data['customCustomerNumber'];
+    _customerNumberType = data['customerNumberType'];
+    _totalPolicies = data['totalPolicies'];
+    _totalLifePolicies = data['totalLifePolicies'];
+    _totalNonLifePolicies = data['totalNonLifePolicies'];
+    _totalProposals = data['totalProposals'];
+    _totalClaims = data['totalClaims'];
+    _needPasswordChange = data['needPasswordChange'];
+    _customerType = data['customerType'];
+    _intermediaryName = data['intermediaryName'];
+
+    if (data['branch'] != null) {
+      _branch = BranchModel(
+          id: data['branch']['id'],
+          name: data['branch']['name'],
+          code: data['branch']['code']);
     }
   }
 
@@ -316,13 +296,11 @@ class UserModel {
     _needPasswordChange = value;
   }
 
-
   int? get customerType => _customerType;
 
   set customerType(int? value) {
     _customerType = value;
   }
-
 
   String? get intermediaryName => _intermediaryName;
 

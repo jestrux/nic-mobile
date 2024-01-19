@@ -123,12 +123,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    // UserModel? user = context.read<AppProvider>().authUser;
     UserModel? user = Provider.of<AppProvider>(context).authUser;
-    // print(user?.totalClaims);
-    // print(user?.totalProposals);
+
     return RoundedHeaderPage(
-      title: "Your Profile",
+      title: user?.firstName ?? "Your Profile",
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         child: Column(

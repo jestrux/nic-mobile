@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nic/components/DynamicForm.dart';
 import 'package:nic/data/preferences.dart';
-import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/auth/AuthComponets.dart';
 import 'package:nic/pages/auth/RecoverPassword.dart';
@@ -10,21 +8,25 @@ import 'package:nic/pages/auth/RegisterPage.dart';
 import 'package:nic/pages/control/bContainer.dart';
 import 'package:nic/utils.dart';
 import 'package:nic/services/authentication_service.dart';
-import 'package:provider/provider.dart';
-
-import '../../services/underwritting_service.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  Future<dynamic> tokenAuth(Map<String, dynamic> values) async {
-    return await AuthenticationService().loginUser(username:  values["username"], password : values["password"],key:scaffoldKey);
+  Future<dynamic> handleLogin(Map<String, dynamic> values) async {
+    var user = await AuthenticationService().loginUser(
+      username: values["username"],
+      password: values["password"],
+    );
+
+    await persistAuthUser(user).then((value) => null);
+
+    return user;
   }
 
   showResponse(dynamic response) {
@@ -37,20 +39,16 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         bool temp = true;
       });
-    }else{
+    } else {
       print(response);
       var message = "Failed to login,Please try again..";
-      if(response != null && response.contains("credentials")){
+      if (response != null && response.contains("credentials")) {
         message = response;
       }
       openAlert(
-          title: "Authenticating",
-          message: message,
-          type: AlertType.error
-      );
+          title: "Authenticating", message: message, type: AlertType.error);
     }
   }
-
 
   Widget _backButton(context) {
     return InkWell(
@@ -79,7 +77,6 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
 
   Widget _createAccountLabel() {
     return Container(
@@ -117,7 +114,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -153,15 +149,19 @@ class _LoginPageState extends State<LoginPage> {
                           placeholder: 'Enter email or phone number..',
                         ),
                         DynamicFormField(
-                          label: "Password",
-                          name: "password",
-                          type: DynamicFormFieldType.password,
-                          placeholder: "Password.."
-                        ),
+                            label: "Password",
+                            name: "password",
+                            type: DynamicFormFieldType.password,
+                            placeholder: "Password.."),
                       ],
                       submitLabel: "Login",
-                      onSubmit: tokenAuth,
-                      onSuccess: showResponse,
+                      onSubmit: handleLogin,
+                      onSuccess: (user) => showToast(
+                        "Welcome ${user.firstName} ${user.lastName}",
+                      ),
+                      onError: (error, formData) => openErrorAlert(
+                        message: error.toString(),
+                      ),
                     ),
                     InkWell(
                       child: Container(
