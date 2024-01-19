@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nic/constants.dart';
+import 'package:nic/data/preferences.dart';
 import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/BimaPage.dart';
@@ -9,6 +10,7 @@ import 'package:nic/pages/ProfilePage.dart';
 import 'package:nic/pages/UtilitiesPage.dart';
 import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -18,6 +20,35 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  Timer? _sessionTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Start session timeout timer
+    startSessionTimeout();
+  }
+
+  void startSessionTimeout() {
+    const int sessionTimeoutInMinutes = 15;
+    const Duration timeoutDuration = Duration(minutes: sessionTimeoutInMinutes);
+
+    _sessionTimer = Timer(timeoutDuration, () {
+      // Session timeout reached, log the user out
+      persistAuthUser(null);
+    });
+  }
+
+  void logoutUser() {
+    // Perform user logout actions here, such as clearing session data
+    // Redirect to the login page or display a session timeout message
+  }
+  void resetSessionTimeout() {
+    print("in-----resetSessionTimeout");
+    _sessionTimer?.cancel();
+    startSessionTimeout();
+  }
+
   int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -48,7 +79,13 @@ class _MainAppState extends State<MainApp> {
             ),
           ),
         ),
-        child: NavigationBar(
+        child:GestureDetector(
+          behavior:  HitTestBehavior.translucent,
+          onTap: () {
+          resetSessionTimeout();
+          // Handle user interactions here
+          },
+          child: NavigationBar(
           height: 60,
           selectedIndex: currentPageIndex,
           onDestinationSelected: (int index) {
@@ -82,8 +119,13 @@ class _MainAppState extends State<MainApp> {
               label: 'More',
             ),
           ],
-        ),
+        )),
       ),
     );
+  }
+  @override
+  void dispose() {
+    _sessionTimer?.cancel(); // Cancel the timer when the app is disposed
+    super.dispose();
   }
 }

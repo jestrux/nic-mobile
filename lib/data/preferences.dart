@@ -23,6 +23,7 @@ Future setupPreferences(BuildContext context) async {
 }
 
 Future persistAuthUser(UserModel? user) async {
+  print("in-----persistAuthUser");
   return await SharedPreferences.getInstance().then((prefs) async {
     if (user == null) {
       prefs.remove("authUser");

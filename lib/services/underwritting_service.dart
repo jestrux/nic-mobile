@@ -370,10 +370,6 @@ Future<List<Map<String, dynamic>>?> fetchProposals() async {
       .map<Map<String, dynamic>>(
     (element) {
       var proposal = element["node"];
-      // var description = List<String?>.from([
-      //   formatDate(proposal['startDate'], format: "dayM"),
-      //   formatDate(proposal['endDate'], format: "dayM")
-      // ]).where((element) => element != null).toList().join(" - ");
       var premium = formatMoney(proposal['actualPremium'],
           currency: proposal['currency']);
       var description =
@@ -473,4 +469,35 @@ fetchUserPolicies() async {
       };
     },
   ).toList();
+}
+
+
+Future<double> getTotalNotPaidCommission() async {
+  String query = r"""
+     query{
+      intermediaryWeeklyUnpaidCommission{
+        total
+      }
+    }
+    """;
+
+  final QueryOptions options = QueryOptions(
+    document: gql(query),
+    variables:  const {},
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data == null) {
+    devLog("fetch getTotalNotPaidCommission: No data found");
+    throw ("Failed to fetch Not Paid Commission. Please try again later.");
+  }
+
+  if (result.data?['intermediaryWeeklyUnpaidCommission'] == null) {
+    devLog('intermediaryWeeklyUnpaidCommission: GraphQL Error: ${result.exception.toString()}');
+    throw ("Failed to fetch Not Paid Commission. Please try again.");
+  }
+
+  return result.data?['intermediaryWeeklyUnpaidCommission']['total'];
 }
