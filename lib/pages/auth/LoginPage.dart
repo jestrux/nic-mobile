@@ -38,9 +38,9 @@ class _LoginPageState extends State<LoginPage> {
         bool temp = true;
       });
     }else{
-      // print(response);
+      print(response);
       var message = "Failed to login,Please try again..";
-      if(response.contains("credentials")){
+      if(response != null && response.contains("credentials")){
         message = response;
       }
       openAlert(

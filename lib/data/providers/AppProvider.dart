@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:nic/models/user_model.dart';
+import 'package:nic/services/underwritting_service.dart';
 
 class AppProvider with ChangeNotifier, DiagnosticableTreeMixin {
   UserModel? _user;
@@ -99,4 +100,21 @@ class AppProvider with ChangeNotifier, DiagnosticableTreeMixin {
     _userContributions?.clear();
     notifyListeners();
   }
+
+//   UNPAID COMMISSION
+double _totalNotPaidCommission = 0;
+int _commissionUpdatedState = 0;
+double get totalNotPaidCommission => _totalNotPaidCommission;
+int get commissionUpdatedState => _commissionUpdatedState;
+
+void setTotalNotCommission() async{
+  _totalNotPaidCommission = await getTotalNotPaidCommission();
+  setCommissionUpdatedState(2);
+  notifyListeners();
+}
+void setCommissionUpdatedState( int commissionUpdatedState){
+  _commissionUpdatedState = commissionUpdatedState;
+  notifyListeners();
+}
+
 }

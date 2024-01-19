@@ -165,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           String? res =
                               "Welcome ${user!.firstName} ${user!.lastName}, welcome again next time!";
                           showToast(res);
-                          persistAuthUser(user = null);
+                          persistAuthUser(null);
                           clearSpecificData("proposal_data");
                         },
                       )

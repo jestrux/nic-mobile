@@ -1,9 +1,7 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:nic/models/recover_user_model.dart';
 import 'package:nic/services/data_connection.dart';
-// import 'package:imis_client_app/services/repository.dart';
 import 'package:nic/models/user_model.dart';
-import 'package:nic/services/underwritting_service.dart';
 
 class AuthenticationService {
   Future<dynamic> loginUser({String? username, String? password, dynamic key}) async {

@@ -6,6 +6,7 @@ import 'package:nic/data/providers/AppProvider.dart';
 import 'package:nic/pages/SplashScreen.dart';
 import 'package:provider/provider.dart';
 
+
 void main() => runApp(const NICKiganjani());
 
 class NICKiganjani extends StatefulWidget {
@@ -19,7 +20,7 @@ class NICKiganjani extends StatefulWidget {
 }
 
 class _NICKiganjaniState extends State<NICKiganjani> {
-  ThemeMode? _themeMode = ThemeMode.system;
+ThemeMode? _themeMode = ThemeMode.system;
 
   void changeTheme(ThemeMode themeMode) {
     setState(() {
