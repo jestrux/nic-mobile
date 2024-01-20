@@ -38,9 +38,6 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             const AdsBanner(),
-            const SizedBox(height: 12),
-            // SHOW THIS ONLY FOR INTERMEDIARY
-            // userObj != null && userObj.customerType == 2 ?
             const TotalCommissions(),
             const SizedBox(height: 12),
             PageSection(
@@ -124,6 +121,7 @@ class TotalCommissions extends StatelessWidget {
 
     return InlineListBuilder(
       title: "Your Commissions",
+      padding: const EdgeInsets.only(bottom: 12),
       titleAction: ActionButton.all(
         "Open dashboard",
         onClick: (d) {
