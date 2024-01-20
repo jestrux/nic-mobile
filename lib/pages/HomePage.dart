@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> {
             // SHOW THIS ONLY FOR INTERMEDIARY
             // userObj != null && userObj.customerType == 2 ?
             const TotalCommissions(),
+            const SizedBox(height: 12),
             PageSection(
               title: "Buy Bima",
               titleAction: ActionButton.all(
@@ -108,7 +109,7 @@ class TotalCommissions extends StatelessWidget {
       {
         "icon": Icons.monetization_on,
         "title": formatMoney(res, currency: "TZS"),
-        "trailing": "Collected this week",
+        "trailing": "Waiting payment",
       }
     ];
   }

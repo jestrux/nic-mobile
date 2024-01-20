@@ -84,7 +84,9 @@ class ActionCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: iconBackground,
                   image: DecorationImage(
-                    image: CachedNetworkImageProvider(image),
+                    image: image.contains("asset")
+                        ? Image.asset(image).image
+                        : CachedNetworkImageProvider(image),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -142,7 +144,9 @@ class ActionCard extends StatelessWidget {
               image: image == null
                   ? null
                   : DecorationImage(
-                      image: CachedNetworkImageProvider(image),
+                      image: image.contains("asset")
+                          ? Image.asset(image).image
+                          : CachedNetworkImageProvider(image),
                       fit: BoxFit.cover,
                     ),
             ),
@@ -201,7 +205,9 @@ class ActionCard extends StatelessWidget {
                 image: image == null
                     ? null
                     : DecorationImage(
-                        image: CachedNetworkImageProvider(image),
+                        image: image.contains("asset")
+                            ? Image.asset(image).image
+                            : CachedNetworkImageProvider(image),
                         fit: BoxFit.cover,
                       ),
               ),

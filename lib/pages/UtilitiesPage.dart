@@ -51,21 +51,24 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
   List<ActionItem> watchAndlearnActions() {
     return [
       ActionItem(
-        image:
-            "https://i.ytimg.com/vi/AA0dSQCRBJY/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGEggZShXMA8=&rs=AOn4CLCWAkGVhpgTFtn9OBWGAz4oAx1P6w",
+        // image:
+        //     "https://i.ytimg.com/vi/AA0dSQCRBJY/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGEggZShXMA8=&rs=AOn4CLCWAkGVhpgTFtn9OBWGAz4oAx1P6w",
+        image: "assets/img/learn/one.jpg",
         label: "Wekeza na BIMA ya Maisha (BeamLife) Kutoka NIC INSURANCE",
         resourceUrl: "https://www.youtube.com/watch?v=AA0dSQCRBJY",
       ),
       ActionItem(
-        image:
-            "https://i.ytimg.com/vi/XLKhaVLFXJ4/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGFIgXihlMA8=&rs=AOn4CLCeamp7ZEtndZ-lX25ncg4gD2V2Kw",
+        // image:
+        //     "https://i.ytimg.com/vi/XLKhaVLFXJ4/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGFIgXihlMA8=&rs=AOn4CLCeamp7ZEtndZ-lX25ncg4gD2V2Kw",
+        image: "assets/img/learn/two.jpg",
         label:
             "Wakulima washikwa mkono na NIC Insurance kwa kuanzisha BIMA ya Kilimo",
         resourceUrl: "https://www.youtube.com/watch?v=XLKhaVLFXJ4",
       ),
       ActionItem(
-        image:
-            "https://i.ytimg.com/vi/KOLJORmuvTQ/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGFIgXihlMA8=&rs=AOn4CLCeamp7ZEtndZ-lX25ncg4gD2V2Kw",
+        // image:
+        //     "https://i.ytimg.com/vi/KOLJORmuvTQ/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGFIgXihlMA8=&rs=AOn4CLCeamp7ZEtndZ-lX25ncg4gD2V2Kw",
+        image: "assets/img/learn/three.jpg",
         label:
             "Zifahamu Faida za BIMA ya Maisha (BeamLife) kutoka NIC Insurance",
         resourceUrl: "https://www.youtube.com/watch?v=KOLJORmuvTQ",
@@ -77,18 +80,24 @@ class _UtilitiesPageState extends State<UtilitiesPage> {
     return [
       ActionItem(
         label: "Become\nan NIC Agent",
-        image:
-            "https://images.unsplash.com/photo-1626178793926-22b28830aa30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGJyb2tlcnxlbnwwfHx8fDE2OTk0NTc4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
+        resourceUrl: "https://www.nicinsurance.co.tz/intermediaries",
+        image: "assets/img/become-an-agent.jpg",
+        // image:
+        //     "https://images.unsplash.com/photo-1626178793926-22b28830aa30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGJyb2tlcnxlbnwwfHx8fDE2OTk0NTc4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
       ),
       ActionItem(
         label: "Rent One of Our Spaces",
-        image:
-            "https://images.unsplash.com/photo-1631193816258-28b44b21e78b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDExfHxvZmZpY2UlMjBzcGFjZXxlbnwwfHx8fDE2OTk1MTQ5ODl8MA&ixlib=rb-4.0.3&q=80&w=1080",
+        onClick: () => openInfoAlert(message: "Feature coming soon!"),
+        image: "assets/img/rent-space.jpg",
+        // image:
+        //     "https://images.unsplash.com/photo-1631193816258-28b44b21e78b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDExfHxvZmZpY2UlMjBzcGFjZXxlbnwwfHx8fDE2OTk1MTQ5ODl8MA&ixlib=rb-4.0.3&q=80&w=1080",
       ),
       ActionItem(
         label: "Lipa Kidogo kidogo",
-        image:
-            "https://images.unsplash.com/photo-1554134449-8ad2b1dea29e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDMwfHxjb2luc3xlbnwwfHx8fDE2OTk0NTg1MDd8MA&ixlib=rb-4.0.3&q=80&w=1080",
+        onClick: () => openInfoAlert(message: "Feature coming soon!"),
+        image: "assets/img/lipa-kidogokidogo.jpg",
+        // image:
+        //     "https://images.unsplash.com/photo-1554134449-8ad2b1dea29e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDMwfHxjb2luc3xlbnwwfHx8fDE2OTk0NTg1MDd8MA&ixlib=rb-4.0.3&q=80&w=1080",
       ),
     ];
   }

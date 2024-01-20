@@ -335,42 +335,48 @@ List<ActionItem> buyBimaActions = [
     id: "UHJvZHVjdE5vZGU6MzAw",
     icon: Icons.volunteer_activism,
     label: "Life & Saving",
-    image:
-        "https://images.unsplash.com/photo-1560346740-a8678c61a524?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDM2fHxibGFjayUyMGZhbWlseXxlbnwwfHx8fDE2ODQzNTYwNDB8MA&ixlib=rb-4.0.3&q=80&w=900",
+    // image:
+    //     "https://images.unsplash.com/photo-1560346740-a8678c61a524?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDM2fHxibGFjayUyMGZhbWlseXxlbnwwfHx8fDE2ODQzNTYwNDB8MA&ixlib=rb-4.0.3&q=80&w=900",
+    image: "assets/img/bima/life.jpg",
   ),
   ActionItem(
     id: "UHJvZHVjdE5vZGU6MTc3",
     icon: Icons.directions_car,
     label: "Magari",
-    image:
-        "https://bsmedia.business-standard.com/_media/bs/img/article/2019-05/25/full/1558730112-9901.jpg",
+    // image:
+    //     "https://bsmedia.business-standard.com/_media/bs/img/article/2019-05/25/full/1558730112-9901.jpg",
+    image: "assets/img/bima/magari.png",
   ),
   ActionItem(
     id: "UHJvZHVjdE5vZGU6MzEx",
     icon: Icons.house,
     label: "Linda Mjengo",
-    image:
-        "https://www.nicinsurance.co.tz/img/uploads/pier_files/Linda-Mjengo_1690709063.png",
+    // image:
+    //     "https://www.nicinsurance.co.tz/img/uploads/pier_files/Linda-Mjengo_1690709063.png",
+    image: "assets/img/bima/linda-mjengo.png",
   ),
   ActionItem(
     id: "UHJvZHVjdE5vZGU6MTgx",
     icon: Icons.two_wheeler,
     label: "Pikipiki / Bajaji",
-    image:
-        "https://images.unsplash.com/photo-1625043484550-df60256f6ea5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDZ8fG1vdG9yJTIwYmlrZXxlbnwwfHx8fDE2OTQ0MzMzNzR8MA&ixlib=rb-4.0.3&q=80&w=1080",
+    // image:
+    //     "https://images.unsplash.com/photo-1625043484550-df60256f6ea5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDZ8fG1vdG9yJTIwYmlrZXxlbnwwfHx8fDE2OTQ0MzMzNzR8MA&ixlib=rb-4.0.3&q=80&w=1080",
+    image: "assets/img/bima/pikipiki.jpg",
   ),
   ActionItem(
     icon: Icons.flight,
     label: "Travel Insurance",
-    image:
-        "https://images.unsplash.com/photo-1544016768-982d1554f0b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDI3fHxhaXJwbGFuZXxlbnwwfHx8fDE2OTk0NDk5MDl8MA&ixlib=rb-4.0.3&q=80&w=1080",
+    // image:
+    //     "https://images.unsplash.com/photo-1544016768-982d1554f0b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDI3fHxhaXJwbGFuZXxlbnwwfHx8fDE2OTk0NDk5MDl8MA&ixlib=rb-4.0.3&q=80&w=1080",
+    image: "assets/img/bima/travel.jpg",
   ),
   ActionItem(
     id: "UHJvZHVjdE5vZGU6MjY=",
     icon: Icons.directions_car,
     label: "Bima Kubwa ya Binafsi",
-    image:
-        "https://www.nicinsurance.co.tz/img/uploads/pier_files/Motor-Insurance__1690709184.jpg",
+    // image:
+    //     "https://www.nicinsurance.co.tz/img/uploads/pier_files/Motor-Insurance__1690709184.jpg",
+    image: "assets/img/bima/bima-kubwa-binafsi.jpg",
   ),
 ];
 

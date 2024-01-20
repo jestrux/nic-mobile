@@ -28,6 +28,7 @@ class Constants {
   static const supportEmail = "info-nic@nicinsurance.co.tz";
   static const contactsUrl = "https://www.nicinsurance.co.tz/contact-us";
   static const portalUrl = "https://www.nicinsurance.co.tz";
+  static const feedbackUrl = "https://www.nicinsurance.co.tz/contact-us";
 
   static final GlobalKey<NavigatorState> globalAppKey =
       GlobalKey<NavigatorState>();

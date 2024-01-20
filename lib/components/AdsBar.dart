@@ -62,8 +62,11 @@ class AdsBarOne extends StatelessWidget {
       decoration: const BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: CachedNetworkImageProvider(
-              "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGZhbmN5JTIwaG91c2V8ZW58MHx8fHwxNjk5MzQ5OTM1fDA&ixlib=rb-4.0.3&q=80&w=900"),
+          image: AssetImage(
+            "assets/img/ads/ad-one.jpg",
+          ),
+          // image: CachedNetworkImageProvider(
+          //     "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGZhbmN5JTIwaG91c2V8ZW58MHx8fHwxNjk5MzQ5OTM1fDA&ixlib=rb-4.0.3&q=80&w=900"),
         ),
       ),
       child: Stack(
@@ -72,8 +75,11 @@ class AdsBarOne extends StatelessWidget {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: CachedNetworkImageProvider(
-                    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGZhbmN5JTIwaG91c2V8ZW58MHx8fHwxNjk5MzQ5OTM1fDA&ixlib=rb-4.0.3&q=80&w=900"),
+                image: AssetImage(
+                  "assets/img/ads/ad-one.jpg",
+                ),
+                // image: CachedNetworkImageProvider(
+                //     "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDF8fGZhbmN5JTIwaG91c2V8ZW58MHx8fHwxNjk5MzQ5OTM1fDA&ixlib=rb-4.0.3&q=80&w=900"),
               ),
             ),
           ),
@@ -215,8 +221,11 @@ class AdsBarTwo extends StatelessWidget {
           decoration: const BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.cover,
-              image: CachedNetworkImageProvider(
-                  "https://images.unsplash.com/photo-1550355291-bbee04a92027?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDEyfHxjYXJ8ZW58MHx8fHwxNjk5Njk2MDcyfDA&ixlib=rb-4.0.3&q=80&w=1080"),
+              image: AssetImage(
+                "assets/img/ads/ad-two.jpg",
+              ),
+              // image: CachedNetworkImageProvider(
+              //     "https://images.unsplash.com/photo-1550355291-bbee04a92027?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDEyfHxjYXJ8ZW58MHx8fHwxNjk5Njk2MDcyfDA&ixlib=rb-4.0.3&q=80&w=1080"),
             ),
           ),
           child: Stack(

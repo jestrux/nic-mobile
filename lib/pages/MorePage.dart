@@ -99,21 +99,23 @@ class _MorePageState extends State<MorePage> {
               ),
               ActionItem(
                 label: "Submit Feedback",
-                onClick: (item) {
-                  openWhatsapp(Constants.whatsappChatbotNumber, "bima");
-                },
+                resourceUrl: Constants.feedbackUrl,
+                // onClick: (item) {
+                //   openWhatsapp(Constants.whatsappChatbotNumber, "bima");
+                // },
               ),
             ]),
             const SizedBox(height: 20),
             InlineList(data: [
               ActionItem(
                 label: "Terms and policies",
-                onClick: (item) {},
+                resourceUrl: "https://www.nicinsurance.co.tz/privacy-policy",
+                // onClick: (item) {},
               ),
-              ActionItem(
-                label: "Service level agreement",
-                onClick: (item) {},
-              ),
+              // ActionItem(
+              //   label: "Service level agreement",
+              //   onClick: (item) {},
+              // ),
             ]),
             // const SizedBox(height: 20),
             // const InlineList(data: [

@@ -55,7 +55,14 @@ class InlineList extends StatelessWidget {
             children: data
                 .asMap()
                 .map(
-                  (i, entry) {
+                  (i, item) {
+                    var entry = item.cloneWith(
+                      onClick: item.onClick ??
+                          (item.resourceUrl != null
+                              ? () => openUrl(item.resourceUrl!)
+                              : null),
+                    );
+
                     List<Widget> trailingWidgets = [
                       if (entry.value != null)
                         Padding(
@@ -230,6 +237,7 @@ class _InlineListBuilderState extends State<InlineListBuilder> {
             label: entry["title"],
             description: entry["description"],
             onClick: entry["onClick"],
+            trailing: entry["trailing"],
             extraData: entry,
           );
 
