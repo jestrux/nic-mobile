@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nic/components/ActionCard.dart';
 import 'package:nic/components/InlineList.dart';
-import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/constants.dart';
 import 'package:nic/data/providers/AppProvider.dart';
@@ -32,7 +32,6 @@ class OurBranchesPage extends StatelessWidget {
         } catch (e) {}
       }
     }
-    ;
   }
 
   Future<List<Map<String, dynamic>>?> fetchBranches(
@@ -58,7 +57,7 @@ class OurBranchesPage extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 14),
             decoration: BoxDecoration(
               color: colorScheme(context).onSurface.withOpacity(0.06),
               border: const Border(bottom: BorderSide(width: 0.1)),
@@ -66,7 +65,8 @@ class OurBranchesPage extends StatelessWidget {
             child: Column(
               // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
+                Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.only(left: 4.0),
                   child: Text(
                     "HQ Branch: Ilala, Dar es Salaam",
@@ -78,37 +78,53 @@ class OurBranchesPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                PageSection(
-                  content: [
-                    ActionItem(
-                      icon: Icons.email,
-                      label: "Email Us",
-                      background:
-                          colorScheme(context).background.withOpacity(0.5),
-                      onClick: () {
-                        openUrl("mailto:${Constants.supportEmail}");
-                      },
-                    ),
-                    ActionItem(
-                      icon: Icons.phone,
-                      label: "Free Call",
-                      background:
-                          colorScheme(context).background.withOpacity(0.5),
-                      onClick: () {
-                        openUrl("tel:${Constants.supportPhoneNumber}");
-                      },
-                    ),
-                    ActionItem(
-                      icon: Icons.location_pin,
-                      label: "Location",
-                      background:
-                          colorScheme(context).background.withOpacity(0.5),
-                      onClick: openGoogleMap,
-                    )
-                  ],
-                  columns: 3,
-                  // shape: ActionItemShape.square,
-                ),
+                SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      ActionItem(
+                        icon: Icons.email,
+                        label: "Email Us",
+                        background:
+                            colorScheme(context).background.withOpacity(0.5),
+                        onClick: () {
+                          openUrl("mailto:${Constants.supportEmail}");
+                        },
+                      ),
+                      ActionItem(
+                        icon: Icons.phone,
+                        label: "Free Call",
+                        background:
+                            colorScheme(context).background.withOpacity(0.5),
+                        onClick: () {
+                          openUrl("tel:${Constants.supportPhoneNumber}");
+                        },
+                      ),
+                      ActionItem(
+                        icon: Icons.location_pin,
+                        label: "Location",
+                        background:
+                            colorScheme(context).background.withOpacity(0.5),
+                        onClick: openGoogleMap,
+                      )
+                    ]
+                        .map(
+                          (action) => Container(
+                            margin: const EdgeInsets.only(right: 4),
+                            constraints: const BoxConstraints(
+                              minWidth: 120,
+                            ),
+                            width: (MediaQuery.of(context).size.shortestSide -
+                                    32 -
+                                    12) /
+                                3,
+                            child: ActionCard(action: action),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                )
               ],
             ),
           ),
