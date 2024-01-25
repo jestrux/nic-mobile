@@ -206,14 +206,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       filled: true,
                       onClick: (d) {
                         var data = item.extraData!;
-                        devLog("Control number: ${data["controlNumber"]}");
-
                         openPaymentForm(
-                          {
-                            "amount": data["actualPremium"],
-                            "controlNumber": data["controlNumber"].toString(),
-                            "phoneNumber": "",
-                          },
+                          amount: data["actualPremium"],
+                          controlNumber: data["controlNumber"].toString(),
                           title:
                               "Make Payment for ${data['policyPropertyName']}",
                         );

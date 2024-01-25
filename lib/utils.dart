@@ -247,16 +247,18 @@ void openDocument(String path, {String title = ""}) {
   );
 }
 
-Future<dynamic> openPaymentForm(
-  Map<String, dynamic> data, {
+Future<dynamic> openPaymentForm({
+  required double amount,
+  String controlNumber = "",
+  String phoneNumber = "",
   String title = "Make Payment",
 }) {
   return openAlert(
     title: "Make Payment",
     child: MakePayment(
-      amount: data["BillAmount"],
-      controlNumber: data["controlNumber"],
-      phoneNumber: data["payerPhone"],
+      amount: amount,
+      controlNumber: controlNumber,
+      phoneNumber: phoneNumber,
     ),
   );
 }

@@ -229,11 +229,12 @@ var makePaymentAction = ActionItem(
       handler: fetchPaymentInformation,
       onSuccess: (response) {
         var context = Constants.globalAppKey.currentContext!;
-        var paymentInfo = {
-          "amount": response["BillAmount"],
-          "controlNumber": response["controlNumber"],
-          "phoneNumber": response["payerPhone"],
-        };
+
+        handlePay() => openPaymentForm(
+              amount: response["BillAmount"],
+              controlNumber: response["controlNumber"],
+              phoneNumber: response["payerPhone"],
+            );
 
         if (payingNow) {
           if (response["isPaid"] ?? false) {
@@ -243,7 +244,7 @@ var makePaymentAction = ActionItem(
             return;
           }
 
-          openPaymentForm(paymentInfo);
+          handlePay();
 
           return;
         }
@@ -285,7 +286,9 @@ var makePaymentAction = ActionItem(
               },
             ),
           ),
-        ).then((value) => openPaymentForm(paymentInfo));
+        ).then((value) {
+          if (value != null) handlePay();
+        });
       },
     );
   },
