@@ -6,7 +6,7 @@ import 'package:nic/models/user_model.dart';
 class Repository {
   Future<String?> getToken() async {
     var token = await getUserToken();
-    print("token----:$token");
+    // print("token----:$token");
     return token ?? "";
   }
 }
