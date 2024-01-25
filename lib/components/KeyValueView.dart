@@ -82,11 +82,14 @@ class KeyValueView extends StatelessWidget {
                   }
                 }
 
-                Widget valueWidget = Text(
-                  "$value",
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                Widget valueWidget = Expanded(
+                  child: Text(
+                    "$value",
+                    textAlign: TextAlign.end,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 );
 
@@ -159,6 +162,7 @@ class KeyValueView extends StatelessWidget {
                             fontSize: 12,
                           ),
                         ),
+                        const SizedBox(width: 8),
                         valueWidget,
                       ],
                     ),
