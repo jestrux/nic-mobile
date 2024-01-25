@@ -181,11 +181,15 @@ class _InlineListBuilderState extends State<InlineListBuilder> {
   }
 
   void fetchData() async {
+    if (!mounted) return;
+
     setState(() {
       status = "loading";
     });
 
     var res = await widget.future();
+
+    if (!mounted) return;
 
     setState(() {
       data = res;
