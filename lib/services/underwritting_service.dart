@@ -164,11 +164,12 @@ Future<Map<String, dynamic>?> submitProposalForm({
   required int proposal,
   required String phoneNumber,
   required List<dynamic> data,
+  required List<dynamic>? files,
   bool? renewal,
 }) async {
   String queryString =
-      r"""mutation ($product: ID!, $data: JSONString!, $proposal: Int!, $renewal: Boolean!, $underwriteChannel: Int!) {
-      proposal(product: $product, data: $data, proposal: $proposal, renewal: $renewal, underwriteChannel: $underwriteChannel) {
+      r"""mutation ($product: ID!, $data: JSONString!, $files: [Upload!]!, $proposal: Int!, $renewal: Boolean!, $underwriteChannel: Int!) {
+      proposal(product: $product, data: $data, files: $files, proposal: $proposal, renewal: $renewal, underwriteChannel: $underwriteChannel) {
           success
           message
           data
@@ -191,6 +192,7 @@ Future<Map<String, dynamic>?> submitProposalForm({
       "renewal": renewal ?? false,
       "verify": false,
       "data": jsonEncode(data),
+      "files": files,
       "underwriteChannel": 2,
     },
   );
@@ -387,9 +389,7 @@ Future<List<Map<String, dynamic>>?> fetchProposals() async {
   ).toList();
 }
 
-
-Future<List<Map<String, dynamic>>?>
-fetchUserPolicies() async {
+Future<List<Map<String, dynamic>>?> fetchUserPolicies() async {
   String query = r"""
   query($loggedOnly:Boolean,$underwriteChannel:Int!){
     allCustomerPolicyGlobalSearchable(orderBy: ["-id"],loggedOnly:$loggedOnly,underwriteChannel:$underwriteChannel){
@@ -435,7 +435,7 @@ fetchUserPolicies() async {
 
   final QueryOptions options = QueryOptions(
     document: gql(query),
-    variables: const {'underwriteChannel': 2,'loggedOnly':true},
+    variables: const {'underwriteChannel': 2, 'loggedOnly': true},
   );
 
   GraphQLClient client = await DataConnection().connectionClient();
@@ -447,20 +447,22 @@ fetchUserPolicies() async {
   }
 
   if (result.data?['allCustomerPolicyGlobalSearchable']?['edges'] == null) {
-    devLog('allCustomerPolicyGlobalSearchable: GraphQL Error: ${result.exception.toString()}');
+    devLog(
+        'allCustomerPolicyGlobalSearchable: GraphQL Error: ${result.exception.toString()}');
     throw ("Failed to fetch policies. Please try again.");
   }
 
   return List.from(result.data!['allCustomerPolicyGlobalSearchable']['edges'])
       .map<Map<String, dynamic>>(
-        (element) {
+    (element) {
       var policies = element["node"];
-      var premium = formatMoney(policies['totalPremium'], currency: policies['currency']['code']);
-      var description = List<String?>.from([
-        policies['productName'],
-        premium.toString()
-      ]).where((element) => element != null).toList().join(" - ");
-
+      var premium = formatMoney(policies['totalPremium'],
+          currency: policies['currency']['code']);
+      var description =
+          List<String?>.from([policies['productName'], premium.toString()])
+              .where((element) => element != null)
+              .toList()
+              .join(" - ");
 
       return {
         ...policies,
@@ -470,7 +472,6 @@ fetchUserPolicies() async {
     },
   ).toList();
 }
-
 
 Future<double> getTotalNotPaidCommission() async {
   String query = r"""
@@ -483,7 +484,7 @@ Future<double> getTotalNotPaidCommission() async {
 
   final QueryOptions options = QueryOptions(
     document: gql(query),
-    variables:  const {},
+    variables: const {},
   );
 
   GraphQLClient client = await DataConnection().connectionClient();
@@ -495,7 +496,8 @@ Future<double> getTotalNotPaidCommission() async {
   }
 
   if (result.data?['intermediaryWeeklyUnpaidCommission'] == null) {
-    devLog('intermediaryWeeklyUnpaidCommission: GraphQL Error: ${result.exception.toString()}');
+    devLog(
+        'intermediaryWeeklyUnpaidCommission: GraphQL Error: ${result.exception.toString()}');
     throw ("Failed to fetch Not Paid Commission. Please try again.");
   }
 

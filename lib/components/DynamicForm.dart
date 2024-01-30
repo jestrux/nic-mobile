@@ -166,48 +166,52 @@ class _DynamicFormState extends State<DynamicForm> {
   }
 
   Future<Map<String, dynamic>> getFormData() async {
-    var form = _formKey.currentState!;
+    var form = _formKey.currentState!.instantValue;
 
-    var payload = form.instantValue;
-
+    Map<String, dynamic> payload = {};
     Map<String, dynamic>? questionAnswerPayload;
 
-    var fileFieldsNames = payload.entries
-        .where((element) => element.value is File)
-        .map((e) => e.key);
+    var data = [];
+    var files = [];
 
-    if (fileFieldsNames.isNotEmpty) {
-      for (var fieldName in fileFieldsNames) {
-        File? file = payload[fieldName];
+    for (var fieldName in form.keys) {
+      if (form[fieldName] is File) {
+        File? file = form[fieldName];
 
         if (file == null) continue;
 
         var fileName = file.path.split('.').last;
         var fileBytes = await file.readAsBytes();
 
-        payload.update(
-          fieldName,
-          (value) => http.MultipartFile.fromBytes(
-            'file',
-            fileBytes,
-            filename: fileName,
-            contentType: MediaType('application', 'octet-stream'),
-          ),
+        var entry = http.MultipartFile.fromBytes(
+          'file',
+          fileBytes,
+          filename: fileName,
+          contentType: MediaType('application', 'octet-stream'),
         );
+
+        if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
+          files.add({
+            "field_name": fieldName,
+            "answer": entry,
+          });
+        } else {
+          payload[fieldName] = entry;
+        }
+      } else {
+        if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
+          data.add({
+            "field_name": fieldName,
+            "answer": form[fieldName],
+          });
+        } else {
+          payload[fieldName] = form[fieldName];
+        }
       }
     }
 
     if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
-      var answers = [];
-
-      for (var question in payload.keys) {
-        answers.add({
-          "field_name": question,
-          "answer": payload[question],
-        });
-      }
-
-      questionAnswerPayload = {"data": answers};
+      questionAnswerPayload = {"data": data, "files": files};
     }
 
     return questionAnswerPayload ?? payload;

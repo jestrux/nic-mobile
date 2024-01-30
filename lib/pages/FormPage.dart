@@ -283,6 +283,7 @@ class _FormPageState extends State<FormPage> {
             proposal: proposalDetails!["proposal"],
             phoneNumber: proposalDetails!["phoneNumber"],
             data: payload["data"],
+            files: payload["files"],
           );
         },
         onSuccess: (response) {
