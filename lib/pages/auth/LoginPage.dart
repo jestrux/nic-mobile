@@ -36,9 +36,9 @@ class _LoginPageState extends State<LoginPage> {
       String? res = "Welcome ${response.firstName} ${response.lastName}";
       showToast(res);
       // Navigator.of(context).pop();
-      setState(() {
-        bool temp = true;
-      });
+      // setState(() {
+      //   bool temp = true;
+      // });
     } else {
       print(response);
       var message = "Failed to login,Please try again..";

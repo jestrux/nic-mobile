@@ -39,10 +39,6 @@ class _MainAppState extends State<MainApp> {
     });
   }
 
-  void logoutUser() {
-    // Perform user logout actions here, such as clearing session data
-    // Redirect to the login page or display a session timeout message
-  }
   void resetSessionTimeout() {
     print("in-----resetSessionTimeout");
     _sessionTimer?.cancel();

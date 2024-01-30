@@ -87,11 +87,13 @@ class _DocViewerState extends State<DocViewer> {
     Directory? dir;
     String newPath = "";
     Dio dio = Dio();
-
+    bool platform = Platform.isAndroid;
+    print("pplatform----: ${platform} ");
     try {
-      if (Platform.isAndroid) {
+      if (platform) {
         if (await _requestPermission(Permission.storage)) {
           dir = await getExternalStorageDirectory();
+          print("dir----: $dir");
           List<String> folders = dir!.path.split("/");
           for (int x = 1; x < folders.length; x ++) {
             String folder = folders[x];
@@ -104,6 +106,7 @@ class _DocViewerState extends State<DocViewer> {
           String? p = '/storage/emulated/0/NIC_Kiganjani';
           dir = Directory(p);
           path = dir.path;
+          print("dir---: $dir");
         }else{
           return false;
         }

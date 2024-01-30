@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nic/components/AdsBar.dart';
 import 'package:nic/components/InlineList.dart';
+import 'package:nic/components/MiniButton.dart';
 import 'package:nic/components/PageSection.dart';
 import 'package:nic/components/RoundedHeaderPage.dart';
 import 'package:nic/data/actions.dart';
@@ -38,8 +39,9 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             const AdsBanner(),
+            const SizedBox(height: 5),
             const TotalCommissions(),
-            const SizedBox(height: 12),
+            // const SizedBox(height: 0),
             PageSection(
               title: "Buy Bima",
               titleAction: ActionButton.all(
@@ -99,13 +101,15 @@ class TotalCommissions extends StatelessWidget {
   Future<List<Map<String, dynamic>>?> fetchTotalCommissions() async {
     devLog("Fetch total commissions...");
 
-    var res = await getTotalNotPaidCommission();
-    devLog("Total commissions res: $res");
+    Map<String,dynamic> res = await getTotalNotPaidCommission();
+    var total = res['total'];
+    devLog("Total commissions res: $total");
 
     return [
       {
+        ...res,
         "icon": Icons.monetization_on,
-        "title": formatMoney(res, currency: "TZS"),
+        "title": formatMoney(total, currency: "TZS"),
         "trailing": "Waiting payment",
       }
     ];
@@ -120,19 +124,24 @@ class TotalCommissions extends StatelessWidget {
     if (userObj?.customerType != 2) return Container();
 
     return InlineListBuilder(
-      title: "Your Commissions",
+      title: "Pending Commissions",
       padding: const EdgeInsets.only(bottom: 12),
-      titleAction: ActionButton.all(
-        "Open dashboard",
-        onClick: (d) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) =>
-                  IntermediaryDash(intermediaryName: userObj!.intermediaryName),
-            ),
-          );
-        },
-      ),
+      actionsBuilder: (item) {
+        return [
+          MiniButton(
+            label: "Open dashboard",
+            // filled: true,
+            onClick: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      IntermediaryDash(data: item.extraData,intermediaryName: userObj!.intermediaryName),
+                ),
+              );
+            },
+          ),
+        ];
+      },
       future: fetchTotalCommissions,
     );
   }
