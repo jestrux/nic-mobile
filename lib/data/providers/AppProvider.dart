@@ -101,20 +101,14 @@ class AppProvider with ChangeNotifier, DiagnosticableTreeMixin {
     notifyListeners();
   }
 
-//   UNPAID COMMISSION
-double _totalNotPaidCommission = 0;
-int _commissionUpdatedState = 0;
-double get totalNotPaidCommission => _totalNotPaidCommission;
-int get commissionUpdatedState => _commissionUpdatedState;
+  // Commission Statement
+  List<Map<String, dynamic>>? _commissionStatement;
 
-void setTotalNotCommission() async{
-  _totalNotPaidCommission = await getTotalNotPaidCommission();
-  setCommissionUpdatedState(2);
-  notifyListeners();
-}
-void setCommissionUpdatedState( int commissionUpdatedState){
-  _commissionUpdatedState = commissionUpdatedState;
-  notifyListeners();
-}
+  List<Map<String, dynamic>>? get commissionStatement => _commissionStatement;
+
+  void setCommissionStatement(List<Map<String, dynamic>> commissionStatements) {
+    _commissionStatement = (_commissionStatement ?? [])..addAll(commissionStatements);
+    notifyListeners();
+  }
 
 }

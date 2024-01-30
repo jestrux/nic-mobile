@@ -473,11 +473,14 @@ Future<List<Map<String, dynamic>>?> fetchUserPolicies() async {
   ).toList();
 }
 
-Future<double> getTotalNotPaidCommission() async {
+
+Future<Map<String,dynamic>> getTotalNotPaidCommission() async {
   String query = r"""
      query{
       intermediaryWeeklyUnpaidCommission{
         total
+        totalGeneral
+        totalLife
       }
     }
     """;
@@ -501,5 +504,59 @@ Future<double> getTotalNotPaidCommission() async {
     throw ("Failed to fetch Not Paid Commission. Please try again.");
   }
 
-  return result.data?['intermediaryWeeklyUnpaidCommission']['total'];
+  return result.data?['intermediaryWeeklyUnpaidCommission'];
 }
+
+
+Future<List<Map<String, dynamic>>?> getCommissionStatement(
+int pageNumber,
+int pageMaxSize,
+int pageState
+    ) async {
+  String queryString = r"""
+    query($page: Int!, $pageSize: Int!){
+      intermediaryCommissionBatches(page: $page, pageSize: $pageSize){
+        total,
+        pages,
+        page,
+        hasNext,
+        hasPrev,
+        results {
+          id
+          formatedStartDate
+          formatedEndDate
+          totalCommission
+          statementDocument
+        }
+      }
+    }
+  """;
+
+  final QueryOptions options = QueryOptions(
+    document: gql(queryString),
+    variables: {'page': pageNumber,'pageSize':pageMaxSize}
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data?['intermediaryCommissionBatches'] == null) {
+    throw ("Failed to fetch branches");
+  }
+
+  return List.from(result.data!['intermediaryCommissionBatches']['results'])
+      .map<Map<String, dynamic>>((commissionBatch) {
+    Map<String, dynamic> props = {...commissionBatch};
+    var description =
+    List<String?>.from([props['formatedStartDate'], props['formatedEndDate']])
+        .where((element) => element != null)
+        .toList()
+        .join(" - ");
+    return {
+      ...props,
+      "description": description.toString(),
+      "title": formatMoney(props["totalCommission"],currency: "TZS"),
+    };
+  }).toList();
+}
+
