@@ -169,52 +169,49 @@ class _DynamicFormState extends State<DynamicForm> {
     var form = _formKey.currentState!.instantValue;
 
     Map<String, dynamic> payload = {};
-    Map<String, dynamic>? questionAnswerPayload;
 
     var data = [];
-    var files = [];
 
     for (var fieldName in form.keys) {
-      if (form[fieldName] is File) {
-        File? file = form[fieldName];
+      var value = form[fieldName];
+      dynamic actualValue;
+      var isFile = value is File;
 
-        if (file == null) continue;
+      // if (value == true) value = "on";
 
-        var fileName = file.path.split('.').last;
-        var fileBytes = await file.readAsBytes();
+      if (isFile) {
+        if (value == null) continue;
 
-        var entry = http.MultipartFile.fromBytes(
+        var fileName = value.path.split('.').last;
+        var fileBytes = await value.readAsBytes();
+
+        actualValue = http.MultipartFile.fromBytes(
           'file',
           fileBytes,
           filename: fileName,
           contentType: MediaType('application', 'octet-stream'),
         );
-
-        if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
-          files.add({
-            "field_name": fieldName,
-            "answer": entry,
-          });
-        } else {
-          payload[fieldName] = entry;
-        }
       } else {
-        if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
-          data.add({
-            "field_name": fieldName,
-            "answer": form[fieldName],
-          });
-        } else {
-          payload[fieldName] = form[fieldName];
-        }
+        actualValue = value;
+      }
+
+      if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
+        var entry = {
+          "field_name": fieldName,
+          "answer": actualValue,
+          "type": isFile ? "file" : "regular",
+        };
+
+        // isFile ? files.add(entry) : data.add(entry);
+        data.add(entry);
+      } else {
+        payload[fieldName] = value;
       }
     }
 
-    if (widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer) {
-      questionAnswerPayload = {"data": data, "files": files};
-    }
-
-    return questionAnswerPayload ?? payload;
+    return widget.payloadFormat == DynamicFormPayloadFormat.questionAnswer
+        ? {"data": data}
+        : payload;
   }
 
   Future<dynamic> onSubmit() async {

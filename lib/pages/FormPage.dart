@@ -282,8 +282,12 @@ class _FormPageState extends State<FormPage> {
             productId: proposalDetails!["productId"],
             proposal: proposalDetails!["proposal"],
             phoneNumber: proposalDetails!["phoneNumber"],
-            data: payload["data"],
-            files: payload["files"],
+            data: payload["data"]
+                .where((field) => field['type'] != "file")
+                .toList(),
+            files: payload["data"]
+                .where((field) => field['type'] == "file")
+                .toList(),
           );
         },
         onSuccess: (response) {
