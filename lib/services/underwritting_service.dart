@@ -9,6 +9,7 @@ bool productIsNonMotor({required String productId}) =>
 
 Future<List<dynamic>?> getInitialProductForm({
   required String productId,
+  required bool checkId,
 }) async {
   String queryString =
       r"""query($product: ID!, $underwriteChannel: Int!, $check: Boolean!) {
@@ -19,7 +20,7 @@ Future<List<dynamic>?> getInitialProductForm({
     document: gql(queryString),
     variables: <String, dynamic>{
       "product": productId,
-      "check": true,
+      "check": checkId,
       "underwriteChannel": 2,
     },
   );

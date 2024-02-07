@@ -29,7 +29,7 @@ class _InitialProductFormState extends State<InitialProductForm> {
   Future<dynamic> fetchForm() async {
     List<DynamicFormField>? form;
     try {
-      var res = await getInitialProductForm(productId: widget.productId);
+      var res = await getInitialProductForm(productId: widget.productId,checkId:! (widget.buyForOther ?? false));
       if (res == null) throw ("Failed to fetch form. Please try again later.");
 
       var fixedInitialFields = !(widget.buyForOther ?? true)
