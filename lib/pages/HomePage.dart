@@ -119,7 +119,7 @@ class TotalCommissions extends StatelessWidget {
   Widget build(BuildContext context) {
     UserModel? userObj = Provider.of<AppProvider>(context).authUser;
 
-    devLog("User type: ${userObj?.firstName}");
+    devLog("User type: ${userObj?.customerType}");
 
     if (userObj?.customerType != 2) return Container();
 

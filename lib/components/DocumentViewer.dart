@@ -41,14 +41,14 @@ class _DocViewerState extends State<DocViewer> {
 
   Future downloadFile(String? imageUrl, String? title) async {
 
-    dynamic saved;
+    bool saved = false;
     try {
       DateTime time = DateTime.now();
       var milSec = time.millisecondsSinceEpoch;
       String fileName = "${title}_${milSec}.pdf";
 
-      saved = await saveFile(imageUrl,fileName);
-      print("saved-----:${saved}");
+      saveFile(imageUrl,fileName);
+      // print("saved-----:${saved}");
       if (saved) {
         setState(() {
           downloading = false;
@@ -91,6 +91,11 @@ class _DocViewerState extends State<DocViewer> {
     print("pplatform----: ${platform} ");
     try {
       if (platform) {
+        bool res = await _requestPermission(Permission.storage);
+        print("res---:$res");
+        dynamic res2 = await Permission.storage.request();
+        Permission.storage.onDeniedCallback(() => openAppSettings());
+        print("res2---:$res2");
         if (await _requestPermission(Permission.storage)) {
           dir = await getExternalStorageDirectory();
           print("dir----: $dir");
@@ -108,18 +113,21 @@ class _DocViewerState extends State<DocViewer> {
           path = dir.path;
           print("dir---: $dir");
         }else{
+          await _requestPermission(Permission.storage);
           return false;
         }
       }
       else {
-        if (await _requestPermission(Permission.storage)) {
+        var ress =  await _requestPermission(Permission.storage);
+        print("ress----: $ress");
+        if (ress) {
           dir = await getApplicationDocumentsDirectory();
           path = dir.path + '/01 Policy Documents';
         } else {
           return false;
         }
       }
-
+      print("dir----: $dir");
       if (await dir.exists()) {
         var status = await Permission.storage.status;
         if (!status.isGranted) {
@@ -136,7 +144,7 @@ class _DocViewerState extends State<DocViewer> {
           });
         } );
       }
-      print("end-------${download}");
+      print("end-------11");
       return true;
     } catch(e){
       print('error for 1111--:${e}');
