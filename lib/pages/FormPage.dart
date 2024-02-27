@@ -277,11 +277,19 @@ class _FormPageState extends State<FormPage> {
         fields: formFields!,
         onSubmit: (payload) async {
           if ([payload["data"], proposalDetails].contains(null)) return null;
-
+          // print("payload----: ${proposalDetails}");
+          // void getType(obj){
+          //   var type = obj.runtimeType;
+          //   return print("${obj} --- ${type}");
+          // }
+          // getType(proposalDetails!["productId"]);
+          // getType(proposalDetails!["proposal"]);
+          // getType(proposalDetails!["phoneNumber"]);
           return submitProposalForm(
-            productId: proposalDetails!["productId"],
+            productId: proposalDetails!["productId"].toString(),
             proposal: proposalDetails!["proposal"],
             phoneNumber: proposalDetails!["phoneNumber"],
+            renewal: widget.renewal,
             data: payload["data"]
                 .where((field) => field['type'] != "file")
                 .toList(),

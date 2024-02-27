@@ -85,7 +85,6 @@ class AppProvider with ChangeNotifier, DiagnosticableTreeMixin {
     notifyListeners();
   }
 
-
 //  USER LIFE CONTRIBUTIONS
   List<Map<String, dynamic>>? _userContributions;
 
