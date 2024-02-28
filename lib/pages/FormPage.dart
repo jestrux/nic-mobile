@@ -55,7 +55,7 @@ class _FormPageState extends State<FormPage> {
 
     try {
       var res = await requestControlNumber(
-        productId: proposalDetails!["productId"],
+        productId: proposalDetails!["productId"].toString(),
         proposal: proposalDetails!["proposal"],
       );
 
@@ -276,6 +276,7 @@ class _FormPageState extends State<FormPage> {
       content = DynamicForm(
         fields: formFields!,
         onSubmit: (payload) async {
+          print(payload);
           if ([payload["data"], proposalDetails].contains(null)) return null;
           // print("payload----: ${proposalDetails}");
           // void getType(obj){

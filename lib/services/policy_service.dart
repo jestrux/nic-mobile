@@ -52,8 +52,10 @@ Future<Map<String, dynamic>?> renewPolicy(String registrationNumber,
     throw ("Failed to purchase product. Please try again later.");
   }
 
-  initiateProposalResponse['data'] =
-      jsonDecode(initiateProposalResponse['data']);
+  if(initiateProposalResponse['data'] != null){
+  initiateProposalResponse['data'] = jsonDecode(initiateProposalResponse['data']);
+  }
+
 
   return initiateProposalResponse;
 }
