@@ -243,6 +243,18 @@ class _GetQuoteState extends State<GetQuote> {
                 ),
               ),
             ),
+            if (quotationDetails!['isLife'])
+            KeyValueView(
+              data: {
+                "Sum Assured": {
+                  "type": "money",
+                  "value": quotationDetails!["sumInsured"]
+                },
+                "Funeral Benefit": {"type": "money","value": quotationDetails!["funeralAmount"]},
+                "Total Premium": {"type": "money","value": quotationDetails!["totalPremium"]},
+              },
+            )
+            else
             KeyValueView(
               data: {
                 "Base Premium": {

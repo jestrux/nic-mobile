@@ -10,6 +10,7 @@ import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/models/user_model.dart';
 import 'package:nic/pages/IntermediaryDash.dart';
+import 'package:nic/services/product_service.dart';
 import 'package:nic/services/underwritting_service.dart';
 import 'package:nic/utils.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +29,22 @@ class _HomePageState extends State<HomePage> {
   void route() {}
 
   @override
+  void initState() {
+    super.initState();
+    fetchProductsGlobally();
+  }
+
+  Future<void> fetchProductsGlobally() async {
+    AppProvider provider = Provider.of<AppProvider>(context, listen: false);
+    if (provider.products == null) {
+      var products = await getProducts();
+      provider.setProducts(products!);
+    }
+  }
+  @override
   Widget build(BuildContext context) {
+    UserModel? userObj = Provider.of<AppProvider>(context).authUser;
+
     return RoundedHeaderPage(
       title: "Sisi ndiyo Bima",
       showLogo: true,
@@ -73,7 +89,7 @@ class _HomePageState extends State<HomePage> {
                 bimaStatusAction,
                 lifeContributionsAction,
                 // changiaBimaAction,
-                policyDocumentsAction,
+                userObj != null ? policyDocumentsAction : changiaBimaAction,
               ],
               shape: ActionItemShape.rounded,
             ),

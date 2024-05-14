@@ -47,6 +47,7 @@ class _BimaRenewalState extends State<BimaRenewal> {
         if (productRes == null) throw ();
 
         res['productId'] = productRes['id'];
+        res['tag'] = productRes['tag'];
 
         var proposalRes = await fetchProposalForm(
           productId: res['product'],
@@ -63,6 +64,7 @@ class _BimaRenewalState extends State<BimaRenewal> {
           "productId": res['productId'],
           "proposal": res['proposal'],
           "product": res['product'],
+          "tag": res['tag'],
           "form": res['form'],
           "phoneNumber": "",
         });

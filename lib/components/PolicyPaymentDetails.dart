@@ -49,6 +49,7 @@ class _PolicyPaymentDetailsState extends State<PolicyPaymentDetails> {
       var res = await requestControlNumber(
         productId: details["productId"] ?? "",
         proposal: details["proposal"],
+        productTag: "motor"
       );
 
       setState(() {
@@ -223,7 +224,7 @@ class _PolicyPaymentDetailsState extends State<PolicyPaymentDetails> {
   @override
   Widget build(BuildContext context) {
     var controlNumber = details["controlNumber"];
-
+    // print(details);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -245,6 +246,8 @@ class _PolicyPaymentDetailsState extends State<PolicyPaymentDetails> {
               },
             },
           ),
+        if (details["propertyName"] != null && details["startDate"] != null)
+        const Divider(height: 40, thickness: 0.3),
         // if (details["data"] != null)
         //   KeyValueView(
         //     title: "Policy Summary",
@@ -254,7 +257,6 @@ class _PolicyPaymentDetailsState extends State<PolicyPaymentDetails> {
         //       "Assured / Insured:": details["data"]["registration_number"],
         //     },
         //   ),
-        const Divider(height: 40, thickness: 0.3),
         KeyValueView(
           title: "Premium Details",
           data: {

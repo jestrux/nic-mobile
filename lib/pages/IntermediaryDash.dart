@@ -26,7 +26,7 @@ class IntermediaryDash extends StatelessWidget {
       ) async {
     AppProvider provider = Provider.of<AppProvider>(context, listen: false);
 
-    if (provider.branches != null) return provider.commissionStatement;
+    if (provider.commissionStatement != null) return provider.commissionStatement;
 
     var commissionStatements = await getCommissionStatement(pageNumber,pageMaxSize,pageState);
 

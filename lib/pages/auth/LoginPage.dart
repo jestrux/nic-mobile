@@ -10,7 +10,8 @@ import 'package:nic/utils.dart';
 import 'package:nic/services/authentication_service.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  final bool popWindow;
+  const LoginPage({Key? key, required this.popWindow}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -35,7 +36,10 @@ class _LoginPageState extends State<LoginPage> {
       // fetchDataAndPersistPendingProposals(scaffoldKey);
       String? res = "Welcome ${response.firstName} ${response.lastName}";
       showToast(res);
-      // Navigator.of(context).pop();
+      print("widget.popWindow----: $widget.popWindow");
+      if(widget.popWindow==true){
+        Navigator.of(context).pop();
+      }
       // setState(() {
       //   bool temp = true;
       // });
@@ -156,9 +160,10 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                       submitLabel: "Login",
                       onSubmit: handleLogin,
-                      onSuccess: (user) => showToast(
-                        "Welcome ${user.firstName} ${user.lastName}",
-                      ),
+                      onSuccess: showResponse,
+                      // onSuccess: (user) => showToast(
+                      //   "Welcome ${user.firstName} ${user.lastName}",
+                      // ),
                       onError: (error, formData) => openErrorAlert(
                         message: error.toString(),
                       ),

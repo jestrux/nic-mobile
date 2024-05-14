@@ -12,6 +12,8 @@ import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 
+import 'package:upgrader/upgrader.dart';
+
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
@@ -60,11 +62,20 @@ class _MainAppState extends State<MainApp> {
       ),
       const BimaPage(),
       const UtilitiesPage(),
-      userObj != null ?  const ProfilePage() : const LoginPage(),
+      userObj != null ?  const ProfilePage() : const LoginPage(popWindow: false,),
       const MorePage(),
     ];
 
-    return Scaffold(
+    return UpgradeAlert(
+      upgrader: Upgrader(
+        countryCode:'TZ',
+        debugLogging: true,
+          // debugDisplayAlways: true
+      ),
+        showIgnore:false,
+        showLater: false,
+      dialogStyle: UpgradeDialogStyle.cupertino,
+      child:Scaffold(
       backgroundColor: Constants.primaryColor,
       body: pages[currentPageIndex],
       bottomNavigationBar: Container(
@@ -117,7 +128,7 @@ class _MainAppState extends State<MainApp> {
           ],
         )),
       ),
-    );
+    ));
   }
   @override
   void dispose() {

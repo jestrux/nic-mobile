@@ -33,6 +33,8 @@ class _FormPageState extends State<FormPage> {
   Map<String, dynamic>? proposalDetails;
   List<DynamicFormField>? formFields;
   bool loading = false;
+  bool cancelingLoading = false;
+  bool cancelingDone = false;
   bool onFinalScreen = false;
 
   @override
@@ -57,6 +59,7 @@ class _FormPageState extends State<FormPage> {
       var res = await requestControlNumber(
         productId: proposalDetails!["productId"].toString(),
         proposal: proposalDetails!["proposal"],
+        productTag: proposalDetails!['tag']
       );
 
       setState(() {
@@ -133,14 +136,52 @@ class _FormPageState extends State<FormPage> {
   Widget _buildPaymentDetailsContent() {
     var details = proposalDetails!;
     var controlNumber = details["control_number"];
-
+    print(details['can_request_control']);
     if (!onFinalScreen) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
-        child: FormButton.filled(
-          "Get payment Details",
-          loading: loading,
-          onClick: openPaymentDetailsScreen,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children:[
+            if(!details['can_request_control'])
+            const Text("Your proposal will be submitted to your employer for payment processing.",style: TextStyle(color: Colors.orange),),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: FormButton.outlined(
+                    "Cancel",
+                    loading: cancelingLoading,
+                    onClick:() async {
+                      await cancelProposal();
+                      if(cancelingDone) {
+                        Navigator.of(context).popUntil(
+                            ModalRoute.withName("/"));
+                      }
+                      },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if(!details['can_request_control'])
+                Expanded(
+                  child: FormButton.filled(
+                    "Submit for lodgment",
+                    loading: loading,
+                    onClick: (){Navigator.of(context).popUntil(ModalRoute.withName("/"));},
+                  ),
+                )
+                else
+                  Expanded(
+                    child: FormButton.filled(
+                      "Get payment Details",
+                      loading: loading,
+                      onClick: openPaymentDetailsScreen,
+                    ),
+                  )
+              ],
+            )
+          ],
         ),
       );
     }
@@ -236,7 +277,7 @@ class _FormPageState extends State<FormPage> {
     if (proposalDetails?["premium"] != null) {
       var details = proposalDetails!;
       var controlNumber = details["controlNumber"];
-
+      // print(details);
       content = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -244,31 +285,45 @@ class _FormPageState extends State<FormPage> {
           KeyValueView(
             title: "Policy Summary",
             data: {
-              "Product": details["data"],
-              "Proposal Number": details["proposal"],
-              "Assured / Insured:": details["propertyName"],
-              "Start Date": {
-                "type": "date",
-                "value": DateFormat('dd/MM/yyyy').parse(details["startDate"])
-              },
-              "End Date": {
-                "type": "date",
-                "value": DateFormat('dd/MM/yyyy').parse(details["endDate"])
-              },
+              "Product:": details["product_name"],
+              "Policy Holder:": details["owner"],
+              "Proposal Number:": details["policy_number"],
+              "Assured / Insured:": details["property_name"],
+              "Start Date:": details["start_date"] != "TBA" ? {"type": "date","value": DateFormat('dd/MM/yyyy').parse(details["start_date"])} : details["start_date"] ,
+              "End Date:": details["end_date"] != "TBA" ? {"type": "date","value": DateFormat('dd/MM/yyyy').parse(details["end_date"])} : details["end_date"],
             },
           ),
           const Divider(height: 40, thickness: 0.3),
-          KeyValueView(
-            title: "Premium Details",
-            data: {
-              "Premium": {"type": "money", "value": details["premium"]},
-              "Premium VAT": {"type": "money", "value": details["premiumVat"]},
-              "Total Premium": {
-                "type": "money",
-                "value": details["totalPremium"]
+
+          if(details['is_life'] == false)
+            KeyValueView(
+              title: "Premium Details",
+              data: {
+                "Sum Insured:": {"type": "money", "value": details["sum_insured"]},
+                "Premium:": {"type": "money", "value": details["premium"]},
+                "Premium VAT:": {"type": "money", "value": details["premium_vat"]},
+                "Total Premium:": {
+                  "type": "money",
+                  "value": details["total_premium"]
+                },
               },
-            },
-          ),
+            )
+          else
+            KeyValueView(
+              title: "Premium Details",
+              data: {
+                "Policy Term(years)":details['policy_term'],
+                "Contribution Mode:": details['payment_mode'],
+                "Premium per (${details['payment_mode']}):": {"type": "money", "value": details["total_premium"]},
+                if(details["funeral_amount"] > 0)
+                "Funeral Benefit:": {"type": "money", "value": details["funeral_amount"]},
+                if(details["annual_bonus_amount"] > 0)
+                "Annual Bonus:": {"type": "money", "value": details["annual_bonus_amount"]},
+                "Sum Assured:": {"type": "money", "value": details["sum_insured"]},
+              },
+            )
+
+          ,
           _buildPaymentDetailsContent()
         ],
       );
@@ -276,9 +331,9 @@ class _FormPageState extends State<FormPage> {
       content = DynamicForm(
         fields: formFields!,
         onSubmit: (payload) async {
-          print(payload);
+          // print(payload);
           if ([payload["data"], proposalDetails].contains(null)) return null;
-          // print("payload----: ${proposalDetails}");
+          // print("payload----: $proposalDetails");
           // void getType(obj){
           //   var type = obj.runtimeType;
           //   return print("${obj} --- ${type}");
@@ -318,7 +373,7 @@ class _FormPageState extends State<FormPage> {
             ),
           );
 
-          devLog("Submit proposal response $response");
+          // devLog("Submit proposal response $response");
         },
       );
     }
@@ -326,6 +381,26 @@ class _FormPageState extends State<FormPage> {
     return content;
   }
 
+  cancelProposal() async {
+    setState(() {
+      cancelingLoading = true;
+    });
+
+    try {
+      var res = await cancelOrderItem(
+        productId: proposalDetails!["productId"].toString(),
+        proposalId: proposalDetails!["proposal"],
+      );
+
+      setState(() {
+        cancelingLoading = false;
+        cancelingDone = true;
+      });
+    } catch (e) {
+      devLog("Control number error: $e");
+    }
+
+  }
   @override
   Widget build(BuildContext context) {
     return RoundedHeaderPage(

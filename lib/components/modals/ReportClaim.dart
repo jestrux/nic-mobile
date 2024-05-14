@@ -50,7 +50,7 @@ class _ReportClaimState extends State<ReportClaim> {
           fields: const [
             DynamicFormField(
               name: "registrationNumber",
-              label: "Registration Number",
+              label: "Policy Reference No.",
               placeholder: "Enter policy number or plate number",
             ),
           ],

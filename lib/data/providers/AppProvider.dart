@@ -110,4 +110,14 @@ class AppProvider with ChangeNotifier, DiagnosticableTreeMixin {
     notifyListeners();
   }
 
+ // Popular PRODUCTS
+  List<Map<String, dynamic>>? _popularProducts;
+
+  List<Map<String, dynamic>>? get popularProducts => _popularProducts;
+
+  void setPopularProducts(List<Map<String, dynamic>> popularProducts) {
+    _popularProducts = (_popularProducts ?? [])..addAll(popularProducts);
+    notifyListeners();
+  }
+
 }
