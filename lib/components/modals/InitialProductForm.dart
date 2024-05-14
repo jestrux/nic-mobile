@@ -11,12 +11,14 @@ class InitialProductForm extends StatefulWidget {
   final String productId;
   final String productName;
   final bool? buyForOther;
+  final Map<String, dynamic>? extraData;
 
   const InitialProductForm({
     Key? key,
     required this.productId,
     required this.productName,
     this.buyForOther,
+    required this.extraData,
   }) : super(key: key);
 
   @override
@@ -35,7 +37,7 @@ class _InitialProductFormState extends State<InitialProductForm> {
       var fixedInitialFields = !(widget.buyForOther ?? true)
           ? []
           : [
-              if (productIsNonMotor(productId: widget.productId))
+              if (productIsNonMotor(productTag: widget.extraData!['tag']))
                 {
                   "type": "text",
                   "name": "owner_full_name",
@@ -50,7 +52,7 @@ class _InitialProductFormState extends State<InitialProductForm> {
                 "required": true,
               }
             ];
-
+            
       form = processFields([...List.from(res), ...fixedInitialFields]);
     } catch (e) {
       Navigator.pop(context);
@@ -83,7 +85,7 @@ class _InitialProductFormState extends State<InitialProductForm> {
               onSuccess: (data) {
                 if (data != null) {
                   Navigator.pop(context);
-                  devLog("Open form page $data");
+                  // devLog("Open form page ${widget.extraData!['tag']}");
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => FormPage(
@@ -91,6 +93,7 @@ class _InitialProductFormState extends State<InitialProductForm> {
                         proposalDetails: {
                           ...data,
                           "productId": widget.productId,
+                          "tag":widget.extraData!['tag']
                         },
                       ),
                     ),

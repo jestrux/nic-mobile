@@ -117,6 +117,8 @@ Future<Map<String, dynamic>?> submitQuote({
       totalPremium
       propertyName
       sumInsured
+      isLife
+      funeralAmount
     }
   },""";
 
@@ -244,4 +246,61 @@ Future<Map<String, dynamic>?> getProductById(int id) async {
         (element) => element?["productId"] == id,
         orElse: () => null,
       );
+}
+
+
+Future<List<Map<String, dynamic>>?> getPopularProduct({
+  String tag = "",
+}) async {
+  devLog("Fetch popular products");
+
+  String queryString = r"""
+      query{
+      allPopularProduct {
+        edges {
+          node {
+            id
+            name
+            description
+            mobileName
+            mobileImage
+            code
+            tag
+            productClass {
+              id
+              name
+              description
+              code
+            }
+          }
+        }
+      }
+    }
+  """;
+
+  final QueryOptions options = QueryOptions(
+    document: gql(queryString),
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data == null || result.data!['allPopularProduct']['edges'].length < 1) {
+    devLog("allPopularProduct: No data found");
+    throw ("Failed to fetch allPopularProduct. Please try again later.");
+  }
+
+  List<Map<String, dynamic>> allPopularProduct = List.from(
+    result.data!['allPopularProduct']['edges'],
+  ).map<Map<String, dynamic>>(
+        (element) {
+      var product = element["node"];
+      product["title"] = product["mobileName"];
+      product['openUssd'] = false;
+
+      return product;
+    },
+  ).toList();
+
+  return allPopularProduct;
 }

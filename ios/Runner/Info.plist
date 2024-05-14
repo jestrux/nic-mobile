@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Nic</string>
+	<string>NIC Kiganjani</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -24,8 +24,18 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera will be used to record videos and take pictures for claims and underwriting</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs to save/capture image in Photos for underwriting/claim purpose.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone will be used when recording videos for claims and underwriting</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -45,16 +55,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>sms</string>
-		<string>tel</string>
-		<string>mailto</string>
-		<string>https</string>
-	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>Camera will be used to record videos and take pictures for claims and underwriting</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone will be used when recording videos for claims and underwriting</string>
 </dict>
 </plist>

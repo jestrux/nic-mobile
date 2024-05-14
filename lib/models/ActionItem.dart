@@ -19,6 +19,7 @@ class ActionItem {
   final String? value;
   final Map<String, dynamic>? extraData;
   final Function? onClick;
+  final String? tag;
 
   ActionItem({
     required this.label,
@@ -36,6 +37,7 @@ class ActionItem {
     this.value,
     this.extraData,
     this.onClick,
+    this.tag,
   });
 
   ActionItem cloneWith({
@@ -62,6 +64,7 @@ class ActionItem {
         leading: leading ?? this.leading,
         trailing: trailing ?? this.trailing,
         extraData: extraData ?? this.extraData,
+        tag: tag,
         onClick: onClick ?? this.onClick,
       );
 }

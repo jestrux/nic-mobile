@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nic/color_schemes.g.dart';
 import 'package:nic/components/DynamicForm.dart';
-import 'package:nic/components/FormActions.dart';
-import 'package:nic/components/KeyValueView.dart';
 import 'package:nic/components/ListItem.dart';
 import 'package:nic/constants.dart';
 import 'package:nic/models/ActionButton.dart';
 import 'package:nic/models/life/LifepolicyModel.dart';
-import 'package:nic/pages/FormPage.dart';
 import 'package:nic/pages/life/premiumCards.dart';
 import 'package:nic/services/life/customer_policies.dart';
 import 'package:nic/utils.dart';

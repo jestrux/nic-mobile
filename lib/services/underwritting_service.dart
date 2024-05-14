@@ -4,8 +4,8 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:nic/services/data_connection.dart';
 import 'package:nic/utils.dart';
 
-bool productIsNonMotor({required String productId}) =>
-    ["UHJvZHVjdE5vZGU6MzAw", "UHJvZHVjdE5vZGU6MzEx"].contains(productId);
+bool productIsNonMotor({required String productTag}) =>
+    ["life", "Fire"].contains(productTag);
 
 Future<List<dynamic>?> getInitialProductForm({
   required String productId,
@@ -132,7 +132,7 @@ Future<Map<String, dynamic>?> initiateProposal({
   }
 
   var initiateProposalResponse = result.data!['initiateProposal'];
-  print(initiateProposalResponse);
+  // print(initiateProposalResponse);
   if (initiateProposalResponse == null) {
     throw ("Failed to purchase product. Please try again later.");
   }
@@ -215,8 +215,12 @@ Future<Map<String, dynamic>?> submitProposalForm({
     devLog("Proposal: backend error, $message");
     throw (message);
   }
-
-  return proposalResponse;
+  // return proposalResponse;
+  return fetchPaymentSummary(
+    productId: productId,
+    proposal: proposal,
+    recurse: false,
+  );
 }
 
 Future<Map<String, dynamic>?> fetchPaymentSummary({
@@ -269,6 +273,7 @@ Future<Map<String, dynamic>?> fetchPaymentSummary({
 Future<Map<String, dynamic>?> requestControlNumber({
   required int proposal,
   required String productId,
+  required String productTag
 }) async {
   String queryString =
       r"""mutation ($proposal: Int!,$isLife: Boolean, $underwriteChannel: Int!) {
@@ -289,17 +294,17 @@ Future<Map<String, dynamic>?> requestControlNumber({
 
   var payload = {
     "proposal": proposal,
-    "isLife": productIsNonMotor(productId: productId),
+    "isLife": productIsNonMotor(productTag: productTag),
     "underwriteChannel": 2,
   };
 
-  devLog("Control number payload: $payload");
+  devLog("Control number payload: $productTag");
 
   final QueryOptions options = QueryOptions(
     document: gql(queryString),
     variables: <String, dynamic>{
       "proposal": proposal,
-      "isLife": productIsNonMotor(productId: productId),
+      "isLife": productIsNonMotor(productTag: productTag),
       "underwriteChannel": 2,
     },
   );
@@ -311,11 +316,11 @@ Future<Map<String, dynamic>?> requestControlNumber({
     devLog("Request control number: No data found");
     throw ("Failed to fetch payment. Please try again later.");
   }
-
+  // print("result.data-----: ${result.data}");
   var controlNumberResponse = result.data!['controlNumber'];
 
   if (!(controlNumberResponse?['success'] ?? false)) {
-    throw ("Failed to fetch payment. Please try again later.");
+    throw ("${result.data!['controlNumber']['message']}");
   }
 
   if (productId.isEmpty) return controlNumberResponse;
@@ -561,3 +566,45 @@ int pageState
   }).toList();
 }
 
+
+Future<bool> cancelOrderItem({
+  required String productId,
+  required int proposalId,
+}) async {
+  String queryString =
+      r"""mutation ($productId: ID!, $proposalId: Int!,$underwriteChannel: Int!) {
+      cancelOrderItem(productId: $productId,proposalId: $proposalId,underwriteChannel: $underwriteChannel) {
+          success
+          message
+      }
+  }""";
+
+  final QueryOptions options = QueryOptions(
+    document: gql(queryString),
+    variables: <String, dynamic>{
+      "productId": productId,
+      "proposalId": proposalId,
+      "underwriteChannel": 2,
+    },
+  );
+
+  GraphQLClient client = await DataConnection().connectionClient();
+  final QueryResult result = await client.query(options);
+
+  if (result.data?['cancelOrderItem'] == null) {
+    devLog("cancelOrderItem: No data found");
+    throw ("Failed to submit cancelOrderItem. Please try again later.");
+  }
+
+  var cancelOrderItemResponse = result.data!['cancelOrderItem'];
+
+  if (!(cancelOrderItemResponse?['success'] ?? false)) {
+    var message = cancelOrderItemResponse?['message'] ??
+        "Failed to submit cancelOrderItemResponse. Please try again later.";
+
+    devLog("cancelOrderItemResponse: backend error, $message");
+    throw (message);
+  }
+  // return proposalResponse;
+  return true;
+}

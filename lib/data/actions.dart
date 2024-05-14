@@ -11,12 +11,18 @@ import 'package:nic/components/modals/ProductsByTag.dart';
 import 'package:nic/data/products.dart';
 import 'package:nic/models/ActionItem.dart';
 import 'package:nic/models/user_model.dart';
+import 'package:nic/pages/BimaPage.dart';
 import 'package:nic/pages/ReportClaimFormPage.dart';
+import 'package:nic/pages/auth/LoginPage.dart';
 import 'package:nic/services/claim_service.dart';
 import 'package:nic/services/payment_service.dart';
 import 'package:nic/services/policy_service.dart';
+import 'package:nic/services/product_service.dart';
 import 'package:nic/utils.dart';
 import 'package:nic/constants.dart';
+import 'package:provider/provider.dart';
+
+import 'providers/AppProvider.dart';
 
 var claimStatusAction = ActionItem(
   label: "Claim status",
@@ -182,12 +188,18 @@ var getQuickQuoteAction = ActionItem(
   background: Colors.orange.shade300,
   icon: Icons.calculate,
   onClick: () async {
+    List<Map<String, dynamic>>? productList;
+    var context = Constants.globalAppKey.currentContext!;
+    AppProvider provider = Provider.of<AppProvider>(context, listen: false);
+    if (provider.products != null) productList =  provider.products;
+    productList ??= await getProducts();
+
     var productId = await showChoicePicker(
       // mode: ChoicePickerMode.alert,
       confirm: true,
       title: "Select product to get a quote",
-      choices: products.map((product) {
-        return {"label": product["name"], "value": product["id"]};
+      choices: productList!.map((product) {
+        return {"label": product["mobileName"], "value": product["id"]};
       }).toList(),
     );
 
@@ -341,6 +353,7 @@ List<ActionItem> buyBimaActions = [
     // image:
     //     "https://images.unsplash.com/photo-1560346740-a8678c61a524?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDM2fHxibGFjayUyMGZhbWlseXxlbnwwfHx8fDE2ODQzNTYwNDB8MA&ixlib=rb-4.0.3&q=80&w=900",
     image: "assets/img/bima/life.jpg",
+    tag: "life"
   ),
   ActionItem(
     id: "UHJvZHVjdE5vZGU6MTc3",
@@ -349,6 +362,7 @@ List<ActionItem> buyBimaActions = [
     // image:
     //     "https://bsmedia.business-standard.com/_media/bs/img/article/2019-05/25/full/1558730112-9901.jpg",
     image: "assets/img/bima/magari.png",
+    tag: "Vehicle"
   ),
   ActionItem(
     id: "UHJvZHVjdE5vZGU6MzEx",
@@ -357,6 +371,7 @@ List<ActionItem> buyBimaActions = [
     // image:
     //     "https://www.nicinsurance.co.tz/img/uploads/pier_files/Linda-Mjengo_1690709063.png",
     image: "assets/img/bima/linda-mjengo.png",
+    tag: "LindaMjengo"
   ),
   ActionItem(
     id: "UHJvZHVjdE5vZGU6MTgx",
@@ -365,6 +380,7 @@ List<ActionItem> buyBimaActions = [
     // image:
     //     "https://images.unsplash.com/photo-1625043484550-df60256f6ea5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDZ8fG1vdG9yJTIwYmlrZXxlbnwwfHx8fDE2OTQ0MzMzNzR8MA&ixlib=rb-4.0.3&q=80&w=1080",
     image: "assets/img/bima/pikipiki.jpg",
+    tag: "Motorcycle"
   ),
   ActionItem(
     icon: Icons.flight,
@@ -372,14 +388,16 @@ List<ActionItem> buyBimaActions = [
     // image:
     //     "https://images.unsplash.com/photo-1544016768-982d1554f0b9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxNjE2NXwwfDF8c2VhcmNofDI3fHxhaXJwbGFuZXxlbnwwfHx8fDE2OTk0NDk5MDl8MA&ixlib=rb-4.0.3&q=80&w=1080",
     image: "assets/img/bima/travel.jpg",
+    tag: "Travel"
   ),
   ActionItem(
     id: "UHJvZHVjdE5vZGU6MjY=",
     icon: Icons.directions_car,
-    label: "Bima Kubwa ya Binafsi",
+    label: "Bima Kubwa ya Magari Binafsi",
     // image:
     //     "https://www.nicinsurance.co.tz/img/uploads/pier_files/Motor-Insurance__1690709184.jpg",
     image: "assets/img/bima/bima-kubwa-binafsi.jpg",
+    tag: "bimaKubwaBinafsi"
   ),
 ];
 
@@ -413,13 +431,46 @@ void handlePurchaseProduct(
     );
   }
 
-  var tagMap = {
-    "UHJvZHVjdE5vZGU6MzAw": "Life",
-    "UHJvZHVjdE5vZGU6MTc3": "Vehicle",
-    "UHJvZHVjdE5vZGU6MTgx": "Motorcycle",
-  };
+  String? selectedChoice;
+  if (authUser == null){
+    selectedChoice = await showChoicePicker(
+      choices: [
+        {
+          "icon": Icons.login,
+          "label": "Login Now",
+        },
+        {
+          "icon": Icons.next_plan_outlined,
+          "label": "Proceed without login",
+        },
+      ],
+    );
+    print("choice---: $selectedChoice");
+    if (selectedChoice == null) return;
+    if (selectedChoice == "Login Now"){
+      // return;
+      Navigator.push(
+        Constants.globalAppKey.currentContext!,
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(popWindow: true),
+        ),
+      );
 
-  var tag = tagMap[product.id];
+    }
+  }
+  if (selectedChoice == "Login Now") return;
+  var tag;
+  if(product.tag !=  null){
+    tag = product.tag;
+  }else{
+    var tagMap = {
+      "UHJvZHVjdE5vZGU6MzAw": "Life",
+      "UHJvZHVjdE5vZGU6MTc3": "Vehicle",
+      "UHJvZHVjdE5vZGU6MTgx": "Motorcycle",
+    };
+    tag = tagMap[product.id];
+
+  }
 
   if (matchTag && tag != null) {
     var res = await openBottomSheet(
@@ -432,8 +483,11 @@ void handlePurchaseProduct(
     product = ActionItem(
       id: res["id"],
       label: res["mobileName"],
+      extraData:res,
+      tag:res['tag']
     );
   }
+
 
   var buyForOtherCheck = await buyForOther(product.label, authUser);
 
@@ -446,6 +500,7 @@ void handlePurchaseProduct(
       productId: product.id!,
       productName: product.label,
       buyForOther: buyForOtherCheck,
+      extraData: product.extraData
     ),
   );
 }

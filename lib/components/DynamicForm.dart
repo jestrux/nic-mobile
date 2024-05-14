@@ -61,6 +61,7 @@ var dynamicFormFieldTypeMap = {
   "bank": DynamicFormFieldType.choice,
   "branch": DynamicFormFieldType.choice,
   "corporate": DynamicFormFieldType.choice,
+  "employer": DynamicFormFieldType.choice,
 
   "future_date": DynamicFormFieldType.date,
   "past_date": DynamicFormFieldType.date,
